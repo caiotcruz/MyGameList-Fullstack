@@ -6,7 +6,6 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class AuthService {
-  // No Angular 17+, usamos 'inject' em vez de construtor
   private http = inject(HttpClient);
 
   private apiUrl = 'https://mygamelist-api-65ts.onrender.com/auth';

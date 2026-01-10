@@ -24,25 +24,54 @@ public class SecurityFilter extends OncePerRequestFilter {
     UserRepository userRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        var token = this.recoverToken(request);
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
+
+        // 🔹 Libera preflight CORS
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = recoverToken(request);
 
         if (token != null) {
-            var login = tokenService.validateToken(token);
+            try {
+                String login = tokenService.validateToken(token);
 
-            if (!login.isEmpty()) {
-                UserDetails user = userRepository.findByEmail(login); 
+                if (login != null && !login.isBlank()) {
+                    UserDetails user = userRepository.findByEmail(login);
 
-                var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    if (user != null) {
+                        UsernamePasswordAuthenticationToken authentication =
+                                new UsernamePasswordAuthenticationToken(
+                                        user,
+                                        null,
+                                        user.getAuthorities()
+                                );
+
+                        SecurityContextHolder.getContext()
+                                .setAuthentication(authentication);
+                    }
+                }
+            } catch (Exception e) {
+                // Token inválido / expirado → ignora e segue sem autenticar
+                SecurityContextHolder.clearContext();
             }
         }
-        filterChain.doFilter(request, response); 
+
+        filterChain.doFilter(request, response);
     }
 
     private String recoverToken(HttpServletRequest request) {
-        var authHeader = request.getHeader("Authorization");
-        if (authHeader == null) return null;
-        return authHeader.replace("Bearer ", "");
+    String authHeader = request.getHeader("Authorization");
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        return null;
     }
+    return authHeader.substring(7);
+}
+
 }
