@@ -59,6 +59,18 @@ ng serve
 ```
 
 Acesse http://localhost:4200.
+
+---
+
+## 📦 Estrutura de Deploy
+
+* Frontend consumindo API via URL pública
+* Backend containerizado com Docker
+* Banco PostgreSQL gerenciado em cloud
+* CI/CD automático via GitHub + Vercel / Render
+
+---
+
 ## 📝 Autor
 Caio Cruz
 

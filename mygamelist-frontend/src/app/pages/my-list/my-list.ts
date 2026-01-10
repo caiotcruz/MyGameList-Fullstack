@@ -59,6 +59,12 @@ export class MyList implements OnInit {
   }
 
   salvarAlteracoes() {
+
+    if (this.editingGame.score < 0 || this.editingGame.score > 10) {
+      alert('A nota deve estar entre 0 e 10.');
+      return;
+    }
+
     this.gameService.addGameToList(this.editingGame).subscribe({
       next: () => {
         alert('Jogo atualizado!');
@@ -88,6 +94,18 @@ export class MyList implements OnInit {
         },
         error: (err) => alert('Erro ao remover.')
       });
+    }
+  }
+
+  validarScore() {
+    if (this.editingGame.score == null) return;
+
+    if (this.editingGame.score > 10) {
+      this.editingGame.score = 10;
+    }
+
+    if (this.editingGame.score < 0) {
+      this.editingGame.score = 0;
     }
   }
 }
