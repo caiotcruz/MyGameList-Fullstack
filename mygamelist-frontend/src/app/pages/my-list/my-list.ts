@@ -1,12 +1,12 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // <--- 1. IMPORTANTE
+import { FormsModule } from '@angular/forms'; 
 import { GameService } from '../../services/game';
 
 @Component({
   selector: 'app-my-list',
   standalone: true,
-  imports: [CommonModule, FormsModule], // <--- 2. ADICIONE AQUI
+  imports: [CommonModule, FormsModule],
   templateUrl: './my-list.html',
   styleUrl: './my-list.css'
 })
@@ -15,9 +15,8 @@ export class MyList implements OnInit {
   cdr = inject(ChangeDetectorRef);
   myGames: any[] = [];
   
-  // --- VARIÁVEIS DO MODAL ---
   isModalOpen = false;
-  editingGame: any = {}; // Guarda os dados do jogo que está sendo editado
+  editingGame: any = {}; 
 
   totalJogos = 0;
   totalZerados = 0;
@@ -32,7 +31,6 @@ export class MyList implements OnInit {
       next: (dados: any) => {
         this.myGames = Array.isArray(dados) ? dados : [dados];
         
-        // --- CÁLCULO DE ESTATÍSTICAS ---
         this.totalJogos = this.myGames.length;
         this.totalZerados = this.myGames.filter(g => g.status === 'COMPLETED').length;
         this.totalJogando = this.myGames.filter(g => g.status === 'PLAYING').length;
@@ -40,16 +38,15 @@ export class MyList implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        this.cdr.detectChanges(); // <--- E ISSO AQUI TAMBÉM
+        this.cdr.detectChanges();
       }
     });
   }
 
-  // Abre o modal e copia os dados do jogo clicado
   abrirEdicao(item: any) {
     this.editingGame = { 
-      rawgId: item.game.rawgId, // Precisamos disso para o Backend achar o jogo
-      title: item.game.title,   // Só para mostrar o nome no título
+      rawgId: item.game.rawgId, 
+      title: item.game.title, 
       status: item.status,
       score: item.score,
       review: item.review
@@ -62,12 +59,11 @@ export class MyList implements OnInit {
   }
 
   salvarAlteracoes() {
-    // Reaproveitamos o método de adicionar, pois o backend entende como "Atualização"
     this.gameService.addGameToList(this.editingGame).subscribe({
       next: () => {
         alert('Jogo atualizado!');
         this.fecharModal();
-        this.carregarLista(); // Recarrega a tabela para mostrar as mudanças
+        this.carregarLista(); 
       },
       error: (err) => alert('Erro ao atualizar.')
     });
@@ -88,7 +84,7 @@ export class MyList implements OnInit {
       this.gameService.deleteGame(item.id).subscribe({
         next: () => {
           alert('Jogo removido!');
-          this.carregarLista(); // Atualiza a tela
+          this.carregarLista();
         },
         error: (err) => alert('Erro ao remover.')
       });

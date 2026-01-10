@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectorRef } from '@angular/core'; // <--- 1. Importe ChangeDetectorRef
+import { Component, inject, ChangeDetectorRef } from '@angular/core'; 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { GameService } from '../../services/game';
@@ -12,7 +12,7 @@ import { GameService } from '../../services/game';
 })
 export class Search {
   gameService = inject(GameService);
-  cdr = inject(ChangeDetectorRef); // <--- 2. Injete a ferramenta de detecção
+  cdr = inject(ChangeDetectorRef); 
   
   query = '';
   games: any[] = [];
@@ -25,7 +25,7 @@ export class Search {
     console.log('Iniciando busca...');
     this.currentPage = 1;
     this.isLoading = true;
-    this.games = []; // Limpa a lista visualmente para dar feedback que está buscando nova
+    this.games = []; 
 
     this.gameService.searchGames(this.query, this.currentPage).subscribe({
       next: (resultados) => {
@@ -33,13 +33,12 @@ export class Search {
         this.games = resultados;
         this.isLoading = false;
 
-        // <--- 3. A MÁGICA: OBRIGA O HTML A ATUALIZAR AGORA
         this.cdr.detectChanges(); 
       },
       error: (err) => {
         console.error('Deu erro:', err);
         this.isLoading = false;
-        this.cdr.detectChanges(); // Força atualização no erro também
+        this.cdr.detectChanges();
       }
     });
   }
@@ -52,7 +51,7 @@ export class Search {
       next: (novosResultados) => {
         this.games.push(...novosResultados);
         this.isLoading = false;
-        this.cdr.detectChanges(); // <--- Força atualização aqui também
+        this.cdr.detectChanges(); 
       },
       error: (err) => {
         this.isLoading = false;

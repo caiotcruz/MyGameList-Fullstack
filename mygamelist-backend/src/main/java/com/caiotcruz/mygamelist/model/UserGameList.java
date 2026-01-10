@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "tb_user_game_list", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_id", "game_id"}) // Um usuário não pode adicionar o mesmo jogo 2x
+        @UniqueConstraint(columnNames = {"user_id", "game_id"})
 })
 public class UserGameList {
 
@@ -23,15 +23,15 @@ public class UserGameList {
 
     @ManyToOne
     @JoinColumn(name = "game_id", nullable = false)
-    private Game game; // Nosso Game local (que já foi cacheado da RAWG)
+    private Game game; 
 
     @Enumerated(EnumType.STRING)
-    private GameStatus status; // PLAYING, COMPLETED...
+    private GameStatus status; 
 
-    private Integer score; // 0 a 10
+    private Integer score; 
 
     @Column(columnDefinition = "TEXT")
-    private String review; // Comentário pessoal
+    private String review; 
 
     private LocalDateTime updatedAt = LocalDateTime.now();
 }

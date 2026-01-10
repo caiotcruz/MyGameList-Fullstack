@@ -21,18 +21,15 @@ public class CommunityController {
     @Autowired
     private UserGameListRepository listRepository;
 
-    // 1. Listar todos os usuários do sistema (Só Nome e ID)
     @GetMapping("/users")
     public List<UserSummaryDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
         
-        // Converte a lista de User para UserSummaryDTO (escondendo senhas)
         return users.stream()
                 .map(u -> new UserSummaryDTO(u.getId(), u.getName()))
                 .collect(Collectors.toList());
     }
 
-    // 2. Ver a lista de jogos de um usuário específico
     @GetMapping("/users/{userId}/list")
     public List<UserGameList> getUserList(@PathVariable Long userId) {
         return listRepository.findByUserId(userId);

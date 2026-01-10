@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router'; // <--- Para ler a URL
+import { ActivatedRoute } from '@angular/router';
 import { CommunityService } from '../../services/community';
 
 @Component({
@@ -17,10 +17,9 @@ export class Profile implements OnInit {
 
   userId: number = 0;
   userGames: any[] = [];
-  userName: string = 'Usuário'; // Placeholder até carregar
+  userName: string = 'Usuário';
 
   ngOnInit() {
-    // 1. Pega o ID da URL (ex: /profile/5 -> id = 5)
     this.userId = Number(this.route.snapshot.paramMap.get('id'));
 
     if (this.userId) {
@@ -33,12 +32,11 @@ export class Profile implements OnInit {
       next: (dados: any) => {
         this.userGames = dados;
         
-        // Tenta descobrir o nome do usuário pelo primeiro item da lista (se tiver)
         if (this.userGames.length > 0) {
           this.userName = this.userGames[0].user.name;
         }
 
-        this.cdr.detectChanges(); // Força atualização
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Erro ao carregar perfil', err);
@@ -48,7 +46,6 @@ export class Profile implements OnInit {
     });
   }
 
-  // Helper de cores (igual ao da sua lista)
   getStatusColor(status: string): string {
     switch(status) {
       case 'PLAYING': return '#4caf50';

@@ -18,12 +18,11 @@ public class GameController {
     @GetMapping("/search")
     public List<GameResultDTO> search(
             @RequestParam String query,
-            @RequestParam(defaultValue = "1") Integer page // <--- NOVO (Padrão 1)
+            @RequestParam(defaultValue = "1") Integer page
     ) {
         return gameService.searchGames(query, page);
     }
 
-    // NOVO ENDPOINT: Pega detalhes (e salva silenciosamente se precisar)
     @GetMapping("/{id}")
     public Game getGameDetails(@PathVariable Long id) {
         return gameService.getGameContent(id);

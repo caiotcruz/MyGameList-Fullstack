@@ -6,15 +6,14 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-// url: Pega a URL base do application.properties
 @FeignClient(name = "rawgClient", url = "${api.rawg.url}")
 public interface RawgClient {
 
     @GetMapping("/games")
     RawgSearchResponse searchGames(
-        @RequestParam("key") String apiKey,  // A API exige a chave em toda requisição
-        @RequestParam("search") String query, // O termo da busca (ex: "Mario")
-        @RequestParam("page_size") int pageSize, // Quantos resultados trazer
+        @RequestParam("key") String apiKey, 
+        @RequestParam("search") String query, 
+        @RequestParam("page_size") int pageSize,
         @RequestParam("page") int page
     );
 

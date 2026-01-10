@@ -42,14 +42,13 @@ public class SecurityConfigurations {
                 .build();
     }
 
-    // Bean que define as regras de CORS especificamente para o Spring Security
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200")); // Libera o Angular
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Libera métodos
-        configuration.setAllowedHeaders(List.of("*")); // Libera todos os cabeçalhos (Authorization, Content-Type, etc)
-        configuration.setAllowCredentials(true); // Permite credenciais se necessário
+        configuration.setAllowedOrigins(List.of("http://localhost:4200")); 
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*")); 
+        configuration.setAllowCredentials(true); 
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

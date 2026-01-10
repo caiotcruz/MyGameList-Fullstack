@@ -22,18 +22,17 @@ public class User implements UserDetails {
     private String email;
 
     @Column(nullable = false)
-    private String password; // Será criptografada
+    private String password; 
 
     private String name;
 
-    // --- UserDetails ---
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
-    public String getUsername() { return email; } // Login é o email
+    public String getUsername() { return email; }
 
     @Override
     public String getPassword() { return password; }

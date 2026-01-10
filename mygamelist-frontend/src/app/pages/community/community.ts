@@ -31,7 +31,6 @@ export class Community implements OnInit {
   }
 
   verPerfil(userId: number) {
-    // Vamos criar essa rota no próximo passo
     this.router.navigate(['/profile', userId]);
   }
 }

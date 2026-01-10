@@ -10,10 +10,8 @@ import java.util.Optional;
 
 public interface UserGameListRepository extends JpaRepository<UserGameList, Long> {
     
-    // Busca um item específico (ex: Quero saber a nota que dei pro Mario)
     Optional<UserGameList> findByUserAndGame(User user, Game game);
 
-    // Busca toda a lista de um usuário
     List<UserGameList> findByUser(User user);
     List<UserGameList> findByUserId(Long userId);
 }
