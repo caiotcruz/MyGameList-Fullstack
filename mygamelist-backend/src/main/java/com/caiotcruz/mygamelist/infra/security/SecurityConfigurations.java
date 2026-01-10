@@ -47,7 +47,8 @@ public class SecurityConfigurations {
         
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4200", 
-                "https://my-game-list-fullstack.vercel.app" 
+                "https://my-game-list-fullstack.vercel.app",
+                "https://mygamelistbrasil.vercel.app"
         ));
         
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
