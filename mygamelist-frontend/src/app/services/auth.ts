@@ -8,7 +8,8 @@ import { tap } from 'rxjs/operators';
 export class AuthService {
   // No Angular 17+, usamos 'inject' em vez de construtor
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/auth';
+
+  private apiUrl = 'https://mygamelist-api-65ts.onrender.com/auth';
 
   constructor() { }
 
@@ -16,10 +17,13 @@ export class AuthService {
     return this.http.post(this.apiUrl + '/login', credentials, { responseType: 'text' })
       .pipe(
         tap((token) => {
-          // Salva o token no navegador quando o login der certo
           localStorage.setItem('token', token);
         })
       );
+  }
+
+  register(userData: any) {
+    return this.http.post(this.apiUrl + '/register', userData);
   }
 
   logout() {

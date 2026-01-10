@@ -1,0 +1,24 @@
+<div class="login-container">
+  <h2>Crie sua conta</h2>
+  
+  <div class="form-group">
+    <label>Nome:</label>
+    <input type="text" [(ngModel)]="name" placeholder="Como quer ser chamado?">
+  </div>
+
+  <div class="form-group">
+    <label>Email:</label>
+    <input type="email" [(ngModel)]="email" placeholder="Digite seu email">
+  </div>
+
+  <div class="form-group">
+    <label>Senha:</label>
+    <input type="password" [(ngModel)]="password" placeholder="Mínimo 6 caracteres">
+  </div>
+
+  <button (click)="onRegister()">Cadastrar</button>
+
+  <p style="margin-top: 15px; font-size: 0.9em;">
+    Já tem conta? <a routerLink="/login" style="color: #6200ea; font-weight: bold;">Faça Login</a>
+  </p>
+</div>

@@ -4,6 +4,7 @@ import { Search } from './pages/search/search';
 import { MyList} from './pages/my-list/my-list'
 import { Community } from './pages/community/community';
 import { Profile } from './pages/profile/profile';
+import { Register } from './pages/register/register';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -11,5 +12,6 @@ export const routes: Routes = [
     { path: 'search', component: Search },
     { path: 'my-list', component: MyList },
     { path: 'community', component: Community },
-    { path: 'profile/:id', component: Profile }
+    { path: 'profile/:id', component: Profile },
+    { path: 'register', component: Register}
 ];

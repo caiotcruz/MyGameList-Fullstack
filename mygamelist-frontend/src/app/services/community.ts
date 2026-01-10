@@ -6,7 +6,7 @@ import { Injectable, inject } from '@angular/core';
 })
 export class CommunityService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/community';
+ private apiUrl = 'https://mygamelist-api-65ts.onrender.com/auth';
 
   // Helper de Token (Igual ao do GameService)
   private getHeaders() {
