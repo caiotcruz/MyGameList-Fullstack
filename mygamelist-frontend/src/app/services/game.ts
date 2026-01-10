@@ -6,7 +6,7 @@ import { Injectable, inject } from '@angular/core';
 })
 export class GameService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080';
+  private apiUrl = 'https://mygamelist-api-65ts.onrender.com';
 
   // Helper para criar o cabeçalho com o Token
   private getHeaders() {
