@@ -1,0 +1,17 @@
+# Ignorar compilação do Java
+**/target/
+**/*.class
+
+# Ignorar dependências do Node.js (Isso é GIGANTE, nunca suba)
+**/node_modules/
+**/dist/
+**/.angular/
+
+# Ignorar configurações de IDE
+**/.idea/
+**/.vscode/
+**/*.iml
+
+# Ignorar logs e sistema
+*.log
+.DS_Store

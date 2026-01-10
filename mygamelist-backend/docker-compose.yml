@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  postgres-mgl:
+    image: postgres:15
+    container_name: mgl-db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: mygamelist_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_mgl_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_mgl_data:
