@@ -1,0 +1,26 @@
+<div class="search-container">
+  <div class="search-bar">
+    <input type="text" [(ngModel)]="query" placeholder="Busque um jogo (ex: Mario)">
+    
+    <button (click)="buscar()" [disabled]="isLoading">
+      {{ isLoading ? 'Buscando...' : 'Pesquisar' }}
+    </button>
+  </div>
+
+  <div class="results-grid">
+    <div class="game-card" *ngFor="let game of games">
+      <img [src]="game.background_image" alt="Capa">
+      <div class="card-info">
+        <h3>{{ game.name }}</h3>
+        <p>Lançamento: {{ game.released }}</p>
+        <button (click)="adicionar(game)">+ Minha Lista</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="load-more-container" *ngIf="games.length > 0">
+    <button class="btn-load" (click)="carregarMais()" [disabled]="isLoading">
+      {{ isLoading ? 'Carregando...' : 'Carregar Mais Jogos' }}
+    </button>
+  </div>
+</div>

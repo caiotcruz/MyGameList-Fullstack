@@ -1,0 +1,15 @@
+<div class="login-container">
+  <h2>Login MyGameList</h2>
+  
+  <div class="form-group">
+    <label>Email:</label>
+    <input type="email" [(ngModel)]="email" placeholder="Digite seu email">
+  </div>
+
+  <div class="form-group">
+    <label>Senha:</label>
+    <input type="password" [(ngModel)]="password" placeholder="Digite sua senha">
+  </div>
+
+  <button (click)="onLogin()">Entrar</button>
+</div>

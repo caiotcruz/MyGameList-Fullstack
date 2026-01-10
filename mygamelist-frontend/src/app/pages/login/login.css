@@ -1,0 +1,22 @@
+.login-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
+}
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  box-sizing: border-box;
+}
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #6200ea; /* Roxo Angular Material */
+  color: white;
+  border: none;
+  cursor: pointer;
+}
