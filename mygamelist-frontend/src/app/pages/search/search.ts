@@ -89,8 +89,13 @@ export class Search {
       next: () => {
         alert('Jogo adicionado!');
         this.fecharModal();
+        
+        this.cdr.detectChanges(); 
       },
-      error: () => alert('Erro ao adicionar.')
+      error: () => {
+        alert('Erro ao adicionar.');
+        this.cdr.detectChanges(); 
+      }
     });
   }
 
