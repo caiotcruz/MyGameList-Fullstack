@@ -23,4 +23,36 @@
       {{ isLoading ? 'Carregando...' : 'Carregar Mais Jogos' }}
     </button>
   </div>
+
+  <div class="modal-overlay" *ngIf="isModalOpen">
+    <div class="modal-content">
+      <h3>Adicionar: {{ editingGame.title }}</h3>
+
+      <div class="form-group">
+        <label>Status:</label>
+        <select [(ngModel)]="editingGame.status">
+          <option value="PLAN_TO_PLAY">Planejo Jogar</option>
+          <option value="PLAYING">Jogando</option>
+          <option value="COMPLETED">Zerado / Completado</option>
+          <option value="DROPPED">Desisti</option>
+          <option value="ON_HOLD">Pausado</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Nota (0 a 10):</label>
+        <input type="number" min="0" max="10" [(ngModel)]="editingGame.score">
+      </div>
+
+      <div class="form-group">
+        <label>Review:</label>
+        <textarea rows="4" [(ngModel)]="editingGame.review"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="fecharModal()">Cancelar</button>
+        <button class="btn-save" (click)="salvar()">Salvar</button>
+      </div>
+    </div>
+  </div>
 </div>

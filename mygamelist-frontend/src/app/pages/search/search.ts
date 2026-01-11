@@ -19,6 +19,9 @@ export class Search {
   currentPage = 1;
   isLoading = false;
 
+  isModalOpen = false;
+  editingGame: any = {};
+
   buscar() {
     if (!this.query) return;
     
@@ -61,16 +64,34 @@ export class Search {
   }
 
   adicionar(game: any) {
-    // ... seu código de adicionar (pode manter igual) ...
-    const payload = {
+    this.editingGame = {
       rawgId: game.id,
+      title: game.name,
       status: 'PLAN_TO_PLAY',
       score: 0,
       review: ''
     };
-    this.gameService.addGameToList(payload).subscribe({
-        next: () => alert(`"${game.name}" adicionado!`),
-        error: (err) => alert('Erro ao adicionar.')
+
+    this.isModalOpen = true;
+  }
+
+  fecharModal() {
+    this.isModalOpen = false;
+  }
+
+  salvar() {
+    if (this.editingGame.score < 0 || this.editingGame.score > 10) {
+      alert('Nota inválida');
+      return;
+    }
+
+    this.gameService.addGameToList(this.editingGame).subscribe({
+      next: () => {
+        alert('Jogo adicionado!');
+        this.fecharModal();
+      },
+      error: () => alert('Erro ao adicionar.')
     });
   }
+
 }
