@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
 })
 export class GameService {
   private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl;
+  private apiUrl = "https://mygamelist-api-65ts.onrender.com/auth";
 
   // Helper para criar o cabeçalho com o Token
   private getHeaders() {
