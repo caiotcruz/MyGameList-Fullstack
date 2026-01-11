@@ -8,7 +8,7 @@ import { Activity } from '../models/activity.model';
 })
 export class ActivityService {
   private http = inject(HttpClient);
-  private apiUrl = "https://mygamelist-api-65ts.onrender.com/auth";
+  private apiUrl = "https://mygamelist-api-65ts.onrender.com/activities";
 
   getFeed() {
     return this.http.get<Activity[]>(this.apiUrl);

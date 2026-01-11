@@ -7,9 +7,8 @@ import { environment } from '../../environments/environment';
 })
 export class GameService {
   private http = inject(HttpClient);
-  private apiUrl = "https://mygamelist-api-65ts.onrender.com/auth";
+  private apiUrl = "https://mygamelist-api-65ts.onrender.com";
 
-  // Helper para criar o cabeçalho com o Token
   private getHeaders() {
     const token = localStorage.getItem('token');
     return {
