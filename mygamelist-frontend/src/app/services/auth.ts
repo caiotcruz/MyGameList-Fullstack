@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +9,7 @@ import { tap } from 'rxjs/operators';
 export class AuthService {
   private http = inject(HttpClient);
 
-  private apiUrl = 'https://mygamelist-api-65ts.onrender.com/auth';
+  private apiUrl = environment.apiUrl + '/auth';
 
   constructor() { }
 

@@ -5,6 +5,7 @@ import { MyList} from './pages/my-list/my-list'
 import { Community } from './pages/community/community';
 import { Profile } from './pages/profile/profile';
 import { Register } from './pages/register/register';
+import { Home } from './pages/home/home';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -13,5 +14,6 @@ export const routes: Routes = [
     { path: 'my-list', component: MyList },
     { path: 'community', component: Community },
     { path: 'profile/:id', component: Profile },
-    { path: 'register', component: Register}
+    { path: 'register', component: Register},
+    { path: 'home', component: Home }
 ];

@@ -1,12 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { environment } from '../../environments/environment'; 
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
   private http = inject(HttpClient);
-  private apiUrl = 'https://mygamelist-api-65ts.onrender.com';
+  private apiUrl = environment.apiUrl;
 
   // Helper para criar o cabeçalho com o Token
   private getHeaders() {
@@ -18,18 +19,14 @@ export class GameService {
     };
   }
 
-  // Busca pública (não precisa de token, mas funciona com ele também)
-  searchGames(query: string, page: number = 1) { // Padrão 1
-    // Note o &page=${page} na URL
+  searchGames(query: string, page: number = 1) { 
     return this.http.get<any[]>(`${this.apiUrl}/games/search?query=${query}&page=${page}`);
   }
 
-  // Adicionar à minha lista (Protegido)
   addGameToList(gameData: any) {
     return this.http.post(`${this.apiUrl}/my-games`, gameData, this.getHeaders());
   }
 
-  // Ver minha lista (Protegido)
   getMyList() {
     return this.http.get<any[]>(`${this.apiUrl}/my-games`, this.getHeaders());
   }

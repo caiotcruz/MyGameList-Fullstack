@@ -1,0 +1,15 @@
+<div class="home-container">
+  <header class="hero-section">
+    <h1>Bem-vindo de volta, {{ userName }}! 🎮</h1>
+    <p>Veja o que a comunidade está jogando.</p>
+    
+    <div class="actions">
+      <a routerLink="/search" class="btn-primary">🔍 Buscar Jogos</a>
+      <a routerLink="/my-list" class="btn-secondary">📋 Minha Lista</a>
+    </div>
+  </header>
+
+  <section class="feed-section">
+    <app-feed></app-feed>
+  </section>
+</div>

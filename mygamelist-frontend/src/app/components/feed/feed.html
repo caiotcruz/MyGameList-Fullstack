@@ -1,0 +1,26 @@
+<div class="feed-container">
+  <h3>Últimas Atividades</h3>
+  
+  <div class="activity-list">
+    <div *ngFor="let item of activities" class="activity-card">
+      
+      <img [src]="item.game.coverUrl" alt="Capa" class="game-thumb">
+      
+      <div class="activity-content">
+        <p class="activity-text">
+          <strong>{{ item.user.name }}</strong> 
+          {{ getActionText(item.type) }}
+          <span class="highlight">{{ formatDetail(item.type, item.detail) }}</span>
+          no jogo
+          <strong>{{ item.game.title }}</strong>
+        </p>
+        <span class="activity-date">{{ item.timestamp | date:'dd/MM HH:mm' }}</span>
+      </div>
+    
+    </div>
+    
+    <p *ngIf="activities.length === 0" class="empty-state">
+      Nenhuma atividade recente. Jogue alguma coisa! 🎮
+    </p>
+  </div>
+</div>

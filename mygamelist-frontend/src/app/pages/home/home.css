@@ -1,0 +1,50 @@
+.home-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.hero-section {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #6200ea 0%, #3700b3 100%);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(98, 0, 234, 0.3);
+}
+
+.hero-section h1 {
+  margin: 0 0 10px 0;
+  font-size: 2rem;
+}
+
+.actions {
+  margin-top: 25px;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.btn-primary, .btn-secondary {
+  padding: 10px 20px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: transform 0.2s;
+}
+
+.btn-primary {
+  background-color: white;
+  color: #6200ea;
+}
+
+.btn-secondary {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.btn-primary:hover, .btn-secondary:hover {
+  transform: scale(1.05);
+}

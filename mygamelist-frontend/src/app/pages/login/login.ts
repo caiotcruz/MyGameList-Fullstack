@@ -23,7 +23,7 @@ export class Login {
     this.authService.login(credentials).subscribe({
       next: (token) => {
         console.log('Login Sucesso! Token:', token);
-        this.router.navigate(['/search']);
+        this.router.navigate(['/home']);
       },
       error: (err) => {
         console.error('Erro:', err);
