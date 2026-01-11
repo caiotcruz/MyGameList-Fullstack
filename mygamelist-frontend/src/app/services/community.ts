@@ -8,6 +8,7 @@ import { environment } from '../../environments/environment';
 export class CommunityService {
   private http = inject(HttpClient);
  private apiUrl = "https://mygamelist-api-65ts.onrender.com/community";
+ //private apiUrl = environment.apiUrl + '/community';
 
   private getHeaders() {
     const token = localStorage.getItem('token');

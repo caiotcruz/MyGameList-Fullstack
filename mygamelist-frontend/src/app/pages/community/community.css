@@ -14,29 +14,66 @@
 .user-card {
   background: white;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 12px; 
   text-align: center;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid transparent; 
 }
 
 .user-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  border-color: #6200ea; 
 }
 
 .avatar {
   font-size: 3rem;
   margin-bottom: 10px;
+  background-color: #f5f5f5;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin: 0 auto 10px auto;
+}
+
+h3 {
+  margin: 10px 0;
+  font-size: 1.1rem;
+  color: #333;
 }
 
 button {
   background-color: #6200ea;
   color: white;
-  border: none;
-  padding: 8px 16px;
+  border: 2px solid #6200ea;
+  padding: 8px 20px;
   border-radius: 20px;
   margin-top: 10px;
   cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+  width: 100%; 
+}
+
+button:hover {
+  background-color: #5000c2;
+  border-color: #5000c2;
+}
+
+button.btn-following {
+  background-color: transparent;
+  color: #6200ea;
+  border: 2px solid #6200ea;
+}
+
+button.btn-following:hover {
+  background-color: #ffebee; 
+  color: #d32f2f;
+  border-color: #d32f2f;
+  content: 'Deixar de Seguir';
 }

@@ -8,6 +8,7 @@ import { environment } from '../../environments/environment';
 export class GameService {
   private http = inject(HttpClient);
   private apiUrl = "https://mygamelist-api-65ts.onrender.com";
+  //private apiUrl = environment.apiUrl ;
 
   private getHeaders() {
     const token = localStorage.getItem('token');

@@ -10,6 +10,7 @@ export class AuthService {
   private http = inject(HttpClient);
 
   private apiUrl ="https://mygamelist-api-65ts.onrender.com/auth";
+  //private apiUrl = environment.apiUrl + '/auth';
 
   constructor() { }
 

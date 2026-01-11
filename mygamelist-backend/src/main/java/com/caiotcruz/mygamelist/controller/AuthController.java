@@ -2,15 +2,23 @@ package com.caiotcruz.mygamelist.controller;
 
 import com.caiotcruz.mygamelist.dto.LoginDTO;
 import com.caiotcruz.mygamelist.dto.RegisterDTO;
+import com.caiotcruz.mygamelist.dto.UserSummaryDTO;
 import com.caiotcruz.mygamelist.infra.security.TokenService;
 import com.caiotcruz.mygamelist.model.User;
+import com.caiotcruz.mygamelist.repository.UserFollowRepository;
 import com.caiotcruz.mygamelist.repository.UserRepository;
 import jakarta.validation.Valid;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,5 +56,26 @@ public class AuthController {
 
         repository.save(newUser);
         return ResponseEntity.ok().build();
+    }
+
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private UserFollowRepository followRepository;
+
+    @GetMapping
+    public List<UserSummaryDTO> getAllUsers() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = (User) userRepository.findByEmail(email);
+
+        List<User> allUsers = userRepository.findAll();
+
+        return allUsers.stream()
+                .filter(u -> !u.getId().equals(currentUser.getId())) 
+                .map(u -> {
+                    boolean isFollowing = followRepository.findByFollowerAndFollowed(currentUser, u).isPresent();
+                    return new UserSummaryDTO(u.getId(), u.getName(), isFollowing);
+                })
+                .collect(Collectors.toList());
     }
 }
