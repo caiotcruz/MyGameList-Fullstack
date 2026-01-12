@@ -37,6 +37,7 @@ public class SecurityConfigurations {
                     req.requestMatchers(HttpMethod.GET, "/games/**").permitAll();
                     req.requestMatchers(HttpMethod.GET, "/auth/users").authenticated();
                     req.requestMatchers(HttpMethod.GET, "/activities").authenticated();
+                    req.requestMatchers(HttpMethod.GET, "/profile/**").authenticated();
                     req.anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
