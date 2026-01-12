@@ -86,4 +86,35 @@
       </tr>
     </tbody>
   </table>
+
+  <div class="modal-backdrop" *ngIf="isModalOpen">
+    <div class="modal-content">
+        <h3>Editar {{ editingGame.title }}</h3>
+        
+        <div class="form-group">
+        <label>Status:</label>
+        <select [(ngModel)]="editingGame.status">
+            <option value="PLAYING">Jogando</option>
+            <option value="COMPLETED">Zerado</option>
+            <option value="PLAN_TO_PLAY">Planejo Jogar</option>
+            <option value="DROPPED">Larguei</option>
+        </select>
+        </div>
+
+        <div class="form-group">
+        <label>Nota (0-10):</label>
+        <input type="number" [(ngModel)]="editingGame.score" (change)="validarScore()" min="0" max="10">
+        </div>
+
+        <div class="form-group">
+        <label>Review Curto:</label>
+        <textarea [(ngModel)]="editingGame.review" rows="3" placeholder="O que achou do jogo?"></textarea>
+        </div>
+
+        <div class="modal-actions">
+        <button class="btn-cancel" (click)="fecharModal()">Cancelar</button>
+        <button class="btn-save" (click)="salvarAlteracoes()">Salvar</button>
+        </div>
+    </div>
+    </div>
 </div>

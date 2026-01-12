@@ -112,9 +112,24 @@ export class GameList implements OnChanges {
 
     this.gameService.addGameToList(this.editingGame).subscribe({
       next: () => {
+        
+        const index = this.games.findIndex(g => 
+            (g.game.rawgId || g.game.id) === this.editingGame.rawgId
+        );
+
+        if (index !== -1) {
+            this.games[index].score = this.editingGame.score;
+            this.games[index].status = this.editingGame.status;
+            this.games[index].review = this.editingGame.review;
+            this.games[index].updatedAt = new Date().toISOString();
+        }
+
         alert('Jogo atualizado!');
         this.fecharModal();
-        this.listUpdated.emit();
+        
+        this.cdr.detectChanges();
+
+        this.listUpdated.emit(); 
       },
       error: () => alert('Erro ao atualizar.')
     });

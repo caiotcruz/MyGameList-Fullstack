@@ -48,12 +48,24 @@ export class Profile implements OnInit {
   favoriteGame: any = null; 
 
   ngOnInit() {
-    this.userId = Number(this.route.snapshot.paramMap.get('id'));
-    const myId = localStorage.getItem('userId'); 
-    this.isMyProfile = (myId && Number(myId) === this.userId) || false;
-    if (this.userId) {
-      this.carregarPerfil();
-    }
+
+    this.route.paramMap.subscribe(params => {
+        const idParam = params.get('id');
+        
+        if (idParam) {
+            this.userId = Number(idParam);
+            
+            const myId = localStorage.getItem('userId');
+            this.isMyProfile = !!myId && Number(myId) === this.userId;
+            
+            this.userGames = []; 
+            this.stats = { total: 0, completed: 0, playing: 0, avgScore: 0 };
+            this.badges = [];
+            this.favoriteGame = null;
+
+            this.carregarPerfil();
+        }
+    });
   }
 
   carregarPerfil() {

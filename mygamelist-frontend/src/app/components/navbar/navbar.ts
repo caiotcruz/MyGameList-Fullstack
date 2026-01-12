@@ -10,14 +10,12 @@ import { AuthService } from '../../services/auth';
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
 })
-export class Navbar implements OnInit {
+export class Navbar{
   authService = inject(AuthService);
   router = inject(Router);
 
-  myId: string | null = null;
-
-  ngOnInit() {
-    this.myId = localStorage.getItem('userId');
+  get myId(): string | null {
+    return localStorage.getItem('userId');
   }
 
   sair() {
