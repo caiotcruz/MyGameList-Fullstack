@@ -1,6 +1,8 @@
 package com.caiotcruz.mygamelist.infra.security;
 
 import com.caiotcruz.mygamelist.repository.UserRepository;
+import com.caiotcruz.mygamelist.service.AuthorizationService;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +25,9 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    AuthorizationService authorizationService;
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -43,7 +48,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                 String login = tokenService.validateToken(token);
 
                 if (login != null && !login.isBlank()) {
-                    UserDetails user = userRepository.findByEmail(login);
+                    UserDetails user = authorizationService.loadUserByUsername(login);
 
                     if (user != null) {
                         UsernamePasswordAuthenticationToken authentication =
