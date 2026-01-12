@@ -9,5 +9,6 @@ public record AddGameDTO(
     @NotNull Long rawgId, 
     GameStatus status,    
     @Min(0) @Max(10) Integer score, 
-    String review 
+    String review,
+    Boolean isFavorite 
 ) {}

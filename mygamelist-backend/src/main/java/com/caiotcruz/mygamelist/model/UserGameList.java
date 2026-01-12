@@ -33,5 +33,11 @@ public class UserGameList {
     @Column(columnDefinition = "TEXT")
     private String review; 
 
+    @Column(name = "is_favorite", nullable = false)
+    private boolean isFavorite = false;
+
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    public boolean isFavorite() { return isFavorite; }
+    public void setFavorite(boolean favorite) { isFavorite = favorite; }
 }

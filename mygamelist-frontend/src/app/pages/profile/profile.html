@@ -1,44 +1,80 @@
 <div class="profile-container">
+
   <div class="profile-header">
-    <div class="avatar-large">👤</div>
-    <div>
-      <h2>Biblioteca de {{ userName }}</h2>
-      <p>{{ userGames.length }} jogos na coleção</p>
+    <div class="cover-bg"></div>
+    <div class="header-content">
+      <div class="avatar-large">{{ userName.charAt(0).toUpperCase() }}</div>
+      <div class="user-info">
+        <h1>{{ userName }}</h1>
+        <p></p>
+        <p class="subtitle">Membro do MyGameList</p>
+      </div>
     </div>
   </div>
 
-  <div class="empty-state" *ngIf="userGames.length === 0">
-    <p>Este usuário ainda não adicionou nenhum jogo.</p>
+  <div *ngIf="userGames.length > 0">
+    
+    <div class="highlights-grid">
+      
+      <div class="highlight-card" *ngIf="favoriteGame">
+        <div class="highlight-label">🏆 Jogo Favorito</div>
+        <div class="highlight-content">
+          <img [src]="favoriteGame.game.coverUrl || favoriteGame.game.background_image" alt="Capa">
+          <div>
+            <h3>{{ favoriteGame.game.title }}</h3>
+            <p class="highlight-score" *ngIf="favoriteGame.score > 0">Nota: {{ favoriteGame.score }}/10</p>
+            <p class="highlight-score" *ngIf="favoriteGame.score === 0">Favorito ❤️</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight-card" *ngIf="badges.length > 0">
+        <div class="highlight-label">🎖️ Conquistas</div>
+        <div class="badges-grid">
+          <div class="badge-item" *ngFor="let badge of badges" [style.border-color]="badge.color">
+            <span class="badge-icon">{{ badge.icon }}</span>
+            <span class="badge-text" [style.color]="badge.color">{{ badge.label }}</span>
+            <span class="custom-tooltip">{{ badge.description }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight-card stats-center">
+          <div class="highlight-label">📊 Média Geral</div>
+          <div class="big-number">{{ stats.avgScore | number:'1.1-1' }}</div>
+          <p class="sub-text">Baseado em {{ userGames.length }} jogos</p>
+      </div>
+
+    </div>
+
+    <div class="chart-section" *ngIf="stats.avgScore > 0">
+       <div class="highlight-label">📈 Distribuição de Notas</div>
+       
+       <div class="chart-container">
+         <div class="chart-bar-group" *ngFor="let data of chartData">
+            <div class="bar-area">
+               <span class="bar-tooltip" *ngIf="data.count > 0">{{ data.count }}</span>
+               <div class="bar-fill" [style.height.%]="data.heightPc" [class.has-data]="data.count > 0"></div>
+            </div>
+            <span class="bar-label">{{ data.score }}</span>
+         </div>
+       </div>
+    </div>
+
   </div>
 
-  <table *ngIf="userGames.length > 0">
-    <thead>
-      <tr>
-        <th>Capa</th>
-        <th>Jogo</th>
-        <th>Status</th>
-        <th>Nota</th>
-        <th>Review</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of userGames">
-        <td><img [src]="item.game.coverUrl" class="thumb"></td>
-        <td><strong>{{ item.game.title }}</strong></td>
-        <td>
-          <span class="badge" [style.background-color]="getStatusColor(item.status)">
-            {{ item.status }}
-          </span>
-        </td>
-        <td>
-          <span class="score" *ngIf="item.score > 0">⭐ {{ item.score }}</span>
-          <span class="no-score" *ngIf="item.score === 0">-</span>
-        </td>
-        <td>
-          <span *ngIf="item.review">"{{ item.review }}"</span>
-          <span class="no-review" *ngIf="!item.review">...</span>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="list-section">
+    <h3>
+      {{ isMyProfile ? 'Minha Coleção' : 'Coleção Completa' }}
+    </h3>
+    <app-game-list 
+      [games]="userGames" 
+      [isOwner]="isMyProfile" 
+      (listUpdated)="onListUpdated()">
+    </app-game-list>
+  </div>
+
+  <div class="empty-state" *ngIf="userGames.length === 0">
+    <p>Este usuário ainda não iniciou sua jornada.</p>
+  </div>
 </div>

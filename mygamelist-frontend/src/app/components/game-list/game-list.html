@@ -1,0 +1,89 @@
+<div class="list-wrapper">
+  
+  <div class="stats-grid" *ngIf="games.length > 0">
+    <div class="stat-card">
+      <h3>{{ stats.total }}</h3>
+      <p>Jogos</p>
+    </div>
+    <div class="stat-card completed">
+      <h3>{{ stats.completed }}</h3>
+      <p>Zerados</p>
+    </div>
+    <div class="stat-card playing">
+      <h3>{{ stats.playing }}</h3>
+      <p>Jogando</p>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="games.length === 0">
+    <p>Nenhum jogo encontrado.</p>
+  </div>
+
+  <table *ngIf="games.length > 0">
+    <thead>
+      <tr>
+        <th width="50" (click)="ordenar('favorite')" class="sortable">
+            # <span class="sort-icon">{{ getSortIcon('favorite') }}</span>
+        </th> 
+        
+        <th width="80">Capa</th>
+        
+        <th (click)="ordenar('title')" class="sortable">
+            Jogo <span class="sort-icon">{{ getSortIcon('title') }}</span>
+        </th>
+        
+        <th (click)="ordenar('status')" class="sortable">
+            Status <span class="sort-icon">{{ getSortIcon('status') }}</span>
+        </th>
+        
+        <th class="mobile-hide sortable" (click)="ordenar('score')">
+            Nota <span class="sort-icon">{{ getSortIcon('score') }}</span>
+        </th>
+        
+        <th class="mobile-hide">Review</th>
+        <th *ngIf="isOwner">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of games" [class.favorite-row]="item.isFavorite">
+        
+        <td class="star-col">
+                <button 
+                class="btn-star" 
+                [class.active]="item.favorite" 
+                [disabled]="!isOwner"
+                type="button" 
+                (click)="toggleFavorite(item, $event)"> {{ item.favorite ? '★' : '☆' }}
+            </button>
+        </td>
+
+        <td>
+           <img [src]="item.game.coverUrl || item.game.background_image" class="thumb">
+        </td>
+        <td>
+            <strong>{{ item.game.title }}</strong>
+            <div class="date-info" *ngIf="item.updatedAt">
+                <small>{{ item.updatedAt | date:'dd/MM/yy' }}</small>
+            </div>
+        </td>
+        <td>
+          <span class="badge" [style.background-color]="getStatusColor(item.status)">
+            {{ item.status }}
+          </span>
+        </td>
+        <td class="mobile-hide">
+          <span class="score" *ngIf="item.score > 0">{{ item.score }}</span>
+          <span class="no-score" *ngIf="item.score === 0">-</span>
+        </td>
+        <td class="mobile-hide">
+           <span *ngIf="item.review" class="review-text" title="{{item.review}}">📝</span>
+        </td>
+        
+        <td *ngIf="isOwner">
+            <button class="btn-icon edit" (click)="abrirEdicao(item)">✏️</button>
+            <button class="btn-icon delete" (click)="removerJogo(item)">🗑️</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

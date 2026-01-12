@@ -15,12 +15,7 @@ export class AuthService {
   constructor() { }
 
   login(credentials: any) {
-    return this.http.post(this.apiUrl + '/login', credentials, { responseType: 'text' })
-      .pipe(
-        tap((token) => {
-          localStorage.setItem('token', token);
-        })
-      );
+    return this.http.post(`${this.apiUrl}/login`, credentials);
   }
 
   register(userData: any) {

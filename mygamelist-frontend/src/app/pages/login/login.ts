@@ -21,8 +21,15 @@ export class Login {
     const credentials = { email: this.email, password: this.password };
 
     this.authService.login(credentials).subscribe({
-      next: (token) => {
-        console.log('Login Sucesso! Token:', token);
+      next: (response: any) => { 
+        console.log('Login Sucesso!', response);
+        
+        localStorage.setItem('token', response.token);
+
+        localStorage.setItem('userId', response.userId.toString());
+
+        localStorage.setItem('userName', response.name);
+
         this.router.navigate(['/home']);
       },
       error: (err) => {

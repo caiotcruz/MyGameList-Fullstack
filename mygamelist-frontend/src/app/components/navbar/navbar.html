@@ -1,10 +1,16 @@
 <nav class="navbar" *ngIf="authService.isLoggedIn()">
   <div class="logo">🎮 MyGameList</div>
+  
   <div class="links">
     <a routerLink="/home" routerLinkActive="active">🏠 Home</a>
     <a routerLink="/search" routerLinkActive="active">🔍 Buscar Jogos</a>
     <a routerLink="/community" routerLinkActive="active">🌍 Comunidade</a>
-    <a routerLink="/my-list" routerLinkActive="active">📋 Minha Lista</a>
+    <a 
+      [routerLink]="['/profile', myId]" 
+      routerLinkActive="active">
+      👤 Meu Perfil
+    </a>
+
     <a (click)="sair()" class="logout">Sair</a>
   </div>
 </nav>

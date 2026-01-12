@@ -47,6 +47,16 @@ public class UserGameListService {
             item.setGame(game);
         }
 
+        if (Boolean.TRUE.equals(dto.isFavorite())) {
+            listRepository.findByUserAndIsFavoriteTrue(user).ifPresent(existingFav -> {
+                if (!existingFav.getId().equals(item.getId())) {
+                    existingFav.setFavorite(false);
+                    listRepository.save(existingFav);
+                }
+            });
+        }
+
+        if (dto.isFavorite() != null) item.setFavorite(dto.isFavorite());
         if (dto.status() != null) item.setStatus(dto.status());
         if (dto.score() != null) item.setScore(dto.score());
         if (dto.review() != null) item.setReview(dto.review());
@@ -64,12 +74,15 @@ public class UserGameListService {
         if (statusMudou && statusRelevante) {
             saveActivity(user, game, ActivityType.CHANGED_STATUS, dto.status().toString());
         }
-
-        boolean novaNotaValida = dto.score() != null && dto.score() > 0;
-        boolean notaMudou = !dto.score().equals(oldScore);
         
-        if (novaNotaValida && notaMudou) {
-            saveActivity(user, game, ActivityType.RATED, String.valueOf(dto.score()));
+        if (dto.score() != null) {
+
+            boolean novaNotaValida = dto.score() > 0;
+            boolean notaMudou = !dto.score().equals(oldScore);
+
+            if (novaNotaValida && notaMudou) {
+                saveActivity(user, game, ActivityType.RATED, String.valueOf(dto.score()));
+            }
         }
         
         if (dto.review() != null && !dto.review().isEmpty() && !dto.review().equals(oldReview)) {

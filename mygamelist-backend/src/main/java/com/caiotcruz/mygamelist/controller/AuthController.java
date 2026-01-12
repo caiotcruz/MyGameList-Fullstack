@@ -1,6 +1,7 @@
 package com.caiotcruz.mygamelist.controller;
 
 import com.caiotcruz.mygamelist.dto.LoginDTO;
+import com.caiotcruz.mygamelist.dto.LoginResponseDTO; // 👈 Importe o novo DTO
 import com.caiotcruz.mygamelist.dto.RegisterDTO;
 import com.caiotcruz.mygamelist.dto.UserSummaryDTO;
 import com.caiotcruz.mygamelist.infra.security.TokenService;
@@ -30,22 +31,30 @@ public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+    
     @Autowired
-    private UserRepository repository;
+    private UserRepository userRepository;
+    
     @Autowired
     private TokenService tokenService;
+    
+    @Autowired
+    private UserFollowRepository followRepository;
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid LoginDTO data) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
-        var token = tokenService.generateToken((User) auth.getPrincipal());
-        return ResponseEntity.ok(token);
+        
+        User user = (User) auth.getPrincipal(); 
+        var token = tokenService.generateToken(user);
+        
+        return ResponseEntity.ok(new LoginResponseDTO(token, user.getId(), user.getName()));
     }
 
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody @Valid RegisterDTO data) {
-        if (repository.findByEmail(data.email()) != null) return ResponseEntity.badRequest().build();
+        if (userRepository.findByEmail(data.email()) != null) return ResponseEntity.badRequest().build();
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
         
@@ -54,14 +63,9 @@ public class AuthController {
         newUser.setName(data.name());
         newUser.setPassword(encryptedPassword);
 
-        repository.save(newUser);
+        userRepository.save(newUser);
         return ResponseEntity.ok().build();
     }
-
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserFollowRepository followRepository;
 
     @GetMapping
     public List<UserSummaryDTO> getAllUsers() {
