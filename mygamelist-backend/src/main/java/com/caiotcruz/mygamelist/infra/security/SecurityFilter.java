@@ -16,8 +16,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
+
+    private static final Logger logger = LoggerFactory.getLogger(SecurityFilter.class);
 
     @Autowired
     TokenService tokenService;
@@ -52,18 +57,13 @@ public class SecurityFilter extends OncePerRequestFilter {
 
                     if (user != null) {
                         UsernamePasswordAuthenticationToken authentication =
-                                new UsernamePasswordAuthenticationToken(
-                                        user,
-                                        null,
-                                        user.getAuthorities()
-                                );
-
-                        SecurityContextHolder.getContext()
-                                .setAuthentication(authentication);
+                                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                        
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
                     }
                 }
             } catch (Exception e) {
-                // Token inválido / expirado → ignora e segue sem autenticar
+                logger.error("Erro ao validar token no SecurityFilter: ", e);
                 SecurityContextHolder.clearContext();
             }
         }
