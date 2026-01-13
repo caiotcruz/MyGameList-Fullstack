@@ -21,9 +21,13 @@ export class GameList implements OnChanges {
 
   isModalOpen = false;
   editingGame: any = {};
+  isSaving = false;
 
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
+
+  reviewSelecionada: any = null;
+item: any;
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['games'] && this.games) {
@@ -100,6 +104,7 @@ export class GameList implements OnChanges {
   }
 
   validarScore() {
+    this.editingGame.score = Math.floor(this.editingGame.score);
     if (this.editingGame.score > 10) this.editingGame.score = 10;
     if (this.editingGame.score < 0) this.editingGame.score = 0;
   }
@@ -109,7 +114,7 @@ export class GameList implements OnChanges {
       alert('Nota inválida');
       return;
     }
-
+    this.isSaving = true;
     this.gameService.addGameToList(this.editingGame).subscribe({
       next: () => {
         
@@ -123,6 +128,8 @@ export class GameList implements OnChanges {
             this.games[index].review = this.editingGame.review;
             this.games[index].updatedAt = new Date().toISOString();
         }
+        this.isSaving = false; 
+        this.fecharModal();
 
         alert('Jogo atualizado!');
         this.fecharModal();
@@ -131,7 +138,10 @@ export class GameList implements OnChanges {
 
         this.listUpdated.emit(); 
       },
-      error: () => alert('Erro ao atualizar.')
+      error: () => {
+        alert('Erro ao atualizar.')
+        this.isSaving = false;
+      }
     });
   }
 
@@ -188,4 +198,19 @@ export class GameList implements OnChanges {
     if (this.sortColumn !== coluna) return ''; 
     return this.sortDirection === 'asc' ? '▲' : '▼';
   }
+
+  lerReview(item: any) {
+    if (!item.review) return; // Se não tem review, não faz nada
+    
+      this.reviewSelecionada = {
+          title: item.game.title,
+          text: item.review,
+          score: item.score
+      };
+    }
+
+    // Método para fechar
+    fecharReview() {
+        this.reviewSelecionada = null;
+    }
 }

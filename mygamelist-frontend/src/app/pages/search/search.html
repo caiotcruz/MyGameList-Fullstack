@@ -1,10 +1,16 @@
 <div class="search-container">
+  
   <div class="search-bar">
-    <input type="text" [(ngModel)]="query" placeholder="Busque um jogo (ex: Mario)">
-    
-    <button (click)="buscar()" [disabled]="isLoading">
-      {{ isLoading ? 'Buscando...' : 'Pesquisar' }}
-    </button>
+    <div class="input-wrapper">
+        <input 
+            type="text" 
+            [(ngModel)]="query" 
+            (input)="onSearchInput(query)"
+            placeholder="Digite o nome do jogo..."
+            autofocus>
+        
+        <span *ngIf="isLoading" class="spinner">⏳</span>
+    </div>
   </div>
 
   <div class="results-grid">
@@ -30,7 +36,7 @@
 
       <div class="form-group">
         <label>Status:</label>
-        <select [(ngModel)]="editingGame.status">
+        <select [(ngModel)]="editingGame.status" (change)="verificarStatus()">
           <option value="PLAN_TO_PLAY">Planejo Jogar</option>
           <option value="PLAYING">Jogando</option>
           <option value="COMPLETED">Zerado / Completado</option>
@@ -39,19 +45,29 @@
         </select>
       </div>
 
-      <div class="form-group">
-        <label>Nota (0 a 10):</label>
-        <input type="number" min="0" max="10" [(ngModel)]="editingGame.score">
-      </div>
+      <div *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
+          
+          <div class="form-group">
+            <label>Nota (0 a 10):</label>
+            <input 
+                type="number" 
+                min="0" max="10" step="1"
+                [(ngModel)]="editingGame.score"
+                (change)="validarScore()">
+          </div>
 
-      <div class="form-group">
-        <label>Review:</label>
-        <textarea rows="4" [(ngModel)]="editingGame.review"></textarea>
+          <div class="form-group">
+            <label>Review:</label>
+            <textarea rows="4" [(ngModel)]="editingGame.review"></textarea>
+          </div>
+
       </div>
 
       <div class="modal-actions">
         <button class="btn-cancel" (click)="fecharModal()">Cancelar</button>
-        <button class="btn-save" (click)="salvar()">Salvar</button>
+        <button class="btn-save" (click)="salvar()" [disabled]="isSaving">
+          {{ isSaving ? 'Salvando...' : 'Salvar' }}
+        </button>
       </div>
     </div>
   </div>

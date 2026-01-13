@@ -20,6 +20,15 @@
   flex-direction: column;
 }
 
+.profile-social-stats {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-top: 60px;
+  color: #444;
+  font-size: 0.95rem;
+}
+
 .cover-bg {
   height: 120px;
   background: linear-gradient(135deg, #6200ea, #9c27b0);
@@ -27,10 +36,10 @@
 
 .header-content {
   display: flex;
-  align-items: flex-end;
-  padding: 0 40px 30px 40px; 
-  margin-top: -50px; 
-  gap: 25px; 
+  align-items: center;
+  padding: 0 40px 30px 40px;
+  margin-top: -50px;
+  gap: 25px;
 }
 
 .avatar-large {
@@ -50,8 +59,8 @@
 }
 
 .user-info {
-  margin-left: 0;
-  padding-top: 60px; 
+  padding-top: 60px;
+  flex: 1; /* empurra os stats pra direita */
 }
 
 .user-info h1 {
@@ -334,4 +343,30 @@ td { padding: 15px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
   
   width: 100%; 
   box-sizing: border-box; 
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+}
+
+.stat-item strong {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #6200ea;
+  line-height: 1;
+}
+
+.stat-item span {
+  font-size: 0.8rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.profile-social-stats .divider {
+  font-size: 1.5rem;
+  color: #bbb;
 }

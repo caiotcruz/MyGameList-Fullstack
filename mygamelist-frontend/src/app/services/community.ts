@@ -34,4 +34,8 @@ export class CommunityService {
   postComment(activityId: number, text: string) {
     return this.http.post<any>(`${this.apiUrl}/activities/${activityId}/comments`, { text });
   }
+
+  getUserStats(userId: number){
+    return this.http.get<any>(`${this.apiUrl}/users/${userId}/stats`)
+  }
 }

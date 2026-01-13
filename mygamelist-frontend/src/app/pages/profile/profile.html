@@ -2,13 +2,25 @@
 
   <div class="profile-header">
     <div class="cover-bg"></div>
-    <div class="header-content">
-      <div class="avatar-large">{{ userName.charAt(0).toUpperCase() }}</div>
-      <div class="user-info">
-        <h1>{{ userName }}</h1>
-        <p></p>
-        <p class="subtitle">Membro do MyGameList</p>
-      </div>
+      <div class="header-content">
+        <div class="avatar-large">{{ userName.charAt(0).toUpperCase() }}</div>
+
+          <div class="user-info">
+            <h1>{{ userName }}</h1>
+            <p class="subtitle">Membro do MyGameList</p>
+          </div>
+
+          <div class="profile-social-stats">
+            <div class="stat-item">
+              <strong>{{ statsCounts.followers }}</strong>
+              <span>Seguidores</span>
+            </div>
+            <div class="divider">•</div>
+            <div class="stat-item">
+              <strong>{{ statsCounts.following }}</strong>
+              <span>Seguindo</span>
+            </div>
+        </div>
     </div>
   </div>
 

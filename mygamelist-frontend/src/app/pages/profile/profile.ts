@@ -36,6 +36,8 @@ export class Profile implements OnInit {
   userName: string = 'Carregando...';
   isMyProfile: boolean = false;
 
+  statsCounts = { following: 0, followers: 0 };
+
   stats = {
     total: 0,
     completed: 0,
@@ -77,6 +79,13 @@ export class Profile implements OnInit {
            this.calcularHallDaFama();
         }
         this.cdr.detectChanges();
+      },
+      error: (err) => console.error(err)
+    });
+
+    this.communityService.getUserStats(this.userId).subscribe({
+      next: (data: any) => {
+        this.statsCounts = data;
       },
       error: (err) => console.error(err)
     });

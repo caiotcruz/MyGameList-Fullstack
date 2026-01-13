@@ -6,20 +6,46 @@
   display: flex;
   justify-content: center;
   margin-bottom: 30px;
-  gap: 10px;
 }
 
 input {
-  padding: 10px;
-  width: 300px;
-  border-radius: 5px;
+  width: 100%; /* Ocupa todo o wrapper */
+  padding: 12px 40px 12px 15px; /* Espaço na direita para o spinner */
+  border-radius: 25px; /* Mais arredondado */
   border: 1px solid #ccc;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 400px; /* Largura máxima da busca */
+}
+
+input:focus {
+  border-color: #6200ea;
+  box-shadow: 0 0 0 3px rgba(98, 0, 234, 0.1);
 }
 
 .results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Responsivo automático */
   gap: 20px;
+}
+
+.spinner {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  animation: spin 1s linear infinite;
+  font-size: 1.2rem;
+}
+
+@keyframes spin { 
+    100% { transform: translateY(-50%) rotate(360deg); } 
 }
 
 .game-card {

@@ -7,10 +7,13 @@ import com.caiotcruz.mygamelist.repository.UserFollowRepository; // 👈 Novo Im
 import com.caiotcruz.mygamelist.repository.UserGameListRepository;
 import com.caiotcruz.mygamelist.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder; // 👈 Novo Import
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -47,5 +50,20 @@ public class CommunityController {
     public List<UserGameList> getUserList(@PathVariable Long userId) {
 
         return listRepository.findByUserId(userId); 
+    }
+
+    @GetMapping("/users/{userId}/stats")
+    public ResponseEntity<Map<String, Long>> getUserStats(@PathVariable Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        long following = followRepository.countByFollower(user);
+        long followers = followRepository.countByFollowed(user);
+
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("following", following);
+        stats.put("followers", followers);
+
+        return ResponseEntity.ok(stats);
     }
 }

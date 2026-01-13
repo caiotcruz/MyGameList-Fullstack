@@ -107,9 +107,10 @@ td {
 
 .modal-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  justify-content: flex-end; /* Alinha à direita (padrão) */
   margin-top: 20px;
+  border-top: 1px solid #f0f0f0; /* Uma linha sutil separando o texto do botão */
+  padding-top: 15px;
 }
 
 .btn-save {
@@ -119,6 +120,43 @@ td {
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #6200ea 0%, #7c4dff 100%); /* Degradê roxo */
+  color: white;
+  border: none;
+  padding: 10px 24px; /* Mais gordinho e largo */
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 25px; /* Formato de pílula (bem moderno) */
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(98, 0, 234, 0.2); /* Sombrainha suave */
+  transition: all 0.2s ease; /* Animação suave */
+  
+  /* Garante que o texto e ícone fiquem alinhados se tiver icone */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px); /* Sobe um pouquinho */
+  box-shadow: 0 6px 12px rgba(98, 0, 234, 0.4); /* Sombra aumenta */
+  background: linear-gradient(135deg, #651fff 0%, #8f63f4 100%); /* Cor levemente mais clara */
+}
+
+/* Efeito ao clicar (Active) */
+.btn-primary:active {
+  transform: translateY(0); /* Volta pro lugar */
+  box-shadow: 0 2px 4px rgba(98, 0, 234, 0.2);
+}
+
+/* Efeito de foco (Acessibilidade) */
+.btn-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.4); /* Anel de foco roxo claro */
 }
 
 .btn-cancel {
@@ -188,4 +226,31 @@ th.sortable:hover {
   color: #6200ea;
   display: inline-block;
   width: 10px; 
+}
+
+.review-body {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #6200ea; /* Charme visual */
+    margin: 20px 0;
+    font-style: italic;
+    color: #444;
+    white-space: pre-wrap; /* Mantém os parágrafos/quebras de linha */
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.review-score {
+    font-weight: bold;
+    color: #ff9800; /* Laranja da nota */
+    font-size: 1.1rem;
 }
