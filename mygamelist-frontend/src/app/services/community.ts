@@ -26,4 +26,12 @@ export class CommunityService {
   getUserList(userId: number) {
     return this.http.get<any[]>(`${this.apiUrl}/users/${userId}/list`, this.getHeaders());
   }
+
+  toggleLike(activityId: number) {
+    return this.http.post<boolean>(`${this.apiUrl}/activities/${activityId}/like`, {});
+  }
+
+  postComment(activityId: number, text: string) {
+    return this.http.post<any>(`${this.apiUrl}/activities/${activityId}/comments`, { text });
+  }
 }

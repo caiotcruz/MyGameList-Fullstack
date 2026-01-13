@@ -10,7 +10,9 @@ import java.util.List;
 
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
     
-    @Query("SELECT a FROM Activity a WHERE a.user IN (SELECT f.followed FROM UserFollow f WHERE f.follower = :user) ORDER BY a.timestamp DESC")
+    @Query("SELECT a FROM Activity a WHERE a.user = :user OR a.user IN " +
+           "(SELECT f.followed FROM UserFollow f WHERE f.follower = :user) " +
+           "ORDER BY a.timestamp DESC")
     List<Activity> findFeedByFollower(@Param("user") User user);
 
     List<Activity> findAllByOrderByTimestampDesc();

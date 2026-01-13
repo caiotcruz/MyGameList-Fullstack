@@ -1,56 +1,116 @@
-.feed-container {
-  max-width: 600px;
-  margin: 20px auto;
-  font-family: sans-serif;
-}
-
-h3 {
-  border-bottom: 2px solid #eee;
-  padding-bottom: 10px;
-  color: #333;
-}
-
+/* Ajuste para o layout flex funcionar com a coluna nova */
 .activity-card {
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Garante que a imagem fique no topo */
   background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border: 1px solid #e0e0e0; /* Borda mais suave */
+  border-radius: 12px; /* Arredondar mais */
+  padding: 15px; /* Mais respiro interno */
+  
+  /* 👇 AQUI ESTÁ O SEGREDO DO "PERTENCIMENTO" */
+  margin-bottom: 24px; /* Aumenta BASTANTE a distância para o próximo post */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04); /* Sombra leve ajuda a agrupar */
 }
 
 .game-thumb {
-  width: 50px;
-  height: 70px;
+  /* 👇 Reduzi de 50px/70px para algo mais discreto */
+  width: 70px; 
+  height: 90px;
   object-fit: cover;
-  border-radius: 4px;
+  border-radius: 6px;
   margin-right: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-.activity-content {
+.activity-main-col {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centraliza verticalmente se for curto */
 }
 
-.activity-text {
-  margin: 0 0 5px 0;
-  font-size: 0.95rem;
-  color: #444;
+/* Barra de Botões */
+.action-bar {
+  display: flex;
+  gap: 15px;
+  
+  /* 👇 Removi a borda e o padding grande */
+  border-top: none; 
+  margin-top: 6px; /* Bem pertinho do texto de cima */
+  padding-top: 0;
 }
 
-.highlight {
-  font-weight: bold;
-  color: #6200ea; 
+.btn-action {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem; /* Levemente menor */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #888; /* Cinza mais claro para não brigar com o texto */
+  padding: 4px 8px 4px 0; /* Área de clique melhor */
+  border-radius: 4px;
+  transition: color 0.2s;
 }
 
-.activity-date {
+.btn-action:hover {
+  color: #6200ea;
+  background-color: rgba(98, 0, 234, 0.05); /* Feedback visual suave */
+}
+
+.btn-action.liked {
+  color: #e91e63;
+}
+
+.count {
   font-size: 0.8rem;
-  color: #888;
+  font-weight: bold;
 }
 
-.empty-state {
-  text-align: center;
-  color: #777;
-  padding: 20px;
+/* Área de Comentários */
+.comments-section {
+  background: #f9f9f9;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.comments-list {
+  margin-bottom: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.comment-row {
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.comment-row strong {
+  color: #6200ea;
+}
+
+.comment-input-wrapper {
+  display: flex;
+  gap: 5px;
+}
+
+.comment-input-wrapper input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  outline: none;
+}
+
+.comment-input-wrapper button {
+  background: #6200ea;
+  color: white;
+  border: none;
+  padding: 0 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.8rem;
 }
