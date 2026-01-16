@@ -7,6 +7,7 @@ import com.caiotcruz.mygamelist.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.caiotcruz.mygamelist.model.enums.NotificationType;
 
 @Service
 public class UserFollowService {
@@ -15,6 +16,8 @@ public class UserFollowService {
     private UserFollowRepository followRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private NotificationService notificationService;
 
     public void followUser(Long userIdToFollow) {
         User currentUser = getCurrentUser();
@@ -33,6 +36,7 @@ public class UserFollowService {
         follow.setFollower(currentUser);
         follow.setFollowed(userToFollow);
         followRepository.save(follow);
+        notificationService.send(userToFollow, currentUser, NotificationType.FOLLOW, null);
     }
 
     public void unfollowUser(Long userIdToUnfollow) {

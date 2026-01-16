@@ -1,79 +1,121 @@
 .community-container {
-  max-width: 800px;
-  margin: 30px auto;
-  padding: 20px;
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 0 24px;
+  color: #1f2937;
 }
+
+.community-header {
+  margin-bottom: 30px;
+}
+
+.community-header h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.community-header p {
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+/* GRID */
 
 .users-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
-  margin-top: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
 }
 
+/* CARD */
+
 .user-card {
-  background: white;
-  padding: 20px;
-  border-radius: 12px; 
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px 20px;
   text-align: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  border: 1px solid transparent; 
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .user-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-  border-color: #6200ea; 
+  transform: translateY(-4px);
+  border-color: #7c3aed;
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
 }
 
+/* AVATAR */
+
 .avatar {
-  font-size: 3rem;
-  margin-bottom: 10px;
-  background-color: #f5f5f5;
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 700;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  margin: 0 auto 10px auto;
+
+  margin: 0 auto 14px auto;
 }
 
-h3 {
-  margin: 10px 0;
-  font-size: 1.1rem;
-  color: #333;
+/* NOME */
+
+.user-card h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: #111827;
 }
 
-button {
-  background-color: #6200ea;
+/* BOTÃO */
+
+.follow-btn {
+  width: 100%;
+  padding: 8px 0;
+  border-radius: 999px;
+
+  background: #7c3aed;
+  border: 1px solid #7c3aed;
   color: white;
-  border: 2px solid #6200ea;
-  padding: 8px 20px;
-  border-radius: 20px;
-  margin-top: 10px;
+
+  font-weight: 600;
   cursor: pointer;
-  font-weight: bold;
-  transition: all 0.2s;
-  width: 100%; 
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
 }
 
-button:hover {
-  background-color: #5000c2;
-  border-color: #5000c2;
+.follow-btn:hover {
+  background: #6d28d9;
+  transform: translateY(-1px);
 }
 
-button.btn-following {
-  background-color: transparent;
-  color: #6200ea;
-  border: 2px solid #6200ea;
+.follow-btn.following {
+  background: transparent;
+  color: #7c3aed;
+  border-color: #7c3aed;
 }
 
-button.btn-following:hover {
-  background-color: #ffebee; 
-  color: #d32f2f;
-  border-color: #d32f2f;
-  content: 'Deixar de Seguir';
+.follow-btn.following:hover {
+  background: rgba(124, 58, 237, 0.08);
+}
+
+/* EMPTY */
+
+.empty-state {
+  margin-top: 40px;
+  text-align: center;
+  color: #6b7280;
 }

@@ -1,31 +1,114 @@
-.login-container {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  text-align: center;
+:host {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #6200ea 0%, #9c47ff 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  background-color: #ffffff;
+  padding: 45px 35px;
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  color: #333; 
+}
+
+h2 {
+  margin-bottom: 10px;
+  color: #4a4a4a;
+  font-weight: 700;
+  font-size: 1.8rem;
+}
+
+.subtitle {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 30px;
+  display: block;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
 input {
   width: 100%;
-  padding: 10px;
-  margin: 10px 0;
+  padding: 14px;
+  background-color: #f0f2f5; 
+  border: 2px solid transparent;
+  border-radius: 8px;
+  color: #333;
+  font-size: 1rem;
+  transition: all 0.3s ease;
   box-sizing: border-box;
 }
+
+input:focus {
+  outline: none;
+  background-color: #fff;
+  border-color: #6200ea; 
+  box-shadow: 0 0 0 4px rgba(98, 0, 234, 0.1);
+}
+
+input::placeholder {
+  color: #aaa;
+}
+
 button {
   width: 100%;
-  padding: 10px;
-  margin-top: 10px;
+  padding: 15px;
   background-color: #6200ea;
   color: white;
   border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  font-weight: bold;
-  border-radius: 4px;
+  margin-top: 15px;
+  transition: background-color 0.3s, transform 0.2s;
+  box-shadow: 0 4px 6px rgba(98, 0, 234, 0.2);
 }
+
 button:hover {
   background-color: #5000d0;
+  transform: translateY(-2px);
 }
-.form-group {
-    text-align: left;
+
+button:active {
+  transform: translateY(0);
+}
+
+.register-link {
+  margin-top: 25px;
+  font-size: 0.95rem;
+  color: #666;
+}
+
+a {
+  color: #6200ea;
+  text-decoration: none;
+  font-weight: 700;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: #4a00b0;
 }

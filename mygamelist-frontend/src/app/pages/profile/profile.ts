@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CommunityService } from '../../services/community';
 import { GameList } from '../../components/game-list/game-list'; 
 import { AuthService } from '../../services/auth'; 
+import { Subject, takeUntil } from 'rxjs';
 
 interface Badge {
   icon: string;
@@ -49,6 +50,8 @@ export class Profile implements OnInit {
   chartData: ChartBar[] = [];
   favoriteGame: any = null; 
 
+  destroy$ = new Subject<void>();
+
   ngOnInit() {
 
     this.route.paramMap.subscribe(params => {
@@ -68,6 +71,18 @@ export class Profile implements OnInit {
             this.carregarPerfil();
         }
     });
+
+    this.communityService.getUserStats(this.userId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(stats => {
+        this.stats = stats;
+      });
+
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   carregarPerfil() {

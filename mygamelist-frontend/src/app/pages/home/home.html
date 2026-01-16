@@ -5,7 +5,11 @@
     
     <div class="actions">
       <a routerLink="/search" class="btn-primary">🔍 Buscar Jogos</a>
-      <a routerLink="/my-list" class="btn-secondary">📋 Minha Lista</a>
+      <a 
+        [routerLink]="['/profile', myId]" 
+        class="btn-secondary">
+        👤 Meu Perfil
+      </a>
     </div>
   </header>
 

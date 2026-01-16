@@ -1,16 +1,58 @@
-<nav class="navbar" *ngIf="authService.isLoggedIn()">
-  <div class="logo">🎮 MyGameList</div>
-  
-  <div class="links">
-    <a routerLink="/home" routerLinkActive="active">🏠 Home</a>
-    <a routerLink="/search" routerLinkActive="active">🔍 Buscar Jogos</a>
-    <a routerLink="/community" routerLinkActive="active">🌍 Comunidade</a>
-    <a 
-      [routerLink]="['/profile', myId]" 
-      routerLinkActive="active">
-      👤 Meu Perfil
+<nav class="navbar" *ngIf="shouldShowNavbar()">
+
+  <div class="left">
+    <div class="logo" routerLink="/home">
+      MyGameList
+    </div>
+
+    <a routerLink="/home" routerLinkActive="active">Home</a>
+    <a routerLink="/search" routerLinkActive="active">Buscar</a>
+    <a routerLink="/community" routerLinkActive="active">Comunidade</a>
+  </div>
+
+  <div class="right">
+
+    <div class="notification-container">
+      <button class="btn-bell modern" [class.open]="showDropdown" (click)="toggleNotifications()" aria-label="Notificações">
+        🔔
+        <span class="badge" *ngIf="unreadCount > 0">
+          {{ unreadCount > 99 ? '99+' : unreadCount }}
+        </span>
+      </button>
+
+      <div class="dropdown-menu" *ngIf="showDropdown">
+        <div class="dropdown-header">Notificações</div>
+
+        <div class="dropdown-list">
+          <div class="notif-item"
+               *ngFor="let n of notifications"
+               [class.unread]="!n.read"
+               (click)="onNotificationClick(n)">
+
+            <div class="avatar-circle">
+              {{ n.actor.name.charAt(0) }}
+            </div>
+
+            <div class="notif-content">
+              <p>
+                <strong>{{ n.actor.name }}</strong>
+                {{ getNotificationText(n.type) }}
+              </p>
+              <small>{{ formatDate(n.createdAt) }}</small>
+            </div>
+          </div>
+
+          <div class="empty-notif" *ngIf="notifications.length === 0">
+            Nenhuma notificação
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a [routerLink]="['/profile', myId]" class="profile-link">
+      Meu Perfil
     </a>
 
-    <a (click)="sair()" class="logout">Sair</a>
+    <button class="logout" (click)="sair()">Sair</button>
   </div>
 </nav>

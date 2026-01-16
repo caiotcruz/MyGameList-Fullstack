@@ -17,9 +17,11 @@ export class Home implements OnInit {
   cdr = inject(ChangeDetectorRef); 
   
   userName = 'Gamer'; 
+  myId!: number;
 
   ngOnInit(): void {
     this.updateUserName();
+    this.myId = Number(localStorage.getItem('userId'));
   }
 
   updateUserName() {

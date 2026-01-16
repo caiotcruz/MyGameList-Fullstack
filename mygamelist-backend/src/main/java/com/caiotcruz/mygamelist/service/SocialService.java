@@ -6,6 +6,7 @@ import com.caiotcruz.mygamelist.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.caiotcruz.mygamelist.model.enums.NotificationType;
 
 import java.util.Optional;
 
@@ -20,6 +21,8 @@ public class SocialService {
     private ActivityRepository activityRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private NotificationService notificationService;
 
     // Método auxiliar para pegar o usuário logado
     private User getCurrentUser() {
@@ -43,6 +46,7 @@ public class SocialService {
             // Se não existe, cria (Curtir)
             ActivityLike newLike = new ActivityLike(currentUser, activity);
             likeRepository.save(newLike);
+            notificationService.send(activity.getUser(), currentUser, NotificationType.LIKE, activity);
             return true; // Retorna true indicando que agora ESTÁ curtido
         }
     }
@@ -54,6 +58,7 @@ public class SocialService {
                 .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
 
         Comment comment = new Comment(dto.text(), currentUser, activity);
+        notificationService.send(activity.getUser(), currentUser, NotificationType.COMMENT, activity);
         return commentRepository.save(comment);
     }
 }

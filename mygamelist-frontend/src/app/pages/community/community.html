@@ -1,23 +1,30 @@
 <div class="community-container">
-  <h2>Comunidade MyGameList</h2>
-  <p>Encontre seus amigos e veja o que eles estão jogando.</p>
+  <header class="community-header">
+    <h2>Comunidade</h2>
+    <p>Descubra pessoas, siga perfis e acompanhe jornadas gamers.</p>
+  </header>
 
   <div class="users-grid">
-    <div class="user-card" *ngFor="let user of users" (click)="verPerfil(user.id)">
-      
-      <div class="avatar">👤</div>
-      <h3>{{ user.name }}</h3>
-      
-      <button 
-        [class.btn-following]="user.isFollowing" 
-        (click)="toggleFollow(user, $event)">
-        {{ user.isFollowing ? 'Seguindo ✔' : 'Seguir +' }}
-      </button>
+    <div class="user-card"
+         *ngFor="let user of users"
+         (click)="verPerfil(user.id)">
 
+      <div class="avatar">
+        {{ user.name.charAt(0) }}
+      </div>
+
+      <h3>{{ user.name }}</h3>
+
+      <button
+        class="follow-btn"
+        [class.following]="user.isFollowing"
+        (click)="toggleFollow(user, $event)">
+        {{ user.isFollowing ? 'Seguindo' : 'Seguir' }}
+      </button>
     </div>
   </div>
-  
-  <p *ngIf="users.length === 0 && !isLoading" style="text-align: center; margin-top: 20px;">
-      Nenhum outro usuário encontrado.
-  </p>
+
+  <div class="empty-state" *ngIf="users.length === 0 && !isLoading">
+    Nenhum outro usuário encontrado.
+  </div>
 </div>
