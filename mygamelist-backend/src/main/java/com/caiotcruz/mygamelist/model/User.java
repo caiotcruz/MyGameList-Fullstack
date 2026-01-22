@@ -26,6 +26,12 @@ public class User implements UserDetails {
 
     private String name;
 
+    @Column(length = 500) // Bio com limite de 500 caracteres
+    private String bio;
+    
+    @Column(length = 1000) // URL pode ser longa
+    private String profilePicture;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
@@ -36,6 +42,12 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() { return password; }
+
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+
+    public String getProfilePicture() { return profilePicture; }
+    public void setProfilePicture(String profilePicture) { this.profilePicture = profilePicture; }
 
     @Override
     public boolean isAccountNonExpired() { return true; }

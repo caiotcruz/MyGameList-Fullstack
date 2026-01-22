@@ -2,16 +2,26 @@
 
   <div class="profile-header">
     <div class="cover-bg"></div>
-      <div class="header-content">
-        <div class="avatar-large">{{ userName.charAt(0).toUpperCase() }}</div>
+    <div class="header-content">
+        
+        <div class="avatar-large">
+            <img *ngIf="userAvatar" [src]="userAvatar" alt="Avatar" class="avatar-img">
+            <span *ngIf="!userAvatar">{{ userName.charAt(0).toUpperCase() }}</span>
+        </div>
 
-          <div class="user-info">
+        <div class="user-info">
             <h1>{{ userName }}</h1>
+            
+            <p class="bio" *ngIf="userBio">{{ userBio }}</p>
             <p></p>
-            <p class="subtitle">Membro do MyGameList</p>
-          </div>
+            <p class="subtitle" *ngIf="!userBio">Membro do MyGameList</p>
 
-          <div class="profile-social-stats">
+            <button *ngIf="isMyProfile" class="btn-edit-profile" (click)="abrirEdicao()">
+                ✏️ Editar Perfil
+            </button>
+        </div>
+
+        <div class="profile-social-stats">
             <div class="stat-item">
               <strong>{{ statsCounts.followers }}</strong>
               <span>Seguidores</span>
@@ -26,9 +36,7 @@
   </div>
 
   <div *ngIf="userGames.length > 0">
-    
     <div class="highlights-grid">
-      
       <div class="highlight-card" *ngIf="favoriteGame">
         <div class="highlight-label">🏆 Jogo Favorito</div>
         <div class="highlight-content">
@@ -57,12 +65,10 @@
           <div class="big-number">{{ stats.avgScore | number:'1.1-1' }}</div>
           <p class="sub-text">Baseado em {{ userGames.length }} jogos</p>
       </div>
-
     </div>
 
     <div class="chart-section" *ngIf="stats.avgScore > 0">
        <div class="highlight-label">📈 Distribuição de Notas</div>
-       
        <div class="chart-container">
          <div class="chart-bar-group" *ngFor="let data of chartData">
             <div class="bar-area">
@@ -73,13 +79,10 @@
          </div>
        </div>
     </div>
-
   </div>
 
   <div class="list-section">
-    <h3>
-      {{ isMyProfile ? 'Minha Coleção' : 'Coleção Completa' }}
-    </h3>
+    <h3>{{ isMyProfile ? 'Minha Coleção' : 'Coleção Completa' }}</h3>
     <app-game-list 
       [games]="userGames" 
       [isOwner]="isMyProfile" 
@@ -89,5 +92,33 @@
 
   <div class="empty-state" *ngIf="userGames.length === 0">
     <p>Este usuário ainda não iniciou sua jornada.</p>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="isEditingProfile">
+  <div class="modal-content-edit">
+    <h3>Editar Perfil</h3>
+
+    <div class="form-group">
+      <label>Nome de Exibição</label>
+      <input type="text" [(ngModel)]="editData.name" placeholder="Seu nome">
+    </div>
+
+    <div class="form-group">
+      <label>Foto de Perfil (URL)</label>
+      <input type="text" [(ngModel)]="editData.profilePicture" placeholder="https://exemplo.com/foto.jpg">
+      <small>Cole o link de uma imagem da internet.</small>
+    </div>
+
+    <div class="form-group">
+      <label>Bio (Sobre Mim)</label>
+      <textarea rows="3" [(ngModel)]="editData.bio" maxlength="500" placeholder="Conte um pouco sobre seus jogos favoritos..."></textarea>
+      <small class="char-count">{{ editData.bio?.length || 0 }}/500</small>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="isEditingProfile = false">Cancelar</button>
+      <button class="btn-save" (click)="salvarPerfil()">Salvar Alterações</button>
+    </div>
   </div>
 </div>
