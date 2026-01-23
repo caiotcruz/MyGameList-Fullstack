@@ -97,4 +97,37 @@ export class GameDetails implements OnInit {
     const map: any = { 'PLAYING': 'Jogando', 'COMPLETED': 'Zerado', 'PLAN_TO_PLAY': 'Quero Jogar', 'DROPPED': 'Larguei' };
     return map[status] || status;
   }
+
+  votar(rev: any, type: 'LIKE' | 'DISLIKE') {
+      // UI Otimista (Atualiza antes do servidor responder)
+      const oldVote = rev.myVote;
+      
+      // Lógica simples de atualização visual instantânea
+      if (rev.myVote === type) {
+          // Removendo voto
+          rev.myVote = null;
+          if (type === 'LIKE') rev.likesCount--;
+          else rev.dislikesCount--;
+      } else {
+          // Trocando ou Adicionando
+          if (rev.myVote === 'LIKE') rev.likesCount--; // Tira do anterior
+          if (rev.myVote === 'DISLIKE') rev.dislikesCount--; // Tira do anterior
+          
+          rev.myVote = type;
+          if (type === 'LIKE') rev.likesCount++;
+          else rev.dislikesCount++;
+      }
+
+      // Recalcula Score Visualmente: (Likes*2) - Dislikes
+      rev.voteScore = (rev.likesCount * 2) - rev.dislikesCount;
+
+      // Chama o backend
+      this.gameService.voteReview(rev.reviewId, type).subscribe({
+          error: (err) => {
+              console.error(err);
+              // Reverte em caso de erro (opcional)
+              alert('Erro ao votar. Faça login.');
+          }
+      });
+  }
 }

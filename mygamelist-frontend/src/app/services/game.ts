@@ -3,11 +3,16 @@ import { Injectable, inject } from '@angular/core';
 import { environment } from '../../environments/environment'; 
 
 export interface GameReview {
+  reviewId: number; // Precisamos do ID
   userName: string;
   userAvatar: string;
   score: number;
   review: string;
   date: string;
+  likesCount: number;
+  dislikesCount: number;
+  voteScore: number;
+  myVote: string | null; // 'LIKE' | 'DISLIKE' | null
 }
 
 export interface GameHubData {
@@ -63,5 +68,9 @@ export class GameService {
 
   deleteGame(listId: number) {
     return this.http.delete(`${this.apiUrl}/my-games/${listId}`, this.getHeaders());
+  }
+
+  voteReview(reviewId: number, type: 'LIKE' | 'DISLIKE') {
+    return this.http.post(`${this.apiUrl}/reviews/${reviewId}/vote`, { type }, this.getHeaders());
   }
 }

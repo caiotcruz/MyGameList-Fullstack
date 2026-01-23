@@ -6,10 +6,16 @@ import com.caiotcruz.mygamelist.dto.GameHubDTO;
 import com.caiotcruz.mygamelist.dto.GameResultDTO;
 import com.caiotcruz.mygamelist.dto.GameReviewDTO;
 import com.caiotcruz.mygamelist.model.Game;
+import com.caiotcruz.mygamelist.model.ReviewVote;
+import com.caiotcruz.mygamelist.model.User;
 import com.caiotcruz.mygamelist.model.enums.GameStatus;
+import com.caiotcruz.mygamelist.model.enums.VoteType;
 import com.caiotcruz.mygamelist.model.UserGameList;
 import com.caiotcruz.mygamelist.repository.GameRepository;
+import com.caiotcruz.mygamelist.repository.ReviewVoteRepository;
 import com.caiotcruz.mygamelist.repository.UserGameListRepository;
+import com.caiotcruz.mygamelist.repository.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,6 +34,12 @@ public class GameService {
 
     @Autowired
     private RawgClient rawgClient;
+
+    @Autowired 
+    private ReviewVoteRepository reviewVoteRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Value("${api.rawg.key}")
     private String apiKey;
@@ -54,6 +66,31 @@ public class GameService {
                 });
     }
 
+    public void voteOnReview(Long reviewId, Long userId, String voteTypeStr) {
+        var review = userGameListRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("Review não encontrada"));
+        
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        VoteType type = VoteType.valueOf(voteTypeStr.toUpperCase());
+        
+        Optional<ReviewVote> existingVote = reviewVoteRepository.findByUserAndReview(user, review);
+
+        if (existingVote.isPresent()) {
+            ReviewVote vote = existingVote.get();
+            if (vote.getType() == type) {
+                reviewVoteRepository.delete(vote);
+            } else {
+                vote.setType(type);
+                reviewVoteRepository.save(vote);
+            }
+        } else {
+            ReviewVote newVote = new ReviewVote(user, review, type);
+            reviewVoteRepository.save(newVote);
+        }
+    }
+
     public GameHubDTO getGameHubData(Long rawgId, Long currentUserId) {
         
         Game game = getGameContent(rawgId);
@@ -67,7 +104,6 @@ public class GameService {
         String myStatus = null;
         Integer myScore = 0;
         boolean myFavorite = false;
-        List<GameReviewDTO> reviews = userGameListRepository.findLatestReviews(internalId);
 
         if (currentUserId != null) {
             Optional<UserGameList> myEntry = userGameListRepository.findByUserIdAndGameId(currentUserId, internalId);
@@ -77,6 +113,37 @@ public class GameService {
                 myFavorite = myEntry.get().isFavorite();
             }
         }
+
+        List<UserGameList> reviewEntities = userGameListRepository.findReviewsByGameId(internalId);
+
+        List<GameReviewDTO> reviews = reviewEntities.stream().map(r -> {
+            long likes = reviewVoteRepository.countByReviewAndType(r, VoteType.LIKE);
+            long dislikes = reviewVoteRepository.countByReviewAndType(r, VoteType.DISLIKE);
+            
+            int karmaScore = (int) ((likes * 2) - dislikes);
+            
+            String myVote = null;
+            if (currentUserId != null) {
+                var userObj = new User(); userObj.setId(currentUserId);
+                var vote = reviewVoteRepository.findByUserAndReview(userObj, r);
+                if (vote.isPresent()) myVote = vote.get().getType().name();
+            }
+
+            return new GameReviewDTO(
+                r.getId(),
+                r.getUser().getName(),
+                r.getUser().getProfilePicture(),
+                r.getScore(),
+                r.getReview(),
+                r.getUpdatedAt(),
+                likes,
+                dislikes,
+                karmaScore,
+                myVote
+            );
+        }).sorted((r1, r2) -> Integer.compare(r2.voteScore(), r1.voteScore()))
+        .limit(10)
+        .toList();
 
         return new GameHubDTO(
                 internalId,

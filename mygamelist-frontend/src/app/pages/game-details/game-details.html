@@ -46,18 +46,43 @@
       
       <div class="reviews-list" *ngIf="data.latestReviews && data.latestReviews.length > 0">
           <div class="review-card" *ngFor="let rev of data.latestReviews">
-              <div class="review-header">
-                  <div class="reviewer-info">
-                      <div class="avatar-small">{{ rev.userName.charAt(0) }}</div>
-                      <strong>{{ rev.userName }}</strong>
-                      <span class="review-date">{{ rev.date | date:'dd/MM/yy' }}</span>
-                  </div>
-                  <div class="review-score" [style.color]="getScoreColor(rev.score)">
-                      {{ rev.score }}/10
-                  </div>
-              </div>
-              <p class="review-text">"{{ rev.review }}"</p>
-          </div>
+                <div class="review-header">
+                    <div class="reviewer-info">
+                        <div class="avatar-small">
+                            <img *ngIf="rev.userAvatar" [src]="rev.userAvatar" class="avatar-img-small">
+                            <span *ngIf="!rev.userAvatar">{{ rev.userName.charAt(0) }}</span>
+                        </div>
+                        <div>
+                            <strong>{{ rev.userName }}</strong>
+                            <div class="review-date">{{ rev.date | date:'dd/MM/yy' }}</div>
+                        </div>
+                    </div>
+                    <div class="review-score" [style.color]="getScoreColor(rev.score)">
+                        {{ rev.score }}/10
+                    </div>
+                </div>
+                
+                <p class="review-text">"{{ rev.review }}"</p>
+
+                <div class="review-actions">
+                    
+                    <button class="btn-vote" 
+                            [class.active]="rev.myVote === 'LIKE'" 
+                            (click)="votar(rev, 'LIKE')">
+                        👍 {{ rev.likesCount }}
+                    </button>
+
+                    <button class="btn-vote" 
+                            [class.active]="rev.myVote === 'DISLIKE'" 
+                            (click)="votar(rev, 'DISLIKE')">
+                        👎 {{ rev.dislikesCount }}
+                    </button>
+
+                    <span class="karma-badge" [class.positive]="rev.voteScore >= 0" [class.negative]="rev.voteScore < 0">
+                        {{ rev.voteScore }} pts
+                    </span>
+                </div>
+</div>
       </div>
 
       <div class="empty-reviews" *ngIf="!data.latestReviews || data.latestReviews.length === 0">

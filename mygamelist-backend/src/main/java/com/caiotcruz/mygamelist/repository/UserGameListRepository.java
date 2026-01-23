@@ -35,17 +35,6 @@ public interface UserGameListRepository extends JpaRepository<UserGameList, Long
    @Query("SELECT count(ugl) FROM UserGameList ugl WHERE ugl.game.rawgId = :rawgId")
     long countPlayersByRawgId(@Param("rawgId") Long rawgId);
 
-    @Query("""
-        SELECT new com.caiotcruz.mygamelist.dto.GameReviewDTO(
-            u.name, u.profilePicture, ugl.score, ugl.review, ugl.updatedAt
-        )
-        FROM UserGameList ugl
-        JOIN ugl.user u
-        WHERE ugl.game.id = :gameId 
-        AND ugl.review IS NOT NULL 
-        AND LENGTH(ugl.review) > 2
-        ORDER BY ugl.updatedAt DESC
-        LIMIT 5
-    """)
-    List<GameReviewDTO> findLatestReviews(@Param("gameId") Long gameId);
+    @Query("SELECT ugl FROM UserGameList ugl WHERE ugl.game.id = :gameId AND ugl.review IS NOT NULL AND LENGTH(ugl.review) > 2 ORDER BY ugl.updatedAt DESC")
+    List<UserGameList> findReviewsByGameId(@Param("gameId") Long gameId);
 }
