@@ -99,35 +99,33 @@ export class GameDetails implements OnInit {
   }
 
   votar(rev: any, type: 'LIKE' | 'DISLIKE') {
-      // UI Otimista (Atualiza antes do servidor responder)
-      const oldVote = rev.myVote;
-      
-      // Lógica simples de atualização visual instantânea
-      if (rev.myVote === type) {
-          // Removendo voto
-          rev.myVote = null;
-          if (type === 'LIKE') rev.likesCount--;
-          else rev.dislikesCount--;
-      } else {
-          // Trocando ou Adicionando
-          if (rev.myVote === 'LIKE') rev.likesCount--; // Tira do anterior
-          if (rev.myVote === 'DISLIKE') rev.dislikesCount--; // Tira do anterior
-          
-          rev.myVote = type;
-          if (type === 'LIKE') rev.likesCount++;
-          else rev.dislikesCount++;
-      }
+    const reviewId = rev.reviewId || rev.id;
 
-      // Recalcula Score Visualmente: (Likes*2) - Dislikes
-      rev.voteScore = (rev.likesCount * 2) - rev.dislikesCount;
+    if (!reviewId) {
+      console.error("❌ ERRO CRÍTICO: ID da review veio nulo/undefined!", rev);
+      return;
+    }
 
-      // Chama o backend
-      this.gameService.voteReview(rev.reviewId, type).subscribe({
-          error: (err) => {
-              console.error(err);
-              // Reverte em caso de erro (opcional)
-              alert('Erro ao votar. Faça login.');
-          }
-      });
+    const oldVote = rev.myVote;
+    if (rev.myVote === type) {
+        rev.myVote = null;
+        if (type === 'LIKE') rev.likesCount--;
+        else rev.dislikesCount--;
+    } else {
+        if (rev.myVote === 'LIKE') rev.likesCount--;
+        if (rev.myVote === 'DISLIKE') rev.dislikesCount--;
+        
+        rev.myVote = type;
+        if (type === 'LIKE') rev.likesCount++;
+        else rev.dislikesCount++;
+    }
+    
+    rev.voteScore = (rev.likesCount * 2) - rev.dislikesCount;
+
+    this.gameService.voteReview(reviewId, type).subscribe({
+        error: (err) => {
+            console.error('Erro no voto:', err);
+        }
+    });
   }
 }
