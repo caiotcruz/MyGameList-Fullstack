@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { GameService } from '../../services/game';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterModule],
   templateUrl: './search.html',
   styleUrl: './search.css'
 })
@@ -22,28 +23,24 @@ export class Search implements OnInit {
   isLoading = false;
   isSaving = false;
 
-  // Controle do Debounce (Busca Dinâmica)
   private searchSubject = new Subject<string>();
 
   isModalOpen = false;
   editingGame: any = {};
 
   ngOnInit() {
-    // Configura o "tubo" de pesquisa
     this.searchSubject.pipe(
-      debounceTime(500), // Espera 500ms o usuário parar de digitar
-      distinctUntilChanged() // Só busca se o texto mudou
+      debounceTime(500), 
+      distinctUntilChanged() 
     ).subscribe(termo => {
        this.executarBusca(termo);
     });
   }
 
-  // Chamado pelo input no HTML a cada letra digitada
   onSearchInput(termo: string) {
     this.searchSubject.next(termo);
   }
 
-  // Lógica central da busca
   executarBusca(termo: string) {
     if (!termo.trim()) {
         this.games = [];
@@ -91,7 +88,7 @@ export class Search implements OnInit {
     this.editingGame = {
       rawgId: game.id,
       title: game.name,
-      status: 'PLAN_TO_PLAY', // Padrão seguro
+      status: 'PLAN_TO_PLAY', 
       score: 0,
       review: ''
     };
@@ -102,7 +99,6 @@ export class Search implements OnInit {
     this.isModalOpen = false;
   }
 
-  // 👇 NOVA LÓGICA: Se mudar para "Planejo Jogar", zera nota e review
   verificarStatus() {
     if (this.editingGame.status === 'PLAN_TO_PLAY') {
        this.editingGame.score = 0;
@@ -110,7 +106,6 @@ export class Search implements OnInit {
     }
   }
 
-  // 👇 NOVA LÓGICA: Garante que a nota seja inteira (0, 1, ... 10)
   validarScore() {
     if (this.editingGame.score) {
         this.editingGame.score = Math.floor(this.editingGame.score);
@@ -120,21 +115,21 @@ export class Search implements OnInit {
   }
 
   salvar() {
-    if (this.isSaving) return; // Segurança extra
+    if (this.isSaving) return;
 
     this.validarScore();
-    this.isSaving = true; // 🔒 Bloqueia
+    this.isSaving = true; 
 
     this.gameService.addGameToList(this.editingGame).subscribe({
       next: () => {
         alert('Jogo adicionado!');
         this.fecharModal();
-        this.isSaving = false; // 🔓 Libera
+        this.isSaving = false; 
         this.cdr.detectChanges(); 
       },
       error: () => {
         alert('Erro ao adicionar.');
-        this.isSaving = false; // 🔓 Libera em caso de erro também
+        this.isSaving = false; 
         this.cdr.detectChanges(); 
       }
     });

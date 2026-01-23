@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter, inject, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GameService } from '../../services/game';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-game-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './game-list.html',
   styleUrl: './game-list.css'
 })
@@ -200,7 +201,7 @@ item: any;
   }
 
   lerReview(item: any) {
-    if (!item.review) return; // Se não tem review, não faz nada
+    if (!item.review) return; 
     
       this.reviewSelecionada = {
           title: item.game.title,
@@ -209,7 +210,6 @@ item: any;
       };
     }
 
-    // Método para fechar
     fecharReview() {
         this.reviewSelecionada = null;
     }

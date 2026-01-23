@@ -11,32 +11,27 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "TEXT") // Permite textos longos
+    @Column(columnDefinition = "TEXT")
     private String text;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Quem comentou?
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    // Comentou em qual atividade?
     @ManyToOne
     @JoinColumn(name = "activity_id")
     private Activity activity;
 
-    // Construtor vazio (obrigatório pro Hibernate)
     public Comment() {}
 
-    // Construtor prático
     public Comment(String text, User user, Activity activity) {
         this.text = text;
         this.user = user;
         this.activity = activity;
     }
 
-    // Getters e Setters
     public Long getId() { return id; }
     public String getText() { return text; }
     public void setText(String text) { this.text = text; }

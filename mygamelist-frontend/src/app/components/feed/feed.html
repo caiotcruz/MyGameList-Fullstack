@@ -4,17 +4,27 @@
   <div class="activity-list">
     <div *ngFor="let item of activities" class="activity-card">
       
-      <img [src]="item.game.coverUrl" alt="Capa" class="game-thumb">
+      <img [src]="item.game.coverUrl" 
+           alt="Capa" 
+           class="game-thumb"
+           [routerLink]="['/game', item.game.rawgId]"
+           style="cursor: pointer;">
       
       <div class="activity-main-col">
           
           <div class="activity-content">
             <p class="activity-text">
-              <strong>{{ item.user.name }}</strong> 
+              <strong [routerLink]="['/profile', item.user.id]" style="cursor: pointer;">
+                  {{ item.user.name }}
+              </strong> 
+              
               {{ getActionText(item.type) }}
               <span class="highlight">{{ formatDetail(item.type, item.detail) }}</span>
               no jogo
-              <strong>{{ item.game.title }}</strong>
+              
+              <strong [routerLink]="['/game', item.game.rawgId]" style="cursor: pointer;">
+                  {{ item.game.title }}
+              </strong>
             </p>
             <span class="activity-date">{{ item.timestamp | date:'dd/MM HH:mm' }}</span>
           </div>
@@ -45,7 +55,8 @@
               </div>
           </div>
 
-      </div> </div>
+      </div> 
+    </div>
     
     <p *ngIf="activities.length === 0" class="empty-state">
       Nenhuma atividade recente. Jogue alguma coisa! 🎮

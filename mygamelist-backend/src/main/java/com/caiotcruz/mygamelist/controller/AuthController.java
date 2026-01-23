@@ -1,7 +1,7 @@
 package com.caiotcruz.mygamelist.controller;
 
 import com.caiotcruz.mygamelist.dto.LoginDTO;
-import com.caiotcruz.mygamelist.dto.LoginResponseDTO; // 👈 Importe o novo DTO
+import com.caiotcruz.mygamelist.dto.LoginResponseDTO;
 import com.caiotcruz.mygamelist.dto.RegisterDTO;
 import com.caiotcruz.mygamelist.dto.UserSummaryDTO;
 import com.caiotcruz.mygamelist.infra.security.TokenService;

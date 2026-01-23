@@ -1,27 +1,27 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // 👈 Importante para o input
+import { FormsModule } from '@angular/forms'; 
 import { ActivityService } from '../../services/activity'; 
-import { CommunityService } from '../../services/community'; // 👈 Serviço de Likes/Comments
+import { CommunityService } from '../../services/community'; 
 import { Activity } from '../../models/activity.model';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, DatePipe, FormsModule], // 👈 Adicione FormsModule aqui
+  imports: [CommonModule, DatePipe, FormsModule, RouterModule], 
   templateUrl: './feed.html',
   styleUrl: './feed.css'
 })
 export class Feed implements OnInit {
   activityService = inject(ActivityService);
-  communityService = inject(CommunityService); // 👈 Injete aqui
+  communityService = inject(CommunityService);
   cdr = inject(ChangeDetectorRef); 
 
-  activities: any[] = []; // Mudei para any[] temporariamente para aceitar likes/comments sem erro de tipagem
+  activities: any[] = []; 
   myId: number = 0;
 
   ngOnInit() {
-    // Pegar meu ID para saber se o like é meu
     this.myId = Number(localStorage.getItem('userId'));
 
     this.activityService.getFeed().subscribe({
@@ -33,7 +33,6 @@ export class Feed implements OnInit {
     });
   }
 
-  // --- LÓGICA DE INTERAÇÃO (LIKE/COMMENT) ---
 
   isLikedByMe(item: any): boolean {
     if (!item.likes) return false;
@@ -41,7 +40,6 @@ export class Feed implements OnInit {
   }
 
   toggleLike(item: any) {
-    // 1. Otimismo Visual
     const jaCurtiu = this.isLikedByMe(item);
     
     if (jaCurtiu) {
@@ -51,11 +49,9 @@ export class Feed implements OnInit {
       item.likes.push({ user: { id: this.myId } }); 
     }
 
-    // 2. Chama Backend
     this.communityService.toggleLike(item.id).subscribe({
       error: () => {
         alert('Erro ao curtir');
-        // Rollback simples se precisar, ou recarregar feed
       }
     });
   }
@@ -81,7 +77,6 @@ export class Feed implements OnInit {
     });
   }
 
-  // --- MÉTODOS VISUAIS ANTIGOS ---
 
   getActionText(type: string): string {
     switch(type) {

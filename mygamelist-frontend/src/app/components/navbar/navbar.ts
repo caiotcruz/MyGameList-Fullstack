@@ -21,35 +21,28 @@ export class Navbar implements OnInit, OnDestroy {
   notifications: any[] = [];
   showDropdown = false;
   
-  // Para limpar o intervalo quando sair
   private intervalId: any;
 
   ngOnInit() {
-    // 1. Checa assim que carrega
     this.checarNotificacoes();
 
-    // 2. Checa toda vez que mudar de rota (Navegar)
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
       this.checarNotificacoes();
     });
 
-    // 3. Checa a cada 30 segundos (Polling)
-    // Isso garante que se você deixar a aba aberta, o número aparece sozinho
     this.intervalId = setInterval(() => {
       this.checarNotificacoes();
     }, 30000); 
   }
 
   ngOnDestroy() {
-    // Limpa o timer para não pesar a memória se o componente for destruído
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
   }
 
-  // Lógica centralizada para verificar
   checarNotificacoes() {
     if (this.shouldShowNavbar()) {
       this.notificationService.getUnreadCount().subscribe({
@@ -59,7 +52,6 @@ export class Navbar implements OnInit, OnDestroy {
     }
   }
 
-  // --- O RESTO CONTINUA IGUAL ---
 
   get myId(): string | null {
     return localStorage.getItem('userId');
@@ -84,14 +76,12 @@ export class Navbar implements OnInit, OnDestroy {
     this.notificationService.getNotifications().subscribe(data => {
       this.notifications = data;
 
-      // 🔥 MARCA TODAS COMO LIDAS AO ABRIR
       const unread = this.notifications.filter(n => !n.read);
 
       if (unread.length > 0) {
         unread.forEach(n => n.read = true);
         this.unreadCount = 0;
 
-        // Chamada única (ideal)
         this.notificationService.markAllAsRead().subscribe();
       }
     });

@@ -13,21 +13,17 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Quem recebe a notificação (ex: Eu)
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    // Quem provocou a notificação (ex: Meu Amigo)
     @ManyToOne
     @JoinColumn(name = "actor_id")
     private User actor;
 
-    // Tipo de notificação
     @Enumerated(EnumType.STRING)
     private NotificationType type;
 
-    // Referência opcional à atividade (para saber qual jogo foi)
     @ManyToOne
     @JoinColumn(name = "activity_id")
     private Activity activity;
@@ -44,7 +40,6 @@ public class Notification {
         this.activity = activity;
     }
 
-    // Getters e Setters
     public Long getId() { return id; }
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }

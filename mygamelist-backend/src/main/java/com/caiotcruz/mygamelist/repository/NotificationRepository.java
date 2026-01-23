@@ -7,9 +7,7 @@ import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     
-    // Busca notificações do usuário, ordenadas da mais nova para mais antiga
     List<Notification> findByUserOrderByCreatedAtDesc(User user);
 
-    // Conta quantas não lidas existem (para a bolinha vermelha)
     long countByUserAndIsReadFalse(User user);
 }

@@ -1,0 +1,102 @@
+<div class="loading-screen" *ngIf="isLoading">
+  <div class="spinner"></div>
+</div>
+
+<div class="hub-container" *ngIf="data">
+  
+  <div class="hero-section" [style.backgroundImage]="'url(' + data.coverUrl + ')'">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <img [src]="data.coverUrl" class="cover-art" alt="Capa">
+      <div class="hero-info">
+        <h1>{{ data.title }}</h1>
+        
+        <div class="community-rating">
+            <div class="score-badge" [style.background]="getScoreColor(data.communityScore)">
+                {{ data.communityScore | number:'1.1-1' }}
+            </div>
+            <span>Média da Comunidade</span>
+        </div>
+
+        <div class="user-status-card interactable" 
+             [class.not-added]="!data.userStatus"
+             (click)="abrirModal()">
+            
+            <span class="status-indicator" *ngIf="data.userStatus">✅ Na sua lista:</span>
+            <span class="status-indicator" *ngIf="!data.userStatus">➕ Adicionar à lista</span>
+            
+            <strong *ngIf="data.userStatus">{{ getStatusLabel(data.userStatus) }}</strong>
+            
+            <span *ngIf="data.userScore > 0" class="mini-score">⭐ {{ data.userScore }}</span>
+            <span class="edit-hint"> (Clique para editar)</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-container">
+    <div class="stat-card"><h3>{{ data.totalPlayers }}</h3><p>Jogadores</p></div>
+    <div class="stat-card"><h3 style="color: #4caf50">{{ data.playingCount }}</h3><p>Jogando Agora</p></div>
+    <div class="stat-card"><h3 style="color: #2196f3">{{ data.completedCount }}</h3><p>Zeraram</p></div>
+  </div>
+
+  <div class="reviews-section">
+      <h2>O que estão falando</h2>
+      
+      <div class="reviews-list" *ngIf="data.latestReviews && data.latestReviews.length > 0">
+          <div class="review-card" *ngFor="let rev of data.latestReviews">
+              <div class="review-header">
+                  <div class="reviewer-info">
+                      <div class="avatar-small">{{ rev.userName.charAt(0) }}</div>
+                      <strong>{{ rev.userName }}</strong>
+                      <span class="review-date">{{ rev.date | date:'dd/MM/yy' }}</span>
+                  </div>
+                  <div class="review-score" [style.color]="getScoreColor(rev.score)">
+                      {{ rev.score }}/10
+                  </div>
+              </div>
+              <p class="review-text">"{{ rev.review }}"</p>
+          </div>
+      </div>
+
+      <div class="empty-reviews" *ngIf="!data.latestReviews || data.latestReviews.length === 0">
+          <p>Nenhuma review escrita ainda. Seja o primeiro!</p>
+      </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="isModalOpen">
+    <div class="modal-content">
+      <h3>{{ data?.userStatus ? 'Editar' : 'Adicionar' }}: {{ editingGame.title }}</h3>
+  
+      <div class="form-group">
+        <label>Status:</label>
+        <select [(ngModel)]="editingGame.status">
+          <option value="PLAN_TO_PLAY">Planejo Jogar</option>
+          <option value="PLAYING">Jogando</option>
+          <option value="COMPLETED">Zerado / Completado</option>
+          <option value="DROPPED">Desisti</option>
+          <option value="ON_HOLD">Pausado</option>
+        </select>
+      </div>
+  
+      <div *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
+          <div class="form-group">
+            <label>Nota (0 a 10):</label>
+            <input type="number" min="0" max="10" step="1" [(ngModel)]="editingGame.score" (change)="validarScore()">
+          </div>
+          <div class="form-group">
+            <label>Review:</label>
+            <textarea rows="4" [(ngModel)]="editingGame.review" placeholder="Escreva sua opinião..."></textarea>
+          </div>
+      </div>
+  
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="fecharModal()">Cancelar</button>
+        <button class="btn-save" (click)="salvar()" [disabled]="isSaving">
+          {{ isSaving ? 'Salvando...' : 'Salvar' }}
+        </button>
+      </div>
+    </div>
+  </div>

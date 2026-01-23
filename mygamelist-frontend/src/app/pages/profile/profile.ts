@@ -1,13 +1,13 @@
 import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms'; // 👈 Importante para o formulário
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 
 import { CommunityService } from '../../services/community';
 import { GameList } from '../../components/game-list/game-list'; 
 import { AuthService } from '../../services/auth'; 
-import { UserService } from '../../services/user'; // 👈 Seu Service Novo
+import { UserService } from '../../services/user'; 
 
 interface Badge {
   icon: string;
@@ -25,7 +25,7 @@ interface ChartBar {
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, GameList, FormsModule], // 👈 Adicionado FormsModule
+  imports: [CommonModule, GameList, FormsModule, RouterModule], 
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
@@ -33,19 +33,18 @@ export class Profile implements OnInit, OnDestroy {
   route = inject(ActivatedRoute);
   communityService = inject(CommunityService);
   authService = inject(AuthService); 
-  userService = inject(UserService); // 👈 Injeção do Service Novo
+  userService = inject(UserService); 
   cdr = inject(ChangeDetectorRef);
 
   userId: number = 0;
   userGames: any[] = [];
   userName: string = 'Carregando...';
-  userBio: string = '';    // 👈 Novo
-  userAvatar: string = ''; // 👈 Novo
+  userBio: string = '';  
+  userAvatar: string = ''; 
   
   isMyProfile: boolean = false;
-  isEditingProfile = false; // 👈 Controle do Modal
+  isEditingProfile = false; 
   
-  // Dados do Formulário
   editData = { name: '', bio: '', profilePicture: '' };
 
   statsCounts = { following: 0, followers: 0 };
@@ -64,11 +63,9 @@ export class Profile implements OnInit, OnDestroy {
         if (idParam) {
             this.userId = Number(idParam);
             
-            // Verifica se é o dono do perfil
             const myId = localStorage.getItem('userId');
             this.isMyProfile = !!myId && Number(myId) === this.userId;
             
-            // Reseta visual
             this.userGames = []; 
             this.stats = { total: 0, completed: 0, playing: 0, avgScore: 0 };
             this.badges = [];
@@ -88,7 +85,6 @@ export class Profile implements OnInit, OnDestroy {
   }
 
   carregarPerfil() {
-    // 1. Busca dados do Usuário (Nome, Bio, Foto)
     this.userService.getById(this.userId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -100,14 +96,11 @@ export class Profile implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error('Erro ao buscar detalhes do usuário:', err);
-          // 💡 SÓ muda para 'Não encontrado' se a gente ainda não tiver o nome vindo dos jogos
           if (this.userName === 'Carregando...') {
-             // Não faz nada ainda, deixa o getUserList tentar preencher
           }
         }
       });
 
-    // 2. Busca lista de jogos (Plano B para o nome)
     this.communityService.getUserList(this.userId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -115,7 +108,6 @@ export class Profile implements OnInit, OnDestroy {
           this.userGames = dados;
           
           if (this.userGames.length > 0) {
-             // Se o endpoint de usuário falhou, pegamos o nome daqui!
              if (this.userName === 'Carregando...' || this.userName === 'Usuário não encontrado') {
                  this.userName = this.userGames[0].user.name;
              }
@@ -126,7 +118,6 @@ export class Profile implements OnInit, OnDestroy {
         }
       });
 
-    // 3. Stats
     this.communityService.getUserStats(this.userId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -136,8 +127,6 @@ export class Profile implements OnInit, OnDestroy {
         }
       });
   }
-
-  // --- LÓGICA DE EDIÇÃO ---
 
   abrirEdicao() {
     this.editData = {
@@ -155,13 +144,12 @@ export class Profile implements OnInit, OnDestroy {
         this.userBio = userAtualizado.bio;
         this.userAvatar = userAtualizado.profilePicture;
         
-        this.isEditingProfile = false; // Fecha o modal
+        this.isEditingProfile = false;
         this.cdr.detectChanges(); 
         alert('Perfil atualizado!');
       },
       error: (err) => {
         console.error(err);
-        // Agora com o 403 resolvido, isso só vai acontecer se der erro real
         if (err.status === 403) {
             alert('Sem permissão para editar. Verifique se está logado.');
         } else {
@@ -174,7 +162,6 @@ export class Profile implements OnInit, OnDestroy {
   onListUpdated() {
     this.favoriteGame = null; 
     setTimeout(() => {
-       // Recarrega apenas a lista de jogos, não precisa recarregar o perfil todo
        this.communityService.getUserList(this.userId).subscribe(dados => {
           this.userGames = dados;
           this.calcularHallDaFama();

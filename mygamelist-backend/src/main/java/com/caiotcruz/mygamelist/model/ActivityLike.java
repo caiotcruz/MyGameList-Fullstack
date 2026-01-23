@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tb_likes", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"user_id", "activity_id"}) // Garante que usuário só curte 1 vez a mesma atividade
+    @UniqueConstraint(columnNames = {"user_id", "activity_id"}) 
 })
 public class ActivityLike {
 

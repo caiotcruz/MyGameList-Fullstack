@@ -14,9 +14,7 @@ public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    // Método genérico para enviar notificação
     public void send(User recipient, User actor, NotificationType type, Activity activity) {
-        // Regra de Ouro: Não notificar se eu curtir meu próprio post
         if (recipient.getId().equals(actor.getId())) {
             return;
         }

@@ -3,12 +3,12 @@ package com.caiotcruz.mygamelist.controller;
 import com.caiotcruz.mygamelist.dto.UserSummaryDTO;
 import com.caiotcruz.mygamelist.model.User;
 import com.caiotcruz.mygamelist.model.UserGameList;
-import com.caiotcruz.mygamelist.repository.UserFollowRepository; // 👈 Novo Import
+import com.caiotcruz.mygamelist.repository.UserFollowRepository; 
 import com.caiotcruz.mygamelist.repository.UserGameListRepository;
 import com.caiotcruz.mygamelist.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder; // 👈 Novo Import
+import org.springframework.security.core.context.SecurityContextHolder; 
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;

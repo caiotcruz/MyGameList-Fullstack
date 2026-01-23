@@ -37,14 +37,29 @@
 
   <div *ngIf="userGames.length > 0">
     <div class="highlights-grid">
+      
       <div class="highlight-card" *ngIf="favoriteGame">
         <div class="highlight-label">🏆 Jogo Favorito</div>
+        
         <div class="highlight-content">
-          <img [src]="favoriteGame.game.coverUrl || favoriteGame.game.background_image" alt="Capa">
-          <div>
+          <img [src]="favoriteGame.game.coverUrl || favoriteGame.game.background_image" 
+               alt="Capa"
+               [routerLink]="['/game', favoriteGame.game.rawgId]"
+               style="cursor: pointer;"
+               title="Ver detalhes do jogo">
+          
+          <div [routerLink]="['/game', favoriteGame.game.rawgId]" 
+               style="cursor: pointer;"
+               title="Ver detalhes do jogo">
+            
             <h3>{{ favoriteGame.game.title }}</h3>
-            <p class="highlight-score" *ngIf="favoriteGame.score > 0">Nota: {{ favoriteGame.score }}/10</p>
-            <p class="highlight-score" *ngIf="favoriteGame.score === 0">Favorito ❤️</p>
+            
+            <p class="highlight-score" *ngIf="favoriteGame.score > 0">
+                Nota: {{ favoriteGame.score }}/10
+            </p>
+            <p class="highlight-score" *ngIf="favoriteGame.score === 0">
+                Favorito ❤️
+            </p>
           </div>
         </div>
       </div>

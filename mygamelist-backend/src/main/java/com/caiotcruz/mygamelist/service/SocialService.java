@@ -24,13 +24,11 @@ public class SocialService {
     @Autowired
     private NotificationService notificationService;
 
-    // Método auxiliar para pegar o usuário logado
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return (User) userRepository.findByEmail(email);
     }
 
-    // Lógica do Like (Toggle: Curte ou Descurte)
     public boolean toggleLike(Long activityId) {
         User currentUser = getCurrentUser();
         Activity activity = activityRepository.findById(activityId)
@@ -39,19 +37,16 @@ public class SocialService {
         Optional<ActivityLike> existingLike = likeRepository.findByUserAndActivity(currentUser, activity);
 
         if (existingLike.isPresent()) {
-            // Se já existe, remove (Descurtir)
             likeRepository.delete(existingLike.get());
-            return false; // Retorna false indicando que agora NÃO está curtido
+            return false; 
         } else {
-            // Se não existe, cria (Curtir)
             ActivityLike newLike = new ActivityLike(currentUser, activity);
             likeRepository.save(newLike);
             notificationService.send(activity.getUser(), currentUser, NotificationType.LIKE, activity);
-            return true; // Retorna true indicando que agora ESTÁ curtido
+            return true; 
         }
     }
 
-    // Lógica de Comentar
     public Comment addComment(Long activityId, CommentDTO dto) {
         User currentUser = getCurrentUser();
         Activity activity = activityRepository.findById(activityId)

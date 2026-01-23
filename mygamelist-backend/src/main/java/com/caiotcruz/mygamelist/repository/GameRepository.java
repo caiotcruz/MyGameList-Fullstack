@@ -6,6 +6,5 @@ import java.util.Optional;
 
 public interface GameRepository extends JpaRepository<Game, Long> {
     
-    // Busca no nosso banco pelo ID da API externa
     Optional<Game> findByRawgId(Long rawgId);
 }

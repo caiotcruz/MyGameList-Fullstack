@@ -15,9 +15,18 @@
 
   <div class="results-grid">
     <div class="game-card" *ngFor="let game of games">
-      <img [src]="game.background_image" alt="Capa">
+      
+      <img [src]="game.background_image" 
+           alt="Capa" 
+           [routerLink]="['/game', game.id]"
+           style="cursor: pointer;">
+
       <div class="card-info">
-        <h3>{{ game.name }}</h3>
+        <h3 [routerLink]="['/game', game.id]" 
+            style="cursor: pointer; display: inline-block;">
+            {{ game.name }}
+        </h3>
+        
         <p>Lançamento: {{ game.released }}</p>
         <button (click)="adicionar(game)">+ Minha Lista</button>
       </div>
@@ -31,7 +40,7 @@
   </div>
 
   <div class="modal-overlay" *ngIf="isModalOpen">
-    <div class="modal-content">
+     <div class="modal-content">
       <h3>Adicionar: {{ editingGame.title }}</h3>
 
       <div class="form-group">

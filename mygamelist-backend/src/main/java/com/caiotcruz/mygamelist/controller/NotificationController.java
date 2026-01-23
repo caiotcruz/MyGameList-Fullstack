@@ -41,7 +41,6 @@ public class NotificationController {
     
     @PutMapping("/read-all")
     public void markAllAsRead() {
-        // Pega o usuário logado e marca tudo como lido
         notificationService.markAllAsRead(getCurrentUser());
     }
 }

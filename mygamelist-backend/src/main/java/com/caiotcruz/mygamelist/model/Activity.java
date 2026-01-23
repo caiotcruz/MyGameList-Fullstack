@@ -35,14 +35,13 @@ public class Activity {
     private LocalDateTime timestamp = LocalDateTime.now();
 
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("activity") // Evita loop infinito no JSON (Activity -> Like -> Activity...)
+    @JsonIgnoreProperties("activity") 
     private List<ActivityLike> likes = new ArrayList<>();
 
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("activity") // Evita loop infinito
+    @JsonIgnoreProperties("activity")
     private List<Comment> comments = new ArrayList<>();
 
-    // 👇 GETTERS E SETTERS
     public List<ActivityLike> getLikes() {
         return likes;
     }

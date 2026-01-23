@@ -45,10 +45,9 @@ public class ActivityController {
     @PostMapping("/{id}/like")
     public ResponseEntity<Boolean> toggleLike(@PathVariable Long id) {
         boolean isLiked = socialService.toggleLike(id);
-        return ResponseEntity.ok(isLiked); // Retorna true se curtiu, false se descurtiu
+        return ResponseEntity.ok(isLiked); 
     }
 
-    // POST /activities/1/comments
     @PostMapping("/{id}/comments")
     public ResponseEntity<Comment> addComment(@PathVariable Long id, @RequestBody CommentDTO dto) {
         Comment newComment = socialService.addComment(id, dto);

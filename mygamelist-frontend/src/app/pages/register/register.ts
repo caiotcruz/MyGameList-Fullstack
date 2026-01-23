@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router'; // Importei RouterLink para o botão de "voltar pro login"
-import { AuthService } from '../../services/auth'; // Ajuste o caminho se necessário
+import { Router, RouterLink } from '@angular/router'; 
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-register',

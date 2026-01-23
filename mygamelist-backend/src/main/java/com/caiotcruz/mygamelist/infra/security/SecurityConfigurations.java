@@ -29,12 +29,12 @@ public class SecurityConfigurations {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // <--- AQUI ESTÁ A MÁGICA
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
-                    req.requestMatchers(HttpMethod.GET, "/games/**").permitAll();
+                    req.requestMatchers(HttpMethod.GET, "/games/**").authenticated();
                     req.requestMatchers(HttpMethod.GET, "/auth/users").authenticated();
                     req.requestMatchers(HttpMethod.GET, "/activities").authenticated();
                     req.requestMatchers(HttpMethod.GET, "/profile/**").authenticated();
@@ -42,6 +42,7 @@ public class SecurityConfigurations {
                     req.requestMatchers(HttpMethod.GET, "/community/activities/**").authenticated();
                     req.requestMatchers(HttpMethod.POST, "/community/activities/**").authenticated();
                     req.requestMatchers(HttpMethod.GET, "/users/**").authenticated();
+                    req.requestMatchers(HttpMethod.GET, "/games/**").authenticated();
                     req.anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

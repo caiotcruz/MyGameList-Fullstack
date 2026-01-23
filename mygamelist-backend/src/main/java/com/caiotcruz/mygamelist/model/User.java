@@ -26,10 +26,10 @@ public class User implements UserDetails {
 
     private String name;
 
-    @Column(length = 500) // Bio com limite de 500 caracteres
+    @Column(length = 500) 
     private String bio;
     
-    @Column(length = 1000) // URL pode ser longa
+    @Column(columnDefinition = "TEXT") 
     private String profilePicture;
 
     @Override
