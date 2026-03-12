@@ -1,52 +1,124 @@
 <div class="landing-container">
-    
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Sua Vida em Jogos.</h1>
-            <p>
-                Organize sua coleção, descubra novas aventuras e veja o que seus amigos estão jogando. 
-                Tudo em um só lugar.
-            </p>
-            
-            <div class="cta-group">
-                <a routerLink="/register" class="btn-primary">Criar Conta Grátis</a>
-                <a routerLink="/login" class="btn-secondary">Já tenho conta</a>
-            </div>
+  <header class="main-header" [class.scrolled]="isScrolled">
+    <div class="header-inner">
+      <div class="logo">
+        🎮 MyGameList
+      </div>
+
+      <nav class="nav-links">
+        <nav class="nav-links">
+          <a (click)="scrollToFeatures($event)" class="nav-link" style="cursor: pointer;">Features</a>
+          
+          <a routerLink="/login" class="nav-link login-link">Login</a>
+          <a routerLink="/register" class="register-btn">Criar Conta</a>
+        </nav>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <h1>
+          Finalmente um lugar<br>
+          para sua vida gamer
+        </h1>
+
+        <p>
+          Organize sua coleção, acompanhe o que seus amigos jogam
+          e construa seu perfil gamer.
+        </p>
+
+        <div class="cta-group">
+          <a routerLink="/register" class="btn-primary">Criar conta grátis</a>
+          <a routerLink="/login" class="btn-secondary">Já tenho conta</a>
         </div>
-    </section>
+      </div>
 
-    <section class="features">
-        <div class="grid-container">
-            
-            <div class="feature-card">
-                <span class="icon">📚</span>
-                <h3>Organize sua Coleção</h3>
-                <p>Mantenha o controle do que você zerou, o que está jogando e seu backlog infinito. Nunca mais esqueça um jogo.</p>
+      <div class="hero-right">
+        <div class="profile-preview">
+          <div class="preview-cover"></div>
+
+          <div class="preview-header">
+            <img class="preview-avatar" src="https://images.igdb.com/igdb/image/upload/t_cover_big/cm2zp.png" />
+            <div class="preview-info">
+              <h3>GamerPro</h3>
+              <span class="preview-sub">Membro do MyGameList</span>
+
+              <div class="preview-stats">
+                <div class="stat">
+                  <strong>124</strong>
+                  <span>Seguidores</span>
+                </div>
+                <div class="stat">
+                  <strong>89</strong>
+                  <span>Seguindo</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-highlights">
+            <div class="preview-card">
+              <span class="preview-label">🏆 Favorito</span>
+              <div class="preview-game">
+                <img src="https://images.igdb.com/igdb/image/upload/t_cover_big/co1tmu.jpg">
+                <div class="game-info">
+                  <strong>God of War</strong>
+                  <span>Nota 10/10</span>
+                </div>
+              </div>
             </div>
 
-            <div class="feature-card">
-                <span class="icon">📈</span>
-                <h3>Estatísticas Detalhadas</h3>
-                <p>Visualize seu progresso com gráficos, conquiste badges exclusivas e veja sua "carreira gamer" evoluir.</p>
+            <div class="preview-card stats">
+              <span class="preview-label">📊 Média</span>
+              <div class="preview-score">8.6</div>
+              <span class="preview-small">Baseado em 42 jogos</span>
             </div>
-
-            <div class="feature-card">
-                <span class="icon">🤝</span>
-                <h3>Conecte-se</h3>
-                <p>Siga amigos, curta reviews, debata sobre lançamentos e veja o feed de atividades da sua comunidade.</p>
-            </div>
-
-            <div class="feature-card">
-                <span class="icon">🔍</span>
-                <h3>Hub de Descobertas</h3>
-                <p>Encontre seu próximo jogo favorito, veja a média da comunidade e leia reviews reais de quem jogou.</p>
-            </div>
-
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <footer>
-        <p>MyGameList © 2026 • Feito por gamers, para gamers.</p>
-    </footer>
+  <section class="features" id="features">
+    <h2>Organize sua vida gamer</h2>
+    <div class="grid-container">
+      <div class="feature-card">
+        <span class="icon">🎮</span>
+        <h3>Controle sua coleção</h3>
+        <p>Marque jogos como zerados, jogando ou backlog.</p>
+      </div>
 
+      <div class="feature-card">
+        <span class="icon">👥</span>
+        <h3>Siga amigos</h3>
+        <p>Descubra jogos através das pessoas que você acompanha.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="icon">📊</span>
+        <h3>Estatísticas</h3>
+        <p>Veja médias, distribuição de notas e progresso.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="icon">🏆</span>
+        <h3>Conquistas</h3>
+        <p>Ganhe badges conforme sua jornada gamer evolui.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-final">
+    <h2>Crie seu perfil gamer</h2>
+    <p>Leva menos de 30 segundos.</p>
+    <a routerLink="/register" class="btn-primary large">
+      Começar agora
+    </a>
+  </section>
+
+  <footer>
+    <p>MyGameList © 2026 • Caio Teixeira</p>
+  </footer>
 </div>

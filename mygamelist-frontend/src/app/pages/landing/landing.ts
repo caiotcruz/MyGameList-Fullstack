@@ -1,7 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { AuthService } from '../../services/auth'; // Seu serviço de Auth
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-landing',
@@ -11,13 +11,32 @@ import { AuthService } from '../../services/auth'; // Seu serviço de Auth
   styleUrl: './landing.css'
 })
 export class Landing implements OnInit {
-  authService = inject(AuthService);
-  router = inject(Router);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  ngOnInit() {
-    // Se já estiver logado, redireciona para a Home (Feed)
+  isScrolled = false;
+
+  @HostListener('window:scroll', [])
+  onScroll(): void {
+    this.isScrolled = window.scrollY > 30;
+  }
+
+  scrollToFeatures(event: Event): void {
+    event.preventDefault();
+    const element = document.getElementById('features');
+    
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start', 
+        inline: 'nearest' 
+      });
+    }
+  }
+
+  ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
-       this.router.navigate(['/home']);
+      this.router.navigate(['/home']);
     }
   }
 }
