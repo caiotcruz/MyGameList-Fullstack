@@ -9,10 +9,9 @@
 .profile-page-wrapper {
   max-width: 1400px;
   margin: auto;
-  padding: 40px 20px 80px 110px; /* Recuo para sidebar */
+  padding: 40px 20px 80px 110px;
 }
 
-/* --- HERO SECTION --- */
 .profile-hero {
   position: relative;
   height: 420px;
@@ -52,7 +51,6 @@
   width: 100%;
 }
 
-/* --- AVATAR & LEVEL --- */
 .avatar-container { 
   position: relative; 
   flex-shrink: 0;
@@ -93,7 +91,6 @@
   border: 2px solid #050505;
 }
 
-/* --- USER INFO & BOTÃO DE EDITAR (Refinado) --- */
 .user-meta-info { 
   flex: 1; 
   min-width: 0; 
@@ -120,7 +117,6 @@
   white-space: nowrap;
 }
 
-/* Ajuste do botão para ser apenas o ícone minimalista na direita */
 .btn-edit-profile-action {
   position: relative;
   flex-shrink: 0;
@@ -149,7 +145,6 @@
 }
 
 
-/* Tooltip */
 .edit-tooltip {
   position: absolute;
   bottom: -35px;
@@ -184,7 +179,6 @@
 .social-metrics { display: flex; gap: 25px; color: #888; font-size: 0.95rem; }
 .social-metrics .num { color: #00e5ff; font-weight: 800; }
 
-/* --- DASHBOARD GRID --- */
 .profile-dashboard-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -213,7 +207,6 @@
   display: block; 
 }
 
-/* --- CARD CARREIRA (HORIZONTAL FIX) --- */
 .stats-row-horizontal {
   display: flex !important;
   flex-direction: row !important;
@@ -235,7 +228,6 @@
 .accent .v { color: #6200ea; }
 .gold .v { color: #ffbf00; }
 
-/* --- CONQUISTAS COM BRILHO (GLOW) REATIVADO --- */
 .badges-flex { display: flex; gap: 12px; flex-wrap: wrap; }
 
 .badge-vessel {
@@ -252,7 +244,6 @@
   cursor: pointer;
 }
 
-/* Div de brilho interna */
 .b-glow {
   position: absolute;
   inset: 0;
@@ -299,7 +290,6 @@
 
 .badge-vessel:hover .custom-tooltip { opacity: 1; }
 
-/* --- CHART & OTHERS --- */
 .fav-body { display: flex; gap: 15px; align-items: center; }
 .fav-poster { width: 70px; height: 100px; border-radius: 12px; object-fit: cover; box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
 .fav-info h3 { margin: 0 0 5px; font-size: 1.2rem; font-weight: 800; color: #fff; }
@@ -324,15 +314,11 @@
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* ... (Hero e Grid seções mantidas iguais ao seu código anterior) ... */
-
 .profile-page-wrapper {
   max-width: 1400px;
   margin: auto;
   padding: 40px 20px 80px 110px;
 }
-
-/* --- REFINAMENTO DO MODAL DE PERFIL --- */
 
 .modal-blur {
   position: fixed;
@@ -342,7 +328,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10000; /* Acima de tudo */
+  z-index: 10000;
   animation: fadeIn 0.3s ease;
 }
 
@@ -364,8 +350,6 @@
   color: #fff;
   letter-spacing: -1px;
 }
-
-/* --- ESTILIZAÇÃO DOS CAMPOS (Identidade MyGameList) --- */
 
 .field-box {
   margin-bottom: 25px;
@@ -409,8 +393,6 @@
   background: #0a0a0a;
   box-shadow: 0 0 15px rgba(98, 0, 234, 0.15);
 }
-
-/* --- RODAPÉ E BOTÕES --- */
 
 .modal-footer-btns {
   display: flex;
@@ -458,8 +440,6 @@
   color: #fff;
 }
 
-/* --- ANIMAÇÕES --- */
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -470,14 +450,11 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* --- (O resto do seu CSS Responsivo e Hero permanece aqui) --- */
-/* --- COLLECTION --- */
 .collection-area { margin-top: 60px; }
 .area-header h2 { font-size: 2rem; font-weight: 900; margin: 0 0 10px; }
 .area-header h2 .count { color: #6200ea; opacity: 0.7; }
 .accent-line { width: 60px; height: 4px; background: #6200ea; border-radius: 2px; }
 
-/* RESPONSIVO */
 @media (max-width: 1024px) {
   .profile-page-wrapper { padding-left: 20px; }
   .profile-dashboard-grid { grid-template-columns: 1fr; }

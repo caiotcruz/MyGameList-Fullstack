@@ -1,81 +1,101 @@
-<div class="search-container">
+<div class="search-page-wrapper">
   
-  <div class="search-bar">
-    <div class="input-wrapper">
+  <header class="search-header">
+    <div class="search-box">
+      <div class="input-container">
+        <span class="icon">🔍</span>
         <input 
-            type="text" 
-            [(ngModel)]="query" 
-            (input)="onSearchInput(query)"
-            placeholder="Digite o nome do jogo..."
-            autofocus>
-        
-        <span *ngIf="isLoading" class="spinner">⏳</span>
-    </div>
-  </div>
-
-  <div class="results-grid">
-    <div class="game-card" *ngFor="let game of games">
-      
-      <img [src]="game.background_image" 
-           alt="Capa" 
-           [routerLink]="['/game', game.id]"
-           style="cursor: pointer;">
-
-      <div class="card-info">
-        <h3 [routerLink]="['/game', game.id]" 
-            style="cursor: pointer; display: inline-block;">
-            {{ game.name }}
-        </h3>
-        
-        <p>Lançamento: {{ game.released }}</p>
-        <button (click)="adicionar(game)">+ Minha Lista</button>
+          type="text" 
+          [(ngModel)]="query" 
+          (input)="onSearchInput(query)"
+          placeholder="Qual será sua próxima aventura?"
+          autofocus>
+        <div *ngIf="isLoading" class="loader-neon"></div>
       </div>
     </div>
-  </div>
+  </header>
 
-  <div class="load-more-container" *ngIf="games.length > 0">
-    <button class="btn-load" (click)="carregarMais()" [disabled]="isLoading">
-      {{ isLoading ? 'Carregando...' : 'Carregar Mais Jogos' }}
-    </button>
-  </div>
-
-  <div class="modal-overlay" *ngIf="isModalOpen">
-     <div class="modal-content">
-      <h3>Adicionar: {{ editingGame.title }}</h3>
-
-      <div class="form-group">
-        <label>Status:</label>
-        <select [(ngModel)]="editingGame.status" (change)="verificarStatus()">
-          <option value="PLAN_TO_PLAY">Planejo Jogar</option>
-          <option value="PLAYING">Jogando</option>
-          <option value="COMPLETED">Zerado / Completado</option>
-          <option value="DROPPED">Desisti</option>
-          <option value="ON_HOLD">Pausado</option>
-        </select>
+  <main class="results-grid" *ngIf="games.length > 0">
+    <div class="game-card-bento" *ngFor="let game of games">
+      <div class="card-visual" [routerLink]="['/game', game.id]">
+        <img [src]="game.background_image || game.image || 'assets/no-image.jpg'" 
+             class="game-poster" 
+             alt="Capa do jogo">
+        <div class="card-overlay">
+          <span class="year-badge">{{ game.released | date:'yyyy' }}</span>
+        </div>
       </div>
 
-      <div *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
+      <div class="card-content">
+        <h3 class="game-title" [routerLink]="['/game', game.id]">{{ game.name }}</h3>
+        
+        <button 
+          class="btn-add-list" 
+          [class.already-added]="estaNaLista(game.id)"
+          [disabled]="estaNaLista(game.id)"
+          (click)="adicionar(game)">
           
-          <div class="form-group">
-            <label>Nota (0 a 10):</label>
-            <input 
-                type="number" 
-                min="0" max="10" step="1"
-                [(ngModel)]="editingGame.score"
-                (change)="validarScore()">
-          </div>
+          <ng-container *ngIf="!estaNaLista(game.id)">
+            <span class="plus">+</span> Minha Lista
+          </ng-container>
 
-          <div class="form-group">
-            <label>Review:</label>
-            <textarea rows="4" [(ngModel)]="editingGame.review"></textarea>
-          </div>
+          <ng-container *ngIf="estaNaLista(game.id)">
+            <span class="check">✓</span> Na minha lista
+          </ng-container>
+        </button>
+      </div>
+    </div>
+  </main>
 
+  <div class="search-feedback" *ngIf="isLoading && games.length === 0">
+    <div class="pulse-loader"></div>
+    <p>Rastreando banco de dados...</p>
+  </div>
+
+  <div class="search-feedback" *ngIf="!isLoading && games.length === 0 && query">
+    <div class="empty-void">👾</div>
+    <p>Nenhum sinal de "{{ query }}" no radar.</p>
+  </div>
+
+  <footer class="load-more-footer" *ngIf="games.length > 0 && !isLoading">
+    <button class="btn-glass-more" (click)="carregarMais()">
+      Explorar mais resultados
+    </button>
+  </footer>
+
+  <div class="modal-blur" *ngIf="isModalOpen" (click)="fecharModal()">
+    <div class="modal-glass-card" (click)="$event.stopPropagation()">
+      <h3 class="modal-title">Adicionar Jogo</h3>
+      <p class="game-subtitle-highlight">{{ editingGame.title }}</p>
+
+      <div class="flex-fields-row">
+        <div class="field-box small-field">
+          <label>Status</label>
+          <div class="select-container">
+            <select [(ngModel)]="editingGame.status" (change)="verificarStatus()">
+              <option value="PLAN_TO_PLAY">Planejo Jogar</option>
+              <option value="PLAYING">Jogando</option>
+              <option value="COMPLETED">Zerado</option>
+              <option value="DROPPED">Larguei</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-box tiny-field" *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
+          <label>Nota</label>
+          <input type="number" [(ngModel)]="editingGame.score" (change)="validarScore()" min="0" max="10">
+        </div>
       </div>
 
-      <div class="modal-actions">
-        <button class="btn-cancel" (click)="fecharModal()">Cancelar</button>
-        <button class="btn-save" (click)="salvar()" [disabled]="isSaving">
-          {{ isSaving ? 'Salvando...' : 'Salvar' }}
+      <div class="field-box" *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
+        <label>Review Rápido</label>
+        <textarea rows="4" [(ngModel)]="editingGame.review" placeholder="O que achou desse título?"></textarea>
+      </div>
+
+      <div class="modal-footer-btns">
+        <button class="btn-cancel-glass" (click)="fecharModal()">Cancelar</button>
+        <button class="btn-save-neon" (click)="salvar()" [disabled]="isSaving">
+          {{ isSaving ? 'Processando...' : 'Adicionar' }}
         </button>
       </div>
     </div>

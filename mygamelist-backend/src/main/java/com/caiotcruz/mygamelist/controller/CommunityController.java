@@ -66,4 +66,23 @@ public class CommunityController {
 
         return ResponseEntity.ok(stats);
     }
+
+    @GetMapping("/users/search")
+    public List<UserSummaryDTO> searchUsers(@RequestParam String name) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = (User) userRepository.findByEmail(email);
+
+        List<User> users = userRepository.findByNameContainingIgnoreCase(name);
+
+        return users.stream()
+                .filter(u -> !u.getId().equals(currentUser.getId()))
+                .map(u -> {
+                    boolean isFollowing = followRepository
+                            .findByFollowerAndFollowed(currentUser, u)
+                            .isPresent();
+
+                    return new UserSummaryDTO(u.getId(), u.getName(), isFollowing);
+                })
+                .collect(Collectors.toList());
+    }
 }

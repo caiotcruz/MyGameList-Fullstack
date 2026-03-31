@@ -1,127 +1,144 @@
-<div class="loading-screen" *ngIf="isLoading">
-  <div class="spinner"></div>
+<div class="loading-overlay" *ngIf="isLoading">
+  <div class="spinner-neon"></div>
 </div>
 
 <div class="hub-container" *ngIf="data">
   
-  <div class="hero-section" [style.backgroundImage]="'url(' + data.coverUrl + ')'">
+  <div class="hero-section" [style.backgroundImage]="'url(' + (data.coverUrl) + ')'">
     <div class="hero-overlay"></div>
+    
     <div class="hero-content">
-      <img [src]="data.coverUrl" class="cover-art" alt="Capa">
+      <div class="cover-vessel">
+        <img [src]="data.coverUrl" class="cover-art" alt="Capa">
+        <div class="lvl-badge" *ngIf="data.communityScore">{{ data.communityScore | number:'1.1-1' }}</div>
+      </div>
+
       <div class="hero-info">
-        <h1>{{ data.title }}</h1>
+        <h1 class="game-title-main">{{ data.title }}</h1>
         
-        <div class="community-rating">
-            <div class="score-badge" [style.background]="getScoreColor(data.communityScore)">
-                {{ data.communityScore | number:'1.1-1' }}
+        <div class="hero-actions-row">
+          <div class="community-rating-glass">
+            <span class="label-tiny">Média Global</span>
+            <div class="stars-neon">⭐ {{ data.communityScore | number:'1.1-1' }}</div>
+          </div>
+
+          <div class="user-status-glass" (click)="abrirModal()">
+            <div class="status-icon-box">
+              <span>{{ data.userStatus ? '✅' : '➕' }}</span>
             </div>
-            <span>Média da Comunidade</span>
+            <div class="status-texts">
+              <span class="status-label">{{ data.userStatus ? getStatusLabel(data.userStatus) : 'Adicionar à Lista' }}</span>
+              <span class="status-subtext" *ngIf="data.userScore > 0">Sua nota: <strong>{{ data.userScore }}/10</strong></span>
+              <span class="status-subtext" *ngIf="!data.userStatus">Toque para configurar</span>
+            </div>
+          </div>
         </div>
-
-        <div class="user-status-card interactable" 
-             [class.not-added]="!data.userStatus"
-             (click)="abrirModal()">
-            
-            <span class="status-indicator" *ngIf="data.userStatus">✅ Na sua lista:</span>
-            <span class="status-indicator" *ngIf="!data.userStatus">➕ Adicionar à lista</span>
-            
-            <strong *ngIf="data.userStatus">{{ getStatusLabel(data.userStatus) }}</strong>
-            
-            <span *ngIf="data.userScore > 0" class="mini-score">⭐ {{ data.userScore }}</span>
-            <span class="edit-hint"> (Clique para editar)</span>
-        </div>
-
       </div>
     </div>
   </div>
 
-  <div class="stats-container">
-    <div class="stat-card"><h3>{{ data.totalPlayers }}</h3><p>Jogadores</p></div>
-    <div class="stat-card"><h3 style="color: #4caf50">{{ data.playingCount }}</h3><p>Jogando Agora</p></div>
-    <div class="stat-card"><h3 style="color: #2196f3">{{ data.completedCount }}</h3><p>Zeraram</p></div>
+  <div class="stats-grid-container">
+    <div class="glass-card stat-item">
+      <span class="label">👥 Comunidade</span>
+      <div class="stat-value">{{ data.totalPlayers }}</div>
+      <span class="stat-desc">Jogadores</span>
+    </div>
+    
+    <div class="glass-card stat-item accent-playing">
+      <span class="label">🔥 Atividade</span>
+      <div class="stat-value">{{ data.playingCount }}</div>
+      <span class="stat-desc">Jogando Agora</span>
+    </div>
+    
+    <div class="glass-card stat-item accent-completed">
+      <span class="label">🏆 Conquista</span>
+      <div class="stat-value">{{ data.completedCount }}</div>
+      <span class="stat-desc">Zeraram</span>
+    </div>
   </div>
 
-  <div class="reviews-section">
-      <h2>O que estão falando</h2>
+  <div class="content-body-section">
+    <div class="section-header">
+      <h2>O que a galera está achando</h2>
+      <div class="accent-line"></div>
+    </div>
       
-      <div class="reviews-list" *ngIf="data.latestReviews && data.latestReviews.length > 0">
-          <div class="review-card" *ngFor="let rev of data.latestReviews">
-                <div class="review-header">
-                    <div class="reviewer-info">
-                        <div class="avatar-small">
-                            <img *ngIf="rev.userAvatar" [src]="rev.userAvatar" class="avatar-img-small">
-                            <span *ngIf="!rev.userAvatar">{{ rev.userName.charAt(0) }}</span>
-                        </div>
-                        <div>
-                            <strong>{{ rev.userName }}</strong>
-                            <div class="review-date">{{ rev.date | date:'dd/MM/yy' }}</div>
-                        </div>
-                    </div>
-                    <div class="review-score" [style.color]="getScoreColor(rev.score)">
-                        {{ rev.score }}/10
-                    </div>
-                </div>
-                
-                <p class="review-text">"{{ rev.review }}"</p>
+    <div class="reviews-stack" *ngIf="data.latestReviews.length > 0">
+      <div class="review-card-glass" *ngFor="let rev of data.latestReviews">
+        <div class="rev-header">
+          <div class="user-pill">
+            <div class="avatar-mini">
+              <img *ngIf="rev.userAvatar" [src]="rev.userAvatar">
+              <span *ngIf="!rev.userAvatar">{{ rev.userName.charAt(0) }}</span>
+            </div>
+            <div class="user-details">
+              <strong class="reviewer-name">{{ rev.userName }}</strong>
+              <span class="review-date">{{ rev.date | date:'dd MMM yyyy' }}</span>
+            </div>
+          </div>
+          <div class="rev-score-badge" [style.color]="getScoreColor(rev.score)">
+            {{ rev.score }}/10
+          </div>
+        </div>
+        
+        <p class="rev-text">"{{ rev.review }}"</p>
 
-                <div class="review-actions">
-                    
-                    <button class="btn-vote" 
-                            [class.active]="rev.myVote === 'LIKE'" 
-                            (click)="votar(rev, 'LIKE')">
-                        👍 {{ rev.likesCount }}
-                    </button>
-
-                    <button class="btn-vote" 
-                            [class.active]="rev.myVote === 'DISLIKE'" 
-                            (click)="votar(rev, 'DISLIKE')">
-                        👎 {{ rev.dislikesCount }}
-                    </button>
-
-                    <span class="karma-badge" [class.positive]="rev.voteScore >= 0" [class.negative]="rev.voteScore < 0">
-                        {{ rev.voteScore }} pts
-                    </span>
-                </div>
-</div>
+        <div class="rev-footer">
+        <div class="vote-group">
+          <button class="vote-btn" [class.active-like]="rev.myVote === 'LIKE'" (click)="votar(rev, 'LIKE')">
+            👍 {{ rev.likesCount }}
+          </button>
+          <button class="vote-btn" [class.active-dislike]="rev.myVote === 'DISLIKE'" (click)="votar(rev, 'DISLIKE')">
+            👎 {{ rev.dislikesCount }}
+          </button>
+        </div>
+        
+        <span class="karma-tag" 
+              [class.positive]="rev.voteScore > 0" 
+              [class.negative]="rev.voteScore < 0"
+              [class.neutral]="rev.voteScore === 0">
+          {{ rev.voteScore > 0 ? '+' : '' }}{{ rev.voteScore }} pts
+        </span>
       </div>
-
-      <div class="empty-reviews" *ngIf="!data.latestReviews || data.latestReviews.length === 0">
-          <p>Nenhuma review escrita ainda. Seja o primeiro!</p>
       </div>
+    </div>
+
+    <div class="glass-card empty-state" *ngIf="!data.latestReviews?.length">
+      <p>Nenhuma review ainda. Seja o primeiro!</p>
+    </div>
   </div>
 </div>
 
-<div class="modal-backdrop" *ngIf="isModalOpen">
-    <div class="modal-content">
-      <h3>{{ data?.userStatus ? 'Editar' : 'Adicionar' }}: {{ editingGame.title }}</h3>
-  
-      <div class="form-group">
-        <label>Status:</label>
+<div class="modal-blur" *ngIf="isModalOpen" (click)="fecharModal()">
+  <div class="modal-glass-card" (click)="$event.stopPropagation()">
+    <h3 class="modal-title">{{ data?.userStatus ? 'Editar' : 'Adicionar' }}</h3>
+    <p class="game-subtitle-highlight">{{ data?.title }}</p>
+
+    <div class="flex-fields-row">
+      <div class="field-box small-field">
+        <label>Status</label>
         <select [(ngModel)]="editingGame.status">
           <option value="PLAN_TO_PLAY">Planejo Jogar</option>
           <option value="PLAYING">Jogando</option>
-          <option value="COMPLETED">Zerado / Completado</option>
+          <option value="COMPLETED">Zerado</option>
           <option value="DROPPED">Desisti</option>
-          <option value="ON_HOLD">Pausado</option>
         </select>
       </div>
-  
-      <div *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
-          <div class="form-group">
-            <label>Nota (0 a 10):</label>
-            <input type="number" min="0" max="10" step="1" [(ngModel)]="editingGame.score" (change)="validarScore()">
-          </div>
-          <div class="form-group">
-            <label>Review:</label>
-            <textarea rows="4" [(ngModel)]="editingGame.review" placeholder="Escreva sua opinião..."></textarea>
-          </div>
-      </div>
-  
-      <div class="modal-actions">
-        <button class="btn-cancel" (click)="fecharModal()">Cancelar</button>
-        <button class="btn-save" (click)="salvar()" [disabled]="isSaving">
-          {{ isSaving ? 'Salvando...' : 'Salvar' }}
-        </button>
+
+      <div class="field-box tiny-field" *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
+        <label>Nota</label>
+        <input type="number" min="0" max="10" [(ngModel)]="editingGame.score">
       </div>
     </div>
+
+    <div class="field-box" *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
+      <label>Sua Opinião</label>
+      <textarea rows="4" [(ngModel)]="editingGame.review"></textarea>
+    </div>
+
+    <div class="modal-footer-btns">
+      <button class="btn-cancel-glass" (click)="fecharModal()">Cancelar</button>
+      <button class="btn-save-neon" (click)="salvar()">Confirmar</button>
+    </div>
   </div>
+</div>

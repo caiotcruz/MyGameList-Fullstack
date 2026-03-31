@@ -2,9 +2,11 @@ import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { GameService } from '../../services/game';
+import { CommunityService } from '../../services/community';
+import { UserService } from '../../services/user';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-search',
@@ -15,7 +17,10 @@ import { RouterModule } from '@angular/router';
 })
 export class Search implements OnInit {
   gameService = inject(GameService);
+  communityService = inject(CommunityService);
+  userService = inject(UserService);
   cdr = inject(ChangeDetectorRef); 
+  router = inject(Router);
   
   query = '';
   games: any[] = [];
@@ -23,18 +28,34 @@ export class Search implements OnInit {
   isLoading = false;
   isSaving = false;
 
+  userGameIds: Set<number> = new Set();
   private searchSubject = new Subject<string>();
 
   isModalOpen = false;
   editingGame: any = {};
 
   ngOnInit() {
+    this.carregarColecaoUsuario();
+
     this.searchSubject.pipe(
       debounceTime(500), 
       distinctUntilChanged() 
     ).subscribe(termo => {
        this.executarBusca(termo);
     });
+  }
+
+  carregarColecaoUsuario() {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      this.communityService.getUserList(Number(userId)).subscribe({
+        next: (dados: any[]) => {
+          this.userGameIds = new Set(dados.map(item => item.game.rawgId));
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Erro ao carregar coleção:', err)
+      });
+    }
   }
 
   onSearchInput(termo: string) {
@@ -48,7 +69,6 @@ export class Search implements OnInit {
         return;
     }
 
-    console.log('Iniciando busca automática para:', termo);
     this.currentPage = 1;
     this.isLoading = true;
     this.games = []; 
@@ -84,7 +104,13 @@ export class Search implements OnInit {
     });
   }
 
+  estaNaLista(gameId: number): boolean {
+    return this.userGameIds.has(gameId);
+  }
+
   adicionar(game: any) {
+    if (this.estaNaLista(game.id)) return;
+
     this.editingGame = {
       rawgId: game.id,
       title: game.name,
@@ -107,22 +133,17 @@ export class Search implements OnInit {
   }
 
   validarScore() {
-    if (this.editingGame.score) {
-        this.editingGame.score = Math.floor(this.editingGame.score);
-    }
-    if (this.editingGame.score > 10) this.editingGame.score = 10;
-    if (this.editingGame.score < 0) this.editingGame.score = 0;
+    this.editingGame.score = Math.min(10, Math.max(0, Math.floor(this.editingGame.score || 0)));
   }
 
   salvar() {
     if (this.isSaving) return;
-
     this.validarScore();
     this.isSaving = true; 
 
     this.gameService.addGameToList(this.editingGame).subscribe({
       next: () => {
-        alert('Jogo adicionado!');
+        this.userGameIds.add(this.editingGame.rawgId);
         this.fecharModal();
         this.isSaving = false; 
         this.cdr.detectChanges(); 

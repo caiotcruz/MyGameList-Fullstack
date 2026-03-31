@@ -1,7 +1,6 @@
-/* --- CONTAINER PRINCIPAL --- */
 :host {
   display: block;
-  background: #0a0a0a; /* Fundo ultra dark */
+  background: #0a0a0a; 
   min-height: 100vh;
   color: white;
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -14,12 +13,11 @@
 
 .main-content {
   flex: 1;
-  padding: 60px 80px 80px 140px; /* Padding largo na esquerda para respeitar a sidebar */
+  padding: 60px 80px 80px 140px; 
   max-width: 1400px;
   margin: 0 auto;
 }
 
-/* --- HEADER E USERNAME --- */
 .welcome-header {
   margin-bottom: 50px;
   display: flex;
@@ -42,7 +40,6 @@
   opacity: 0.9;
 }
 
-/* Correção para o nome não cortar: padding vertical e line-height adequado */
 .username-title {
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 850;
@@ -85,7 +82,6 @@
   color: #fff;
 }
 
-/* --- BENTO GRID --- */
 .bento-grid {
   display: grid;
   grid-template-columns: 1.8fr 1fr 1fr;
@@ -109,7 +105,6 @@
   justify-content: flex-end;
 }
 
-/* Efeito de hover nos itens do grid */
 .bento-item:hover {
   transform: translateY(-8px) scale(1.01);
   border-color: rgba(98, 0, 234, 0.4);
@@ -149,7 +144,6 @@
   line-height: 1.4;
 }
 
-/* --- FEED SECTION --- */
 .feed-header {
   display: flex;
   align-items: center;
@@ -173,14 +167,12 @@
   letter-spacing: -0.5px;
 }
 
-/* --- ANIMAÇÕES --- */
 @keyframes pulse {
   0% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.2); opacity: 0.7; }
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* --- RESPONSIVIDADE --- */
 @media (max-width: 1100px) {
   .bento-grid {
     grid-template-columns: 1fr 1fr;

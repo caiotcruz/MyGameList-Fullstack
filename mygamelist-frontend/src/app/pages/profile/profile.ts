@@ -29,13 +29,11 @@ interface ChartBar {
   styleUrl: './profile.css'
 })
 export class Profile implements OnInit, OnDestroy {
-  // Injeções
   private route = inject(ActivatedRoute);
   private communityService = inject(CommunityService);
   private userService = inject(UserService); 
   private cdr = inject(ChangeDetectorRef);
 
-  // Estados
   userId: number = 0;
   userGames: any[] = [];
   userName: string = 'Carregando...';
@@ -45,7 +43,6 @@ export class Profile implements OnInit, OnDestroy {
   isEditingProfile = false; 
   editData = { name: '', bio: '', profilePicture: '' };
 
-  // Inicialização segura para evitar "undefined" no HTML
   statsCounts = { following: 0, followers: 0 };
   stats = { total: 0, completed: 0, playing: 0, avgScore: 0 };
   badges: Badge[] = [];
@@ -76,7 +73,6 @@ export class Profile implements OnInit, OnDestroy {
   }
 
   carregarPerfil() {
-    // Usamos forkJoin para evitar múltiplos ciclos de renderização (opcional, mas recomendado)s
     forkJoin({
       user: this.userService.getById(this.userId),
       games: this.communityService.getUserList(this.userId),

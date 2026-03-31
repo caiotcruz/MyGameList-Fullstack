@@ -1,6 +1,5 @@
 .list-wrapper-pro { display: flex; flex-direction: column; gap: 10px; }
 
-/* --- RESET DE INPUTS (Esconder setinhas de número padrão) --- */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -11,7 +10,6 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-/* --- HEADER DE ORDENAÇÃO --- */
 .list-header-pro {
   display: flex;
   justify-content: space-between;
@@ -53,7 +51,6 @@ input[type=number] {
   color: #fff;
 }
 
-/* --- LISTA DE CARDS --- */
 .game-stack { display: flex; flex-direction: column; gap: 12px; }
 
 .game-stack-card {
@@ -126,7 +123,6 @@ input[type=number] {
 .action-trigger.active { color: #ffbf00; border-color: #ffbf00; background: rgba(255, 191, 0, 0.1); }
 .action-trigger.del:hover { color: #ff4757; border-color: #ff4757; background: rgba(255, 71, 87, 0.1); }
 
-/* --- MODAIS --- */
 .modal-blur { 
   position: fixed; 
   inset: 0; 
@@ -175,7 +171,7 @@ input[type=number] {
   background: #050505;
   border: 1px solid #222;
   padding: 12px;
-  padding-right: 40px; /* espaço pra seta */
+  padding-right: 40px;
   border-radius: 12px;
   color: white;
   outline: none;
@@ -264,9 +260,8 @@ input[type=number] {
   color: #fff;
 }
 
-/* Botão de confirmação com cor de alerta */
 .btn-confirm-delete {
-  background: #ff4757; /* Vermelho vibrante */
+  background: #ff4757; 
   color: white;
   border: none;
   padding: 12px 25px;
@@ -284,7 +279,6 @@ input[type=number] {
 }
 
 
-/* --- ESTILO REVIEW --- */
 .review-header-pop { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 15px; }
 .review-body-pop { background: #050505; padding: 20px; border-radius: 20px; margin-bottom: 25px; line-height: 1.6; color: #ccc; font-style: italic; }
 
