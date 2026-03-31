@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #6200ea 0%, #9c47ff 100%);
+  background: radial-gradient(circle at center, #2a0a4d 0%, #121212 80%);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 

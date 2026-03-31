@@ -1,65 +1,48 @@
-<div class="feed-container">
-  <h3>Últimas Atividades</h3>
-  
-  <div class="activity-list">
-    <div *ngFor="let item of activities" class="activity-card">
-      
-      <img [src]="item.game.coverUrl" 
-           alt="Capa" 
-           class="game-thumb"
-           [routerLink]="['/game', item.game.rawgId]"
-           style="cursor: pointer;">
-      
-      <div class="activity-main-col">
-          
-          <div class="activity-content">
-            <p class="activity-text">
-              <strong [routerLink]="['/profile', item.user.id]" style="cursor: pointer;">
-                  {{ item.user.name }}
-              </strong> 
-              
-              {{ getActionText(item.type) }}
-              <span class="highlight">{{ formatDetail(item.type, item.detail) }}</span>
-              no jogo
-              
-              <strong [routerLink]="['/game', item.game.rawgId]" style="cursor: pointer;">
-                  {{ item.game.title }}
-              </strong>
-            </p>
-            <span class="activity-date">{{ item.timestamp | date:'dd/MM HH:mm' }}</span>
-          </div>
-
-          <div class="action-bar">
-            <button class="btn-action" [class.liked]="isLikedByMe(item)" (click)="toggleLike(item)">
-                <span>{{ isLikedByMe(item) ? '❤️' : '🤍' }}</span>
-                <span class="count" *ngIf="item.likes?.length">{{ item.likes.length }}</span>
-            </button>
-
-            <button class="btn-action" (click)="toggleComments(item)">
-                <span>💬</span>
-                <span class="count" *ngIf="item.comments?.length">{{ item.comments.length }}</span>
-            </button>
-          </div>
-
-          <div class="comments-section" *ngIf="item.showComments">
-              
-              <div class="comments-list" *ngIf="item.comments?.length">
-                  <div class="comment-row" *ngFor="let c of item.comments">
-                      <strong>{{ c.user.name }}:</strong> {{ c.text }}
-                  </div>
-              </div>
-
-              <div class="comment-input-wrapper">
-                  <input #ipt type="text" placeholder="Escreva algo..." (keyup.enter)="enviarComentario(item, ipt)">
-                  <button (click)="enviarComentario(item, ipt)">Enviar</button>
-              </div>
-          </div>
-
-      </div> 
-    </div>
+<div class="activities-wrapper">
+  <div *ngFor="let item of activities" class="activity-card-glass">
     
-    <p *ngIf="activities.length === 0" class="empty-state">
-      Nenhuma atividade recente. Jogue alguma coisa! 🎮
-    </p>
+    <div class="game-cover-wrapper">
+      <img [src]="item.game.coverUrl" alt="Capa" class="game-cover" [routerLink]="['/game', item.game.rawgId]">
+      <div class="rating-badge" *ngIf="item.type === 'RATED'">{{ item.detail }}</div>
+    </div>
+
+    <div class="activity-body">
+      <div class="activity-info">
+        <p class="activity-text">
+          <span class="user-link" [routerLink]="['/profile', item.user.id]">{{ item.user.name }}</span>
+          <span class="action-tag">{{ getActionText(item.type) }}</span>
+          <span class="game-link" [routerLink]="['/game', item.game.rawgId]">{{ item.game.title }}</span>
+        </p>
+        <span class="activity-time">{{ item.timestamp | date:'dd MMM • HH:mm' }}</span>
+      </div>
+
+      <div class="activity-actions">
+        <button class="action-btn" [class.active-like]="isLikedByMe(item)" (click)="toggleLike(item)">
+          <span class="icon">{{ isLikedByMe(item) ? '❤️' : '🤍' }}</span>
+          <span class="count">{{ item.likes?.length || 0 }}</span>
+        </button>
+
+        <button class="action-btn" (click)="toggleComments(item)">
+          <span class="icon">💬</span>
+          <span class="count">{{ item.comments?.length || 0 }}</span>
+        </button>
+      </div>
+
+      <div class="comments-container" *ngIf="item.showComments">
+        <div class="comments-list">
+          <div class="comment-bubble" *ngFor="let c of item.comments">
+            <strong>{{ c.user.name }}</strong> {{ c.text }}
+          </div>
+        </div>
+        <div class="comment-input-box">
+          <input #ipt type="text" placeholder="Adicionar comentário..." (keyup.enter)="enviarComentario(item, ipt)">
+          <button (click)="enviarComentario(item, ipt)">🚀</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="activities.length === 0" class="empty-state-glass">
+    <p>O feed está vazio. Comece uma nova jornada! 🎮</p>
   </div>
 </div>

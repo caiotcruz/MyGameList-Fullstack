@@ -1,116 +1,112 @@
-/* Ajuste para o layout flex funcionar com a coluna nova */
-.activity-card {
+.activities-wrapper { display: flex; flex-direction: column; gap: 20px; }
+
+.activity-card-glass {
   display: flex;
-  align-items: flex-start; /* Garante que a imagem fique no topo */
-  background: #fff;
-  border: 1px solid #e0e0e0; /* Borda mais suave */
-  border-radius: 12px; /* Arredondar mais */
-  padding: 15px; /* Mais respiro interno */
-  
-  /* 👇 AQUI ESTÁ O SEGREDO DO "PERTENCIMENTO" */
-  margin-bottom: 24px; /* Aumenta BASTANTE a distância para o próximo post */
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04); /* Sombra leve ajuda a agrupar */
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px;
+  transition: border-color 0.3s ease;
 }
 
-.game-thumb {
-  /* 👇 Reduzi de 50px/70px para algo mais discreto */
-  width: 70px; 
-  height: 90px;
+.activity-card-glass:hover { border-color: rgba(98, 0, 234, 0.3); }
+
+.game-cover-wrapper { position: relative; margin-right: 20px; }
+
+.game-cover {
+  width: 80px;
+  height: 110px;
   object-fit: cover;
-  border-radius: 6px;
-  margin-right: 15px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.activity-main-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* Centraliza verticalmente se for curto */
-}
-
-/* Barra de Botões */
-.action-bar {
-  display: flex;
-  gap: 15px;
-  
-  /* 👇 Removi a borda e o padding grande */
-  border-top: none; 
-  margin-top: 6px; /* Bem pertinho do texto de cima */
-  padding-top: 0;
-}
-
-.btn-action {
-  background: none;
-  border: none;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: 0.85rem; /* Levemente menor */
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.rating-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: #6200ea;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  gap: 6px;
-  color: #888; /* Cinza mais claro para não brigar com o texto */
-  padding: 4px 8px 4px 0; /* Área de clique melhor */
-  border-radius: 4px;
-  transition: color 0.2s;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  border: 2px solid #0a0a0a;
 }
 
-.btn-action:hover {
-  color: #6200ea;
-  background-color: rgba(98, 0, 234, 0.05); /* Feedback visual suave */
-}
+.activity-body { flex: 1; }
 
-.btn-action.liked {
-  color: #e91e63;
-}
+.activity-text { font-size: 1rem; color: #ccc; margin: 0 0 5px; line-height: 1.4; }
+.user-link { color: #fff; font-weight: 700; cursor: pointer; }
+.user-link:hover { color: #6200ea; }
+.action-tag { color: #888; margin: 0 5px; }
+.game-link { color: #6200ea; font-weight: 600; cursor: pointer; }
 
-.count {
-  font-size: 0.8rem;
-  font-weight: bold;
-}
+.activity-time { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 1px; }
 
-/* Área de Comentários */
-.comments-section {
-  background: #f9f9f9;
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 0.85rem;
-}
+.activity-actions { display: flex; gap: 15px; margin-top: 15px; }
 
-.comments-list {
-  margin-bottom: 8px;
-  max-height: 150px;
-  overflow-y: auto;
-}
-
-.comment-row {
-  margin-bottom: 4px;
-  line-height: 1.4;
-}
-
-.comment-row strong {
-  color: #6200ea;
-}
-
-.comment-input-wrapper {
+.action-btn {
+  background: rgba(255,255,255,0.05);
+  border: none;
+  color: #aaa;
+  padding: 6px 14px;
+  border-radius: 10px;
+  cursor: pointer;
   display: flex;
-  gap: 5px;
+  align-items: center;
+  gap: 8px;
+  transition: 0.2s;
 }
 
-.comment-input-wrapper input {
+.action-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.active-like { color: #ff4757 !important; background: rgba(255, 71, 87, 0.1) !important; }
+
+/* Comentários */
+.comments-container {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.comment-bubble {
+  background: rgba(255,255,255,0.02);
+  padding: 10px 15px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  color: #bbb;
+}
+
+.comment-bubble strong { color: #6200ea; margin-right: 5px; }
+
+.comment-input-box { display: flex; gap: 10px; margin-top: 15px; }
+
+.comment-input-box input {
   flex: 1;
-  padding: 6px 10px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 10px 15px;
+  color: #fff;
   outline: none;
 }
 
-.comment-input-wrapper button {
+.comment-input-box button {
   background: #6200ea;
-  color: white;
   border: none;
-  padding: 0 12px;
-  border-radius: 20px;
+  border-radius: 12px;
+  width: 45px;
   cursor: pointer;
-  font-size: 0.8rem;
+  transition: 0.2s;
 }
+
+.comment-input-box button:hover { background: #7c4dff; transform: scale(1.05); }
+
+.empty-state-glass { text-align: center; padding: 40px; color: #444; border: 2px dashed rgba(255,255,255,0.05); border-radius: 20px; }

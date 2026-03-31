@@ -1,139 +1,146 @@
-<div class="profile-container">
-
-  <div class="profile-header">
-    <div class="cover-bg"></div>
-    <div class="header-content">
-        
-        <div class="avatar-large">
-            <img *ngIf="userAvatar" [src]="userAvatar" alt="Avatar" class="avatar-img">
-            <span *ngIf="!userAvatar">{{ userName.charAt(0).toUpperCase() }}</span>
-        </div>
-
-        <div class="user-info">
-            <h1>{{ userName }}</h1>
-            
-            <p class="bio" *ngIf="userBio">{{ userBio }}</p>
-            <p></p>
-            <p class="subtitle" *ngIf="!userBio">Membro do MyGameList</p>
-
-            <button *ngIf="isMyProfile" class="btn-edit-profile" (click)="abrirEdicao()">
-                ✏️ Editar Perfil
-            </button>
-        </div>
-
-        <div class="profile-social-stats">
-            <div class="stat-item">
-              <strong>{{ statsCounts.followers }}</strong>
-              <span>Seguidores</span>
-            </div>
-            <div class="divider">•</div>
-            <div class="stat-item">
-              <strong>{{ statsCounts.following }}</strong>
-              <span>Seguindo</span>
-            </div>
-        </div>
+<div class="profile-page-wrapper">
+  
+  <section class="profile-hero">
+    <div class="hero-backdrop"
+      [style.backgroundImage]="favoriteGame ? 'url(' + (favoriteGame.game?.background_image || favoriteGame.game?.coverUrl) + ')' : 'none'"
+      [class.has-image]="favoriteGame">
     </div>
-  </div>
 
-  <div *ngIf="userGames.length > 0">
-    <div class="highlights-grid">
-      
-      <div class="highlight-card" *ngIf="favoriteGame">
-        <div class="highlight-label">🏆 Jogo Favorito</div>
-        
-        <div class="highlight-content">
-          <img [src]="favoriteGame.game.coverUrl || favoriteGame.game.background_image" 
-               alt="Capa"
-               [routerLink]="['/game', favoriteGame.game.rawgId]"
-               style="cursor: pointer;"
-               title="Ver detalhes do jogo">
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+      <div class="avatar-container">
+        <div class="avatar-border-glow">
+          <ng-container *ngIf="userAvatar; else noAvatar">
+            <img [src]="userAvatar" class="avatar-main" alt="Avatar" />
+          </ng-container>
+
+          <ng-template #noAvatar>
+            <div class="avatar-placeholder">{{ userName[0] || '?' }}</div>
+          </ng-template>
+        </div>
+        <div class="lvl-tag">LEVEL 42</div>
+      </div>
+
+      <div class="user-meta-info">
+        <div class="header-main-row">
+          <div class="name-column">
+            <h1 class="profile-name-display">{{ userName }}</h1>
+          </div>
           
-          <div [routerLink]="['/game', favoriteGame.game.rawgId]" 
-               style="cursor: pointer;"
-               title="Ver detalhes do jogo">
-            
-            <h3>{{ favoriteGame.game.title }}</h3>
-            
-            <p class="highlight-score" *ngIf="favoriteGame.score > 0">
-                Nota: {{ favoriteGame.score }}/10
-            </p>
-            <p class="highlight-score" *ngIf="favoriteGame.score === 0">
-                Favorito ❤️
-            </p>
+          <div class="actions-column" *ngIf="isMyProfile">
+            <button class="btn-edit-profile-action" (click)="abrirEdicao()" title="Editar perfil">
+              ✏️
+              <span class="edit-tooltip">Editar perfil</span>
+            </button>
           </div>
         </div>
-      </div>
 
-      <div class="highlight-card" *ngIf="badges.length > 0">
-        <div class="highlight-label">🎖️ Conquistas</div>
-        <div class="badges-grid">
-          <div class="badge-item" *ngFor="let badge of badges" [style.border-color]="badge.color">
-            <span class="badge-icon">{{ badge.icon }}</span>
-            <span class="badge-text" [style.color]="badge.color">{{ badge.label }}</span>
-            <span class="custom-tooltip">{{ badge.description }}</span>
-          </div>
+        <div class="bio-container">
+          <p class="user-bio-text" *ngIf="userBio; else bioPlaceholder">{{ userBio }}</p>
+          <ng-template #bioPlaceholder>
+            <p class="user-bio-text placeholder">Membro lendário do MyGameList.</p>
+          </ng-template>
+        </div>
+
+        <div class="social-metrics">
+          <div class="metric"><span class="num">{{ statsCounts.followers }}</span> seguidores</div>
+          <div class="metric"><span class="num">{{ statsCounts.following }}</span> seguindo</div>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="highlight-card stats-center">
-          <div class="highlight-label">📊 Média Geral</div>
-          <div class="big-number">{{ stats.avgScore | number:'1.1-1' }}</div>
-          <p class="sub-text">Baseado em {{ userGames.length }} jogos</p>
+  <div class="profile-dashboard-grid">
+    <div class="glass-card fav-highlight" *ngIf="favoriteGame?.game">
+      <span class="label">🏆 Destaque</span>
+      <div class="fav-body">
+        <img [src]="favoriteGame.game.coverUrl || favoriteGame.game.background_image" class="fav-poster" alt="Cover" />
+        <div class="fav-info">
+          <h3>{{ favoriteGame.game.title }}</h3>
+          <div class="score-neon">⭐ {{ favoriteGame.score || '10' }}<span>/10</span></div>
+        </div>
       </div>
     </div>
 
-    <div class="chart-section" *ngIf="stats.avgScore > 0">
-       <div class="highlight-label">📈 Distribuição de Notas</div>
-       <div class="chart-container">
-         <div class="chart-bar-group" *ngFor="let data of chartData">
-            <div class="bar-area">
-               <span class="bar-tooltip" *ngIf="data.count > 0">{{ data.count }}</span>
-               <div class="bar-fill" [style.height.%]="data.heightPc" [class.has-data]="data.count > 0"></div>
+    <div class="glass-card career-stats">
+      <span class="label">📊 Carreira</span>
+      <div class="stats-row-horizontal">
+        <div class="s-item">
+          <span class="v">{{ stats.total }}</span>
+          <span class="d">Jogos</span>
+        </div>
+        <div class="s-item accent">
+          <span class="v">{{ stats.completed }}</span>
+          <span class="d">Zerados</span>
+        </div>
+        <div class="s-item gold">
+          <span class="v">{{ stats.avgScore | number:'1.1-1' }}</span>
+          <span class="d">Média</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-card achievements-card" *ngIf="badges.length > 0">
+      <span class="label">🎖️ Conquistas</span>
+      <div class="badges-flex">
+        <div class="badge-vessel" *ngFor="let badge of badges; trackBy: trackByBadge">
+          <span class="b-icon">{{ badge.icon }}</span>
+          <div class="b-glow" [style.background]="badge.color"></div>
+          <div class="custom-tooltip">
+            <strong>{{ badge.label }}</strong>
+            <p>{{ badge.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-card distribution-chart full-width" *ngIf="stats.avgScore > 0">
+      <span class="label">📈 Distribuição de Notas</span>
+      <div class="chart-main-area">
+        <div class="chart-bar-vessel" *ngFor="let data of chartData; trackBy: trackByScore">
+          <div class="bar-outer">
+            <div class="bar-inner" [style.height.%]="data.heightPc">
+              <span class="count-pop" *ngIf="data.count > 0">{{ data.count }}</span>
             </div>
-            <span class="bar-label">{{ data.score }}</span>
-         </div>
-       </div>
+          </div>
+          <span class="bar-idx">{{ data.score }}</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="list-section">
-    <h3>{{ isMyProfile ? 'Minha Coleção' : 'Coleção Completa' }}</h3>
+  <section class="collection-area">
+    <div class="area-header">
+      <h2>Coleção Completa <span class="count">({{ stats.total }})</span></h2>
+      <div class="accent-line"></div>
+    </div>
     <app-game-list 
       [games]="userGames" 
       [isOwner]="isMyProfile" 
       (listUpdated)="onListUpdated()">
     </app-game-list>
-  </div>
+  </section>
 
-  <div class="empty-state" *ngIf="userGames.length === 0">
-    <p>Este usuário ainda não iniciou sua jornada.</p>
-  </div>
-</div>
-
-<div class="modal-backdrop" *ngIf="isEditingProfile">
-  <div class="modal-content-edit">
-    <h3>Editar Perfil</h3>
-
-    <div class="form-group">
-      <label>Nome de Exibição</label>
-      <input type="text" [(ngModel)]="editData.name" placeholder="Seu nome">
-    </div>
-
-    <div class="form-group">
-      <label>Foto de Perfil (URL)</label>
-      <input type="text" [(ngModel)]="editData.profilePicture" placeholder="https://exemplo.com/foto.jpg">
-      <small>Cole o link de uma imagem da internet.</small>
-    </div>
-
-    <div class="form-group">
-      <label>Bio (Sobre Mim)</label>
-      <textarea rows="3" [(ngModel)]="editData.bio" maxlength="500" placeholder="Conte um pouco sobre seus jogos favoritos..."></textarea>
-      <small class="char-count">{{ editData.bio?.length || 0 }}/500</small>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn-cancel" (click)="isEditingProfile = false">Cancelar</button>
-      <button class="btn-save" (click)="salvarPerfil()">Salvar Alterações</button>
+  <div class="modal-blur" *ngIf="isEditingProfile" (click)="isEditingProfile = false">
+    <div class="modal-glass-card" (click)="$event.stopPropagation()">
+      <h3 class="modal-title">Editar Perfil</h3>
+      <div class="field-box">
+        <label>Nome</label>
+        <input [(ngModel)]="editData.name" placeholder="Seu nome" />
+      </div>
+      <div class="field-box">
+        <label>Foto (URL)</label>
+        <input [(ngModel)]="editData.profilePicture" placeholder="URL da imagem" />
+      </div>
+      <div class="field-box">
+        <label>Bio</label>
+        <textarea [(ngModel)]="editData.bio" rows="4" placeholder="Conte sua história..."></textarea>
+      </div>
+      <div class="modal-footer-btns">
+        <button class="btn-cancel" (click)="isEditingProfile = false">Cancelar</button>
+        <button class="btn-save-glow" (click)="salvarPerfil()">Salvar Alterações</button>
+      </div>
     </div>
   </div>
 </div>

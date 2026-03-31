@@ -60,7 +60,7 @@ export class Navbar implements OnInit, OnDestroy {
   sair() {
     this.resetNotifications();
     this.authService.logout();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/landing']);
   }
 
   shouldShowNavbar(): boolean {

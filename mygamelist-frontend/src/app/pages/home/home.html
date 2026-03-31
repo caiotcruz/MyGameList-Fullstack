@@ -1,19 +1,48 @@
-<div class="home-container">
-  <header class="hero-section">
-    <h1>Bem-vindo de volta, {{ userName }}! 🎮</h1>
-    <p>Veja o que a comunidade está jogando.</p>
-    
-    <div class="actions">
-      <a routerLink="/search" class="btn-primary">🔍 Buscar Jogos</a>
-      <a 
-        [routerLink]="['/profile', myId]" 
-        class="btn-secondary">
-        👤 Meu Perfil
-      </a>
-    </div>
-  </header>
+<div class="dashboard-wrapper">
+  <main class="main-content">
+    <header class="welcome-header">
+      <div class="user-meta">
+        <span class="greeting">Status do Sistema: Online</span>
+        <h1 class="username-title">Olá, {{ userName }}<span>.</span></h1>
+      </div>
+      <div class="quick-stats">
+        <div class="stat-pill highlight">
+          <span class="label">Nível</span>
+          <span class="value">42</span>
+        </div>
+      </div>
+    </header>
 
-  <section class="feed-section">
-    <app-feed></app-feed>
-  </section>
+    <section class="bento-grid">
+      <div class="bento-item main-cta" routerLink="/search">
+        <div class="bento-content">
+          <span class="bento-icon">🔍</span>
+          <div class="text">
+            <h3>Explorar Biblioteca</h3>
+            <p>Descubra seu próximo jogo favorito.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bento-item profile-card" [routerLink]="['/profile', myId]">
+        <span class="bento-icon">👤</span>
+        <h3>Meu Perfil</h3>
+        <p>Ver conquistas</p>
+      </div>
+
+      <div class="bento-item community-card" routerLink="/community">
+        <span class="bento-icon">🔥</span>
+        <h3>Trending</h3>
+        <p>Comunidade ativa</p>
+      </div>
+    </section>
+
+    <section class="feed-container-main">
+      <div class="feed-header">
+        <div class="indicator"></div>
+        <h2>Atividade da Rede</h2>
+      </div>
+      <app-feed></app-feed>
+    </section>
+  </main>
 </div>

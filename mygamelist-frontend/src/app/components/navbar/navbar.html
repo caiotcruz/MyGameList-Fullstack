@@ -1,58 +1,63 @@
-<nav class="navbar" *ngIf="shouldShowNavbar()">
-
-  <div class="left">
-    <div class="logo" routerLink="/home">
-      MyGameList
+<nav class="sidebar-nav" *ngIf="shouldShowNavbar()">
+  <div class="nav-top">
+    <div class="logo-wrapper" routerLink="/home">
+      <span class="logo-icon">🎮</span>
     </div>
 
-    <a routerLink="/home" routerLinkActive="active">Home</a>
-    <a routerLink="/search" routerLinkActive="active">Buscar</a>
-    <a routerLink="/community" routerLinkActive="active">Comunidade</a>
+    <div class="nav-links">
+      <a routerLink="/home" routerLinkActive="active" class="nav-item" title="Home">
+        <span class="icon">🏠</span>
+        <span class="label">Home</span>
+      </a>
+      <a routerLink="/search" routerLinkActive="active" class="nav-item" title="Buscar">
+        <span class="icon">🔍</span>
+        <span class="label">Buscar</span>
+      </a>
+      <a routerLink="/community" routerLinkActive="active" class="nav-item" title="Comunidade">
+        <span class="icon">👥</span>
+        <span class="label">Comunidade</span>
+      </a>
+    </div>
   </div>
 
-  <div class="right">
-
+  <div class="nav-bottom">
     <div class="notification-container">
-      <button class="btn-bell modern" [class.open]="showDropdown" (click)="toggleNotifications()" aria-label="Notificações">
-        🔔
-        <span class="badge" *ngIf="unreadCount > 0">
-          {{ unreadCount > 99 ? '99+' : unreadCount }}
-        </span>
+      <button class="btn-sidebar-action" [class.open]="showDropdown" (click)="toggleNotifications()" aria-label="Notificações">
+        <span class="icon">🔔</span>
+        <span class="badge-dot" *ngIf="unreadCount > 0"></span>
       </button>
 
-      <div class="dropdown-menu" *ngIf="showDropdown">
+      <div class="dropdown-menu-glass" *ngIf="showDropdown">
         <div class="dropdown-header">Notificações</div>
-
         <div class="dropdown-list">
-          <div class="notif-item"
-               *ngFor="let n of notifications"
-               [class.unread]="!n.read"
+          <div class="notif-item" 
+               *ngFor="let n of notifications" 
+               [class.unread]="!n.read" 
                (click)="onNotificationClick(n)">
-
-            <div class="avatar-circle">
+            
+            <div class="avatar-circle-glass">
               {{ n.actor.name.charAt(0) }}
             </div>
 
             <div class="notif-content">
-              <p>
-                <strong>{{ n.actor.name }}</strong>
-                {{ getNotificationText(n.type) }}
-              </p>
+              <p><strong>{{ n.actor.name }}</strong> {{ getNotificationText(n.type) }}</p>
               <small>{{ formatDate(n.createdAt) }}</small>
             </div>
           </div>
-
           <div class="empty-notif" *ngIf="notifications.length === 0">
-            Nenhuma notificação
+            Silêncio no lobby... 🎮
           </div>
         </div>
       </div>
     </div>
 
-    <a [routerLink]="['/profile', myId]" class="profile-link">
-      Meu Perfil
+    <a [routerLink]="['/profile', myId]" class="user-avatar-link" title="Meu Perfil">
+      <div class="profile-glow"></div>
+      <span class="icon">👤</span>
     </a>
 
-    <button class="logout" (click)="sair()">Sair</button>
+    <button class="btn-logout" (click)="sair()" title="Sair">
+      <span class="icon">🚪</span>
+    </button>
   </div>
 </nav>

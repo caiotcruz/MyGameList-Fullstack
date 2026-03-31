@@ -1,92 +1,213 @@
-.home-container {
-  max-width: 1100px;
-  margin: 40px auto;
-  padding: 0 24px 60px;
-  color: #1f2937;
-}
-
-/* HERO */
-
-.hero-section {
-  text-align: center;
-  padding: 48px 32px;
-  margin-bottom: 48px;
-
-  background: linear-gradient(135deg, #6200ea 0%, #3700b3 100%);
+/* --- CONTAINER PRINCIPAL --- */
+:host {
+  display: block;
+  background: #0a0a0a; /* Fundo ultra dark */
+  min-height: 100vh;
   color: white;
-
-  border-radius: 20px;
-  box-shadow: 0 20px 40px rgba(124, 58, 237, 0.35);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-.hero-section h1 {
-  margin: 0 0 10px;
-  font-size: 2.2rem;
-  font-weight: 800;
+.dashboard-wrapper {
+  display: flex;
+  min-height: 100vh;
 }
 
-.hero-section p {
-  font-size: 1rem;
+.main-content {
+  flex: 1;
+  padding: 60px 80px 80px 140px; /* Padding largo na esquerda para respeitar a sidebar */
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* --- HEADER E USERNAME --- */
+.welcome-header {
+  margin-bottom: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.greeting {
+  color: #6200ea;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 0.75rem;
   opacity: 0.9;
 }
 
-/* ACTIONS */
+/* Correção para o nome não cortar: padding vertical e line-height adequado */
+.username-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 850;
+  margin: 0;
+  padding: 5px 0 15px 0; 
+  line-height: 1.1;
+  letter-spacing: -2px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #888888 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
 
-.actions {
-  margin-top: 28px;
+.username-title span {
+  -webkit-text-fill-color: #6200ea;
+  text-shadow: 0 0 30px rgba(98, 0, 234, 0.4);
+}
+
+.stat-pill {
+  background: rgba(98, 0, 234, 0.1);
+  border: 1px solid rgba(98, 0, 234, 0.3);
+  padding: 12px 24px;
+  border-radius: 16px;
   display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.btn-primary,
-.btn-secondary {
-  padding: 10px 22px;
-  border-radius: 999px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-
-  display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
-
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    background 0.15s ease,
-    color 0.15s ease;
+  backdrop-filter: blur(10px);
 }
 
-/* BOTÃO PRINCIPAL */
-
-.btn-primary {
-  background: white;
-  color: #7c3aed;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+.stat-pill .label {
+  font-size: 0.65rem;
+  color: #aaa;
+  text-transform: uppercase;
+  font-weight: 600;
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.25);
+.stat-pill .value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
 }
 
-/* BOTÃO SECUNDÁRIO */
-
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.45);
+/* --- BENTO GRID --- */
+.bento-grid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr;
+  grid-template-rows: 220px;
+  gap: 24px;
+  margin-bottom: 60px;
 }
 
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
+.bento-item {
+  background: #121212;
+  border-radius: 28px;
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
-/* FEED */
+/* Efeito de hover nos itens do grid */
+.bento-item:hover {
+  transform: translateY(-8px) scale(1.01);
+  border-color: rgba(98, 0, 234, 0.4);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(98, 0, 234, 0.1);
+}
 
-.feed-section {
-  margin-top: 20px;
+.bento-item::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at top right, rgba(98, 0, 234, 0.08), transparent);
+  pointer-events: none;
+}
+
+.main-cta {
+  background: linear-gradient(135deg, #1a003e 0%, #0d0d0d 100%);
+  justify-content: center;
+}
+
+.bento-icon {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.bento-item h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.bento-item p {
+  margin: 8px 0 0;
+  color: #888;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* --- FEED SECTION --- */
+.feed-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  background: #6200ea;
+  border-radius: 50%;
+  box-shadow: 0 0 20px #6200ea;
+  animation: pulse 2s infinite;
+}
+
+.feed-header h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+/* --- ANIMAÇÕES --- */
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 1100px) {
+  .bento-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+  .main-cta {
+    grid-column: span 2;
+    padding: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 40px 20px 100px;
+  }
+  .bento-grid {
+    grid-template-columns: 1fr;
+  }
+  .main-cta {
+    grid-column: span 1;
+  }
+  .username-title {
+    font-size: 2.5rem;
+  }
+  .welcome-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
 }
