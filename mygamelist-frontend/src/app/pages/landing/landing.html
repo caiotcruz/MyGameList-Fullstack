@@ -1,17 +1,12 @@
 <div class="landing-container">
   <header class="main-header" [class.scrolled]="isScrolled">
     <div class="header-inner">
-      <div class="logo">
-        🎮 MyGameList
-      </div>
+      <div class="logo">🎮 MyGameList</div>
 
       <nav class="nav-links">
-        <nav class="nav-links">
-          <a (click)="scrollToFeatures($event)" class="nav-link" style="cursor: pointer;">Features</a>
-          
-          <a routerLink="/login" class="nav-link login-link">Login</a>
-          <a routerLink="/register" class="register-btn">Criar Conta</a>
-        </nav>
+        <a (click)="scrollToFeatures($event)" class="nav-link" style="cursor: pointer;">Features</a>
+        <a routerLink="/login" class="nav-link login-link">Login</a>
+        <a routerLink="/register" class="register-btn">Criar Conta</a>
       </nav>
     </div>
   </header>
@@ -19,15 +14,8 @@
   <section class="hero">
     <div class="hero-inner">
       <div class="hero-left">
-        <h1>
-          Finalmente um lugar<br>
-          para sua vida gamer
-        </h1>
-
-        <p>
-          Organize sua coleção, acompanhe o que seus amigos jogam
-          e construa seu perfil gamer.
-        </p>
+        <h1>Finalmente um lugar<br>para sua vida gamer</h1>
+        <p>Organize sua coleção, acompanhe o que seus amigos jogam e construa seu perfil gamer.</p>
 
         <div class="cta-group">
           <a routerLink="/register" class="btn-primary">Criar conta grátis</a>
@@ -36,44 +24,45 @@
       </div>
 
       <div class="hero-right">
-        <div class="profile-preview">
-          <div class="preview-cover"></div>
-
-          <div class="preview-header">
-            <img class="preview-avatar" src="https://images.igdb.com/igdb/image/upload/t_cover_big/cm2zp.png" />
-            <div class="preview-info">
-              <h3>GamerPro</h3>
-              <span class="preview-sub">Membro do MyGameList</span>
-
-              <div class="preview-stats">
-                <div class="stat">
-                  <strong>124</strong>
-                  <span>Seguidores</span>
-                </div>
-                <div class="stat">
-                  <strong>89</strong>
-                  <span>Seguindo</span>
-                </div>
-              </div>
-            </div>
+        <div class="mini-profile-vessel">
+          <div class="mini-hero-backdrop">
+            <div class="mini-hero-overlay"></div>
           </div>
 
-          <div class="preview-highlights">
-            <div class="preview-card">
-              <span class="preview-label">🏆 Favorito</span>
-              <div class="preview-game">
-                <img src="https://images.igdb.com/igdb/image/upload/t_cover_big/co1tmu.jpg">
-                <div class="game-info">
-                  <strong>God of War</strong>
-                  <span>Nota 10/10</span>
-                </div>
+          <div class="mini-profile-content">
+            <div class="mini-avatar-container">
+              <div class="mini-avatar-glow">
+                <img class="mini-avatar-img" src="https://images.igdb.com/igdb/image/upload/t_cover_big/cm2zp.png" />
+              </div>
+              <div class="mini-lvl-tag">LEVEL 42</div>
+            </div>
+
+            <div class="mini-user-info">
+              <h3 class="mini-profile-name">GamerPro</h3>
+              <p class="mini-bio">Membro lendário do MyGameList.</p>
+              
+              <div class="mini-social-metrics">
+                <span><strong class="cyan-text">124</strong> seguidores</span>
+                <span><strong class="cyan-text">89</strong> seguindo</span>
               </div>
             </div>
 
-            <div class="preview-card stats">
-              <span class="preview-label">📊 Média</span>
-              <div class="preview-score">8.6</div>
-              <span class="preview-small">Baseado em 42 jogos</span>
+            <div class="mini-glass-card career-mini">
+              <span class="mini-label">📊 Carreira</span>
+              <div class="mini-stats-row">
+                <div class="mini-s-item">
+                  <span class="v">156</span>
+                  <span class="d">Jogos</span>
+                </div>
+                <div class="mini-s-item accent">
+                  <span class="v">84</span>
+                  <span class="d">Zerados</span>
+                </div>
+                <div class="mini-s-item gold">
+                  <span class="v">8.9</span>
+                  <span class="d">Média</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -113,9 +102,7 @@
   <section class="cta-final">
     <h2>Crie seu perfil gamer</h2>
     <p>Leva menos de 30 segundos.</p>
-    <a routerLink="/register" class="btn-primary large">
-      Começar agora
-    </a>
+    <a routerLink="/register" class="btn-primary large">Começar agora</a>
   </section>
 
   <footer>
