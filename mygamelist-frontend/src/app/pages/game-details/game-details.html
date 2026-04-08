@@ -55,7 +55,16 @@
       <div class="stat-value">{{ data.completedCount }}</div>
       <span class="stat-desc">Zeraram</span>
     </div>
+
+    <div class="glass-card stat-item accent-platinum">
+      <span class="label">💎 Perfeição</span>
+      <div class="stat-value">{{ data.platinumCount }}</div>
+      <span class="stat-desc">Platinaram</span>
+    </div>
+
   </div>
+
+  <option value="PLATINUM">Platinado</option>
 
   <div class="content-body-section">
     <div class="section-header">
@@ -103,7 +112,7 @@
       </div>
     </div>
 
-    <div class="glass-card empty-state" *ngIf="!data.latestReviews?.length">
+    <div class="glass-card empty-state" *ngIf="!data.latestReviews.length">
       <p>Nenhuma review ainda. Seja o primeiro!</p>
     </div>
   </div>

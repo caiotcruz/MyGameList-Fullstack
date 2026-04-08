@@ -44,7 +44,7 @@ export class Profile implements OnInit, OnDestroy {
   editData = { name: '', bio: '', profilePicture: '' };
 
   statsCounts = { following: 0, followers: 0 };
-  stats = { total: 0, completed: 0, playing: 0, avgScore: 0 };
+  stats = { total: 0, completed: 0, playing: 0, platinum: 0, avgScore: 0 };
   badges: Badge[] = [];
   chartData: ChartBar[] = [];
   favoriteGame: any = null; 
@@ -137,13 +137,14 @@ export class Profile implements OnInit, OnDestroy {
     // Cálculos Básicos
     const total = this.userGames.length;
     const completed = this.userGames.filter(g => g.status === 'COMPLETED').length;
+    const platinum = this.userGames.filter(g => g.status === 'PLATINUM').length;
     const playing = this.userGames.filter(g => g.status === 'PLAYING').length;
     
     const ratedGames = this.userGames.filter(g => g.score > 0);
     const totalScore = ratedGames.reduce((sum, g) => sum + g.score, 0);
     const avgScore = ratedGames.length ? (totalScore / ratedGames.length) : 0;
 
-    this.stats = { total, completed, playing, avgScore };
+    this.stats = { total, completed, playing, platinum, avgScore };
 
     // Lógica do Gráfico
     const counts = new Array(11).fill(0); 
@@ -176,6 +177,9 @@ export class Profile implements OnInit, OnDestroy {
     if (this.stats.total >= 10) b.push({ icon: '📚', label: 'Bibliotecário', color: 'silver', description: '+10 jogos na conta.' });
     if (this.stats.completed >= 5) b.push({ icon: '🏆', label: 'Zerador', color: '#4caf50', description: 'Completou 5 desafios.' });
     if (this.stats.avgScore >= 9 && ratedGames.length >= 3) b.push({ icon: '⭐', label: 'Sommelier', color: '#ffbf00', description: 'Média de notas excelente.' });
+    if (this.stats.platinum >= 1) {
+        b.push({ icon: '💎', label: 'Perfeccionista', color: '#b400ff', description: 'Platinou seu primeiro jogo.' });
+    }
     this.badges = b;
   }
 

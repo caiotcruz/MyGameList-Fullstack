@@ -11,6 +11,7 @@ public record GameHubDTO(
     long totalPlayers,
     long playingCount,
     long completedCount,
+    long platinumCount,
     Double communityScore, 
     
     String userStatus,    

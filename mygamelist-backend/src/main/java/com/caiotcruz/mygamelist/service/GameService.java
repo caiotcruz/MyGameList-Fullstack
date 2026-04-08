@@ -99,6 +99,7 @@ public class GameService {
         long totalPlayers = userGameListRepository.countPlayersByGameId(internalId);
         long playingCount = userGameListRepository.countByGameIdAndStatus(internalId, GameStatus.PLAYING);
         long completedCount = userGameListRepository.countByGameIdAndStatus(internalId, GameStatus.COMPLETED);
+        long platinumCount = userGameListRepository.countByGameIdAndStatus(internalId, GameStatus.PLATINUM);
         Double avgScore = userGameListRepository.getAverageScoreByGameId(internalId);
 
         String myStatus = null;
@@ -153,6 +154,7 @@ public class GameService {
                 totalPlayers,
                 playingCount,
                 completedCount,
+                platinumCount,
                 avgScore != null ? avgScore : 0.0,
                 myStatus,
                 myScore,

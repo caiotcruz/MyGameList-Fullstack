@@ -94,7 +94,13 @@ export class GameDetails implements OnInit {
   }
 
   getStatusLabel(status: string): string {
-    const map: any = { 'PLAYING': 'Jogando', 'COMPLETED': 'Zerado', 'PLAN_TO_PLAY': 'Quero Jogar', 'DROPPED': 'Larguei' };
+    const map: any = { 
+      'PLAYING': 'Jogando', 
+      'COMPLETED': 'Zerado', 
+      'PLATINUM': 'Platinado',
+      'PLAN_TO_PLAY': 'Quero Jogar', 
+      'DROPPED': 'Larguei' 
+    };
     return map[status] || status;
   }
 

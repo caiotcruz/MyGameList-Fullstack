@@ -20,7 +20,7 @@ export class GameList implements OnChanges {
   @Input() isOwner: boolean = false;
   @Output() listUpdated = new EventEmitter<void>();
 
-  stats = { total: 0, completed: 0, playing: 0 };
+  stats = { total: 0, completed: 0, playing: 0, platinum: 0 };
   isModalOpen = false;
   editingGame: any = {};
   isSaving = false;
@@ -93,7 +93,6 @@ export class GameList implements OnChanges {
     }
     item.favorite = novoStatus;
     
-    // Após favoritar, re-aplica a ordem padrão para ele pular para o topo
     this.aplicarOrdenacaoPadrao();
     this.cdr.detectChanges(); 
 
@@ -106,7 +105,13 @@ export class GameList implements OnChanges {
   navegarParaJogo(item: any) { this.router.navigate(['/game', item.game.rawgId]); }
   
   getStatusColor(status: string): string {
-    const colors: any = { 'PLAYING': '#4caf50', 'COMPLETED': '#2196f3', 'DROPPED': '#f44336', 'PLAN_TO_PLAY': '#9e9e9e' };
+    const colors: any = { 
+      'PLAYING': '#4caf50', 
+      'COMPLETED': '#2196f3', 
+      'PLATINUM': '#00e5ff',
+      'DROPPED': '#f44336', 
+      'PLAN_TO_PLAY': '#9e9e9e' 
+    };
     return colors[status] || '#000';
   }
 
@@ -167,5 +172,6 @@ export class GameList implements OnChanges {
     this.stats.total = this.games.length;
     this.stats.completed = this.games.filter(g => g.status === 'COMPLETED').length;
     this.stats.playing = this.games.filter(g => g.status === 'PLAYING').length;
+    this.stats.platinum = this.games.filter(g => g.status === 'PLATINUM').length; // Adicionado
   }
 }
