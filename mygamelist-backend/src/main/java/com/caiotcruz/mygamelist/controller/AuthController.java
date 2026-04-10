@@ -1,9 +1,11 @@
 package com.caiotcruz.mygamelist.controller;
 
 import com.caiotcruz.mygamelist.dto.ApiResponseDTO;
+import com.caiotcruz.mygamelist.dto.ForgotPasswordRequestDTO;
 import com.caiotcruz.mygamelist.dto.LoginDTO;
 import com.caiotcruz.mygamelist.dto.LoginResponseDTO;
 import com.caiotcruz.mygamelist.dto.RegisterDTO;
+import com.caiotcruz.mygamelist.dto.ResetPasswordDTO;
 import com.caiotcruz.mygamelist.dto.UserSummaryDTO;
 import com.caiotcruz.mygamelist.dto.VerificacaoDTO;
 import com.caiotcruz.mygamelist.infra.security.TokenService;
@@ -139,6 +141,47 @@ public class AuthController {
             "Código inexistente ou expirado",
             null
         ));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponseDTO<Void>> forgotPassword(@RequestBody @Valid ForgotPasswordRequestDTO data) {
+        User user = (User) userRepository.findByEmail(data.email());
+        
+        if (user != null) {
+            // Geramos um token longo e único
+            String token = java.util.UUID.randomUUID().toString();
+            
+            user.setVerificationCode(token); // Reutilizamos a coluna, mas agora com o UUID
+            user.setVerificationExpiry(LocalDateTime.now().plusHours(1)); // Tokens de link costumam durar mais (ex: 1h)
+            userRepository.save(user);
+            
+            try {
+                emailService.enviarEmailRecuperacao(user.getEmail(), token);
+            } catch (Exception e) {
+                System.out.println("Erro e-mail: " + e.getMessage());
+            }
+        }
+
+        return ResponseEntity.ok(new ApiResponseDTO<>("Se o e-mail existir, as instruções foram enviadas.", null));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponseDTO<Void>> resetPassword(@RequestBody @Valid ResetPasswordDTO data) {
+        User user = (User) userRepository.findByEmail(data.email());
+
+        if (user != null && user.getVerificationCode() != null &&
+            user.getVerificationCode().equals(data.codigo()) &&
+            user.getVerificationExpiry().isAfter(LocalDateTime.now())) {
+            
+            String encryptedPassword = new BCryptPasswordEncoder().encode(data.newPassword());
+            user.setPassword(encryptedPassword);
+            user.setVerificationCode(null); // Limpa o código
+            userRepository.save(user);
+
+            return ResponseEntity.ok(new ApiResponseDTO<>("Senha alterada com sucesso!", null));
+        }
+
+        return ResponseEntity.badRequest().body(new ApiResponseDTO<>("Código inválido ou expirado.", null));
     }
 
     @GetMapping

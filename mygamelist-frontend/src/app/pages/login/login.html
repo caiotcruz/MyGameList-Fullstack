@@ -27,6 +27,10 @@
       [disabled]="isLoading"
       (input)="errorMessage = ''"
       (keyup.enter)="onLogin()">
+
+      <div class="forgot-password-link">
+        <a (click)="!isLoading && router.navigate(['/forgot-password'])">Esqueci minha senha</a>
+      </div>
   </div>
 
   <div class="msg-error" *ngIf="errorMessage">

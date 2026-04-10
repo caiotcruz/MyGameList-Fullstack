@@ -40,4 +40,31 @@ public class EmailService {
             System.err.println("Falha ao montar e-mail HTML: " + e.getMessage());
         }
     }
+
+    @Async
+    public void enviarEmailRecuperacao(String to, String token) {
+        try {
+            String link = "http://localhost:4200/reset-password?token=" + token + "&email=" + to;
+            
+            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
+            org.springframework.mail.javamail.MimeMessageHelper helper = new org.springframework.mail.javamail.MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(to);
+            helper.setSubject("Recuperação de Senha - MyGameList 🔑");
+
+            String htmlContent = """
+                <div style="font-family: sans-serif; background-color: #121212; color: #ffffff; padding: 40px; text-align: center;">
+                    <h2 style="color: #6200ea;">Recuperar Senha</h2>
+                    <p>Clique no botão abaixo para definir uma nova senha para sua conta:</p>
+                    <a href="%s" style="background-color: #6200ea; color: white; padding: 15px 25px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; margin: 20px 0;">
+                        Redefinir Senha
+                    </a>
+                    <p style="font-size: 12px; color: #666;">Este link expira em 1 hora.</p>
+                </div>
+                """.formatted(link);
+
+            helper.setText(htmlContent, true);
+            mailSender.send(message);
+        } catch (Exception e) { /* log erro */ }
+    }
 }

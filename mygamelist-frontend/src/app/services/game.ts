@@ -23,6 +23,7 @@ export interface GameHubData {
   totalPlayers: number;
   playingCount: number;
   completedCount: number;
+  platinumCount: number;
   communityScore: number;
   userStatus: string | null;
   userScore: number;

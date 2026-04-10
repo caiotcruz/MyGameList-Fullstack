@@ -8,6 +8,8 @@ import { Home } from './pages/home/home';
 import { GameDetails } from './pages/game-details/game-details';
 import { Landing } from './pages/landing/landing';
 import { Verify } from './pages/verify/verify';
+import { ForgotPassword } from './pages/forgot-password/forgot-password';
+import { ResetPassword } from './pages/reset-password/reset-password';
 
 
 export const routes: Routes = [
@@ -20,5 +22,7 @@ export const routes: Routes = [
     { path: 'home', component: Home },
     { path: 'game/:id', component: GameDetails },
     { path: 'landing', component: Landing },
-    { path: 'verify', component: Verify }
+    { path: 'verify', component: Verify },
+    { path: 'forgot-password', component: ForgotPassword },
+    { path: 'reset-password', component: ResetPassword }
 ];
