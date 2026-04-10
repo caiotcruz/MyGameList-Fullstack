@@ -39,4 +39,12 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!localStorage.getItem('token');
   }
+
+  forgotPassword(email: string) {
+    return this.http.post<ApiResponse<void>>(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(data: any) {
+    return this.http.post<ApiResponse<void>>(`${this.apiUrl}/reset-password`, data);
+  }
 }
