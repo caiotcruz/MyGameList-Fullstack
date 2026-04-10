@@ -1,0 +1,54 @@
+<div class="login-container">
+    <button class="btn-close" (click)="router.navigate(['/'])" aria-label="Voltar para a página inicial">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+    <h2 class="brand-logo" (click)="router.navigate(['/'])">MyGameList</h2>
+    <h2>Verifique seu E-mail</h2>
+
+  <span class="subtitle">
+    Enviamos um código de 6 dígitos para <br>
+    <strong>{{ email }}</strong>
+  </span>
+
+  <div class="form-group">
+    <label for="code">Código de Verificação</label>
+
+    <input 
+      id="code"
+      type="text"
+      [(ngModel)]="codigo"
+      (input)="formatInput()"
+      placeholder="000000"
+      maxlength="6"
+      [class.input-error]="errorMessage"
+      (keyup.enter)="onVerify()"
+      [disabled]="isLoading"
+      autocomplete="one-time-code"
+    >
+  </div>
+
+  <div class="msg-error" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <div class="msg-success" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+
+  <button 
+    (click)="onVerify()" 
+    [disabled]="isLoading || successMessage || codigo.length < 6"
+    [class.btn-loading]="isLoading || successMessage">
+
+    <div class="spinner-mini" *ngIf="isLoading"></div>
+    <span>
+      {{ successMessage ? 'Sucesso!' : (isLoading ? 'Validando...' : 'Confirmar Conta') }}
+    </span>
+  </button>
+
+  <div class="register-link">
+    <a (click)="!isLoading && router.navigate(['/register'])">
+      Voltar para o cadastro
+    </a>
+  </div>
+</div>

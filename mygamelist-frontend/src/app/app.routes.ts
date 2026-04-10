@@ -7,6 +7,7 @@ import { Register } from './pages/register/register';
 import { Home } from './pages/home/home';
 import { GameDetails } from './pages/game-details/game-details';
 import { Landing } from './pages/landing/landing';
+import { Verify } from './pages/verify/verify';
 
 
 export const routes: Routes = [
@@ -18,5 +19,6 @@ export const routes: Routes = [
     { path: 'register', component: Register},
     { path: 'home', component: Home },
     { path: 'game/:id', component: GameDetails },
-    { path: 'landing', component: Landing }
+    { path: 'landing', component: Landing },
+    { path: 'verify', component: Verify }
 ];

@@ -227,6 +227,7 @@
 .s-item .d { font-size: 0.65rem; color: #666; font-weight: 800; text-transform: uppercase; margin-top: 8px; }
 .accent .v { color: #6200ea; }
 .gold .v { color: #ffbf00; }
+
 .gold:hover .v {
   filter: brightness(1.2);
   transition: 0.3s ease;

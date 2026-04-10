@@ -1,5 +1,8 @@
 <div class="login-container">
-  <h2>MyGameList</h2>
+  <button class="btn-close" (click)="router.navigate(['/'])" aria-label="Voltar para a página inicial">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  </button>
+  <h2 class="brand-logo" (click)="router.navigate(['/'])">MyGameList</h2>
   <span class="subtitle">Faça login para gerenciar seus jogos</span>
   
   <div class="form-group">
@@ -9,6 +12,8 @@
       type="email" 
       [(ngModel)]="email" 
       placeholder="exemplo@email.com"
+      [disabled]="isLoading"
+      (input)="errorMessage = ''"
       (keyup.enter)="onLogin()">
   </div>
 
@@ -19,13 +24,22 @@
       type="password" 
       [(ngModel)]="password" 
       placeholder="Sua senha secreta"
+      [disabled]="isLoading"
+      (input)="errorMessage = ''"
       (keyup.enter)="onLogin()">
   </div>
 
-  <button (click)="onLogin()">Entrar</button>
+  <div class="msg-error" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <button (click)="onLogin()" [disabled]="isLoading" [class.btn-loading]="isLoading">
+    <div class="spinner-mini" *ngIf="isLoading"></div>
+    <span>{{ isLoading ? 'Entrando...' : 'Entrar' }}</span>
+  </button>
 
   <div class="register-link">
     <span>Novo por aqui?</span>
-    <a (click)="goToRegister()">Crie sua conta</a>
+    <a (click)="!isLoading && goToRegister()">Crie sua conta</a>
   </div>
 </div>
