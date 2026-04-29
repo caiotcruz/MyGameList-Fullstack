@@ -78,6 +78,13 @@ public class AuthController {
             ));
         }
 
+        if (userRepository.existsByName(data.name())) {
+            return ResponseEntity.badRequest().body(new ApiResponseDTO<>(
+                "Nome de usuário já está em uso.",
+                null
+            ));
+        }
+
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
         String code = String.valueOf((int) ((Math.random() * 900000) + 100000));
 
@@ -196,13 +203,11 @@ public class AuthController {
                     .findByFollowerAndFollowed(currentUser, u)
                     .isPresent();
 
-                return new UserSummaryDTO(u.getId(), u.getName(), isFollowing);
+                // Agora passando o 4º parâmetro: imageUrl
+                return new UserSummaryDTO(u.getId(), u.getName(), isFollowing, u.getProfilePicture());
             })
             .collect(Collectors.toList());
 
-        return ResponseEntity.ok(new ApiResponseDTO<>(
-            "Usuários carregados com sucesso",
-            users
-        ));
+        return ResponseEntity.ok(new ApiResponseDTO<>("Usuários carregados com sucesso", users));
     }
 }

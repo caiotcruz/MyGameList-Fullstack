@@ -27,8 +27,18 @@
          (click)="verPerfil(user.id)">
       
       <div class="avatar-vessel">
-        <div class="avatar-glow">
-          {{ user.name.charAt(0) }}
+        <div class="avatar-outglow-static">
+          <div class="avatar-glow">
+            <img 
+              *ngIf="user.profilePicture" 
+              [src]="user.profilePicture" 
+              [alt]="user.name" 
+              class="user-avatar-img">
+            
+            <span *ngIf="!user.profilePicture">
+              {{ user.name.charAt(0) }}
+            </span>
+          </div>
         </div>
         <div class="status-dot"></div>
       </div>

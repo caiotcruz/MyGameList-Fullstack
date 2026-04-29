@@ -37,13 +37,19 @@ public class CommunityController {
         List<User> users = userRepository.findAll();
         
         return users.stream()
-                .filter(u -> !u.getId().equals(currentUser.getId())) 
-                .map(u -> {
-                    boolean isFollowing = followRepository.findByFollowerAndFollowed(currentUser, u).isPresent();
-                    
-                    return new UserSummaryDTO(u.getId(), u.getName(), isFollowing);
-                })
-                .collect(Collectors.toList());
+            .filter(u -> !u.getId().equals(currentUser.getId()))
+            .map(u -> {
+                boolean isFollowing = followRepository.findByFollowerAndFollowed(currentUser, u).isPresent();
+                
+                // Passando explicitamente o campo do Model para o DTO
+                return new UserSummaryDTO(
+                    u.getId(), 
+                    u.getName(), 
+                    isFollowing, 
+                    u.getProfilePicture()
+                );
+            })
+            .collect(Collectors.toList());
     }
 
     @GetMapping("/users/{userId}/list")
@@ -75,14 +81,18 @@ public class CommunityController {
         List<User> users = userRepository.findByNameContainingIgnoreCase(name);
 
         return users.stream()
-                .filter(u -> !u.getId().equals(currentUser.getId()))
-                .map(u -> {
-                    boolean isFollowing = followRepository
-                            .findByFollowerAndFollowed(currentUser, u)
-                            .isPresent();
-
-                    return new UserSummaryDTO(u.getId(), u.getName(), isFollowing);
-                })
-                .collect(Collectors.toList());
-    }
+            .filter(u -> !u.getId().equals(currentUser.getId()))
+            .map(u -> {
+                boolean isFollowing = followRepository.findByFollowerAndFollowed(currentUser, u).isPresent();
+                
+                // Passando explicitamente o campo do Model para o DTO
+                return new UserSummaryDTO(
+                    u.getId(), 
+                    u.getName(), 
+                    isFollowing, 
+                    u.getProfilePicture()
+                );
+            })
+            .collect(Collectors.toList());
+            }
 }

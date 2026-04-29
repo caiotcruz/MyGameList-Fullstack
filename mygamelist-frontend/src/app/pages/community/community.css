@@ -110,21 +110,52 @@
   width: 90px;
   height: 90px;
   margin: 0 auto 25px;
+  display: flex; 
+  justify-content: center;
+  align-items: center;
 }
 
 .avatar-glow {
-  width: 100%;
+  width: 100%; 
   height: 100%;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6200ea, #b388ff);
+  background: #050505; 
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
   font-weight: 950;
   color: #fff;
-  border: 4px solid #050505;
-  box-shadow: 0 0 25px rgba(98, 0, 234, 0.4);
+  border: 3px solid #050505; 
+  overflow: hidden;
+  position: relative;
+}
+
+.user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatar-glow span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-outglow-static {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  padding: 3px; 
+  background: conic-gradient(from 180deg, #6200ea, #00e5ff, #9c27b0, #6200ea);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(98, 0, 234, 0.3);
 }
 
 .status-dot {
