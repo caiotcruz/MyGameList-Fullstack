@@ -27,6 +27,10 @@ export class CommunityService {
     return this.http.get<any[]>(`${this.apiUrl}/users/${userId}/list`, this.getHeaders());
   }
 
+  getSuggestions() {
+    return this.http.get<any[]>(`${this.apiUrl}/suggestions`, this.getHeaders());
+  }
+
   getUserListByName(userName: string) {
     return this.http.get<any[]>(`${this.apiUrl}/users/search?name=${userName}`, this.getHeaders());
   }

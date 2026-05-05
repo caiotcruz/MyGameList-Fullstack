@@ -1,5 +1,8 @@
 package com.caiotcruz.mygamelist.controller;
 
+import com.caiotcruz.mygamelist.dto.ApiResponseDTO;
+import com.caiotcruz.mygamelist.dto.MutualFriendDTO;
+import com.caiotcruz.mygamelist.dto.UserSuggestionDTO;
 import com.caiotcruz.mygamelist.dto.UserSummaryDTO;
 import com.caiotcruz.mygamelist.model.User;
 import com.caiotcruz.mygamelist.model.UserGameList;
@@ -94,5 +97,30 @@ public class CommunityController {
                 );
             })
             .collect(Collectors.toList());
-            }
+    }
+
+    @GetMapping("/suggestions")
+    public ResponseEntity<ApiResponseDTO<List<UserSuggestionDTO>>> getSuggestions() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = (User) userRepository.findByEmail(email);
+
+        List<Object[]> results = userRepository.findSuggestionsWithMutualCount(currentUser);
+
+        List<UserSuggestionDTO> suggestions = results.stream().map(result -> {
+            User suggestedUser = (User) result[0]; 
+            Long count = (Long) result[1];      
+
+           List<MutualFriendDTO> mutuals = followRepository.findMutualFollowers(currentUser, suggestedUser);
+
+            return new UserSuggestionDTO(
+                suggestedUser.getId(),
+                suggestedUser.getName(),
+                suggestedUser.getProfilePicture(),
+                mutuals,
+                count
+            );
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(new ApiResponseDTO<>("Sugestões carregadas", suggestions));
+    }
 }

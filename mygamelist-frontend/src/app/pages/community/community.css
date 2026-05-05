@@ -208,6 +208,318 @@
   background: rgba(255, 71, 87, 0.05);
 }
 
+.section-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #6200ea;
+  margin: 30px 0 15px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.suggestions-section {
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.suggestions-premium-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  margin-bottom: 60px;
+}
+
+.premium-suggestion-card {
+  background: linear-gradient(145deg, rgba(98, 0, 234, 0.15), rgba(0, 0, 0, 0.4));
+  border: 1px solid rgba(98, 0, 234, 0.3);
+  border-radius: 24px;
+  padding: 30px 20px;
+  transition: 0.4s;
+  position: relative;
+  overflow: hidden;
+}
+
+.premium-suggestion-card:hover {
+  transform: translateY(-5px);
+  border-color: #6200ea;
+  box-shadow: 0 15px 30px rgba(98, 0, 234, 0.2);
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.avatar-vessel.large {
+  width: 100px;
+  height: 100px;
+}
+
+.avatar-vessel.small {
+  position: absolute;
+  left: -20px; 
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.user-info {
+  text-align: center;
+}
+
+.suggestions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.suggestion-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  padding: 15px 20px !important;
+  gap: 15px;
+  text-align: left !important;
+  border-radius: 20px !important;
+}
+
+.suggestion-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.suggestion-info .user-name {
+  margin: 0;
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mutual-badge {
+  background: rgba(98, 0, 234, 0.2);
+  color: #b388ff;
+  font-size: 0.7rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  display: inline-block;
+  margin: 8px 0;
+}
+
+.mutual-badge-button {
+  background: rgba(98, 0, 234, 0.1);
+  color: #b388ff;
+  font-size: 0.75rem;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0;
+  cursor: pointer;
+  border: 1px solid rgba(98, 0, 234, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mutual-badge-button:hover {
+  background: rgba(98, 0, 234, 0.3);
+  border-color: #6200ea;
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(98, 0, 234, 0.3);
+}
+
+.mutual-badge-button .icon {
+  font-size: 0.9rem;
+}
+
+.mutual-names {
+  font-size: 0.75rem;
+  color: #888;
+  margin: 0;
+}
+
+.mutual-names-info {
+  font-size: 0.7rem;
+  color: #666;
+  margin: 0;
+  pointer-events: none;
+}
+
+.mutual-count {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+.mutual-text {
+  font-size: 0.7rem;
+  color: #666;
+  margin: 4px 0 0;
+}
+
+.mini-avatar {
+  width: 35px;
+  height: 35px;
+  background: #6200ea;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.8rem;
+}
+
+.highlight {
+  color: #b388ff;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.follow-btn-neon.mini {
+  width: auto;
+  padding: 8px 15px;
+  font-size: 0.75rem;
+}
+
+.follow-btn-premium {
+  background: #6200ea;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 14px;
+  font-weight: 800;
+  width: 100%;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.follow-btn-premium.following {
+  background: rgba(255, 255, 255, 0.05);
+  color: #666;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.label-badge {
+  background: #2ed573;
+  color: #000;
+  font-size: 0.6rem;
+  font-weight: 900;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-card {
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  width: 90%;
+  max-width: 380px;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.close-btn:hover { color: #fff; }
+
+.modal-body {
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.friend-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.friend-list-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.avatar-mini {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #222;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #6200ea; 
+}
+
+.friend-name {
+  font-size: 1rem;
+  color: #eee;
+  font-weight: 500;
+}
+
 @media (max-width: 900px) {
   .community-page-wrapper { padding: 40px 20px 80px 20px; }
   .community-header { flex-direction: column; align-items: stretch; gap: 30px; }

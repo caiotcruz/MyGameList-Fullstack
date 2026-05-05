@@ -21,6 +21,50 @@
     </div>
   </header>
 
+  <section class="suggestions-section" *ngIf="suggestions.length > 0 && !searchQuery">
+      <div class="section-header">
+        <h2 class="section-label">Pessoas que você talvez conheça</h2>
+        <span class="label-badge">RECOMENDADO</span>
+      </div>
+
+      <div class="suggestions-premium-grid">
+        <div class="premium-suggestion-card" *ngFor="let user of suggestions" (click)="verPerfil(user.id)">
+          <div class="card-content">
+            <div class="avatar-vessel large">
+              <div class="avatar-outglow-static">
+                <div class="avatar-glow">
+                  <img *ngIf="user.profilePicture" [src]="user.profilePicture" class="user-avatar-img">
+                  <span *ngIf="!user.profilePicture">{{ user.name.charAt(0) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="user-info">
+              <h3 class="user-name">{{ user.name }}</h3>
+              
+              <div class="mutual-badge-button" 
+                  *ngIf="user.mutualCount > 0" 
+                  (click)="abrirModalMutual(user, $event)">
+                <span class="icon">👥</span>
+                {{ user.mutualCount }} {{ user.mutualCount === 1 ? 'amigo' : 'amigos' }} em comum
+              </div>
+
+              <p class="mutual-names-info" *ngIf="user.mutualCount > 0">
+                Seguido por {{ user.mutualFriends[0]?.name }}
+                <span *ngIf="user.mutualCount > 1">e outros</span>
+              </p>
+            </div>
+
+            <button class="follow-btn-premium" (click)="toggleFollow(user, $event)" [class.following]="user.isFollowing">
+              {{ user.isFollowing ? 'Seguindo' : 'Seguir' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <h2 class="section-label" *ngIf="!searchQuery && users.length > 0">Explorar Comunidade</h2>
+
   <main class="users-grid" *ngIf="users.length > 0">
     <div class="user-card-glass" 
          *ngFor="let user of users" 
@@ -57,5 +101,35 @@
   <div class="empty-state-vibe" *ngIf="users.length === 0 && !isLoading">
     <div class="empty-icon">🛸</div>
     <p>Nenhum explorador encontrado no radar.</p>
+  </div>
+</div>
+
+
+<div class="modal-overlay" *ngIf="isModalOpen" (click)="isModalOpen = false">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    
+    <div class="modal-header">
+      <h3 class="modal-title">Conexões com {{ selectedUserName }}</h3>
+      <button class="close-btn" (click)="isModalOpen = false">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div 
+        class="friend-list-item"
+        *ngFor="let friend of selectedMutuals"
+        (click)="verPerfilDesdeModal(friend.id)">
+
+        <!-- Avatar compacto e centralizado -->
+        <div class="avatar-mini">
+          <img *ngIf="friend.profilePicture" [src]="friend.profilePicture" class="avatar-img">
+          <div *ngIf="!friend.profilePicture" class="avatar-placeholder">
+            {{ friend.name.charAt(0) }}
+          </div>
+        </div>
+
+        <span class="friend-name">{{ friend.name }}</span>
+      </div>
+    </div>
+
   </div>
 </div>
