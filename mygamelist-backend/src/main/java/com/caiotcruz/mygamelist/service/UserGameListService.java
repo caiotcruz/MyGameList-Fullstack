@@ -66,27 +66,22 @@ public class UserGameListService {
 
         if (isNew) {
             saveActivity(user, game, ActivityType.ADDED_TO_LIST, null);
-        }
+        } 
 
         boolean statusMudou = dto.status() != null && oldStatus != dto.status();
-        boolean statusRelevante = !isNew || (dto.status() != GameStatus.PLAN_TO_PLAY);
-        
-        if (statusMudou && statusRelevante) {
+        if (statusMudou) {
             saveActivity(user, game, ActivityType.CHANGED_STATUS, dto.status().toString());
         }
-        
-        if (dto.score() != null) {
 
-            boolean novaNotaValida = dto.score() > 0;
+        if (dto.score() != null && dto.score() > 0) {
             boolean notaMudou = !dto.score().equals(oldScore);
-
-            if (novaNotaValida && notaMudou) {
+            if (notaMudou) {
                 saveActivity(user, game, ActivityType.RATED, String.valueOf(dto.score()));
             }
         }
-        
+
         if (dto.review() != null && !dto.review().isEmpty() && !dto.review().equals(oldReview)) {
-            saveActivity(user, game, ActivityType.REVIEWED, null);
+            saveActivity(user, game, ActivityType.REVIEWED, dto.review());
         }
 
         return savedItem;
