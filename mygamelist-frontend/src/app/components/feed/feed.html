@@ -1,18 +1,40 @@
 <div class="activities-wrapper">
-  <div *ngFor="let item of activities" class="activity-card-glass">
-    
+  <div class="activity-card-glass" *ngFor="let item of activities">
+  
     <div class="game-cover-wrapper">
-      <img [src]="item.game.coverUrl" alt="Capa" class="game-cover" [routerLink]="['/game', item.game.rawgId]">
-      <div class="rating-badge" *ngIf="item.type === 'RATED'">{{ item.detail }}</div>
+      <img [src]="item.game.coverUrl" class="game-cover" [routerLink]="['/game', item.game.rawgId]">
+      
+      <div class="rating-badge" *ngIf="item.ratingForBadge || item.type === 'RATED'">
+        {{ item.ratingForBadge || item.detail }}
+      </div>
     </div>
 
     <div class="activity-body">
       <div class="activity-info">
         <p class="activity-text">
           <span class="user-link" [routerLink]="['/profile', item.user.id]">{{ item.user.name }}</span>
-          <span class="action-tag">{{ getActionText(item.type) }}</span>
+          
+          <span class="action-tag">
+            {{ hasAction(item, 'ADDED_TO_LIST') ? 'adicionou à biblioteca' : getActionText(item.type) }}
+          </span>
+
           <span class="game-link" [routerLink]="['/game', item.game.rawgId]">{{ item.game.title }}</span>
         </p>
+
+        <div class="combo-details">
+          <span class="mini-tag status" *ngIf="hasAction(item, 'CHANGED_STATUS')">
+            {{ formatStatus(getActionDetail(item, 'CHANGED_STATUS')) }}
+          </span>
+          
+          <span class="mini-tag review" *ngIf="item.fullReview || hasAction(item, 'REVIEWED')">
+            📝 Review
+          </span>
+        </div>
+
+        <div class="post-review-content" *ngIf="item.fullReview">
+          <p class="review-text-bubble">"{{ item.fullReview }}"</p>
+        </div>
+
         <span class="activity-time">{{ item.timestamp | date:'dd MMM • HH:mm' }}</span>
       </div>
 
@@ -40,9 +62,5 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <div *ngIf="activities.length === 0" class="empty-state-glass">
-    <p>O feed está vazio. Comece uma nova jornada! 🎮</p>
   </div>
 </div>

@@ -106,6 +106,62 @@
   transition: 0.2s;
 }
 
+.combo-details {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.mini-tag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: rgba(98, 0, 234, 0.1);
+  border: 1px solid rgba(98, 0, 234, 0.2);
+  color: #b388ff;
+  letter-spacing: 0.5px;
+}
+
+.mini-tag.review {
+  background: rgba(0, 255, 136, 0.05);
+  border-color: rgba(0, 255, 136, 0.2);
+  color: #00ff88;
+}
+
+.activity-time {
+  display: block;
+  margin-top: 5px;
+}
+
+.post-review-content {
+  margin: 12px 0;
+  padding-left: 15px;
+  border-left: 2px solid rgba(98, 0, 234, 0.4);
+}
+
+.review-text-bubble {
+  font-style: italic;
+  color: #aaa;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.combo-details {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+  flex-wrap: wrap;
+}
+
+.mini-tag.score {
+  background: rgba(255, 202, 40, 0.05);
+  border-color: rgba(255, 202, 40, 0.2);
+  color: #ffca28;
+}
+
 .comment-input-box button:hover { background: #7c4dff; transform: scale(1.05); }
 
 .empty-state-glass { text-align: center; padding: 40px; color: #444; border: 2px dashed rgba(255,255,255,0.05); border-radius: 20px; }

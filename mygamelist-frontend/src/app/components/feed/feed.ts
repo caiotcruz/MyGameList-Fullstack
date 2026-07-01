@@ -6,6 +6,18 @@ import { CommunityService } from '../../services/community';
 import { Activity } from '../../models/activity.model';
 import { RouterModule } from '@angular/router';
 
+export interface GroupedActivity {
+  id: number;
+  user: any;
+  game: any;
+  timestamp: any;
+  types: string[];
+  details: { [key: string]: string }; 
+  likes: any[];
+  comments: any[];
+  showComments?: boolean;
+}
+
 @Component({
   selector: 'app-feed',
   standalone: true,
@@ -23,17 +35,45 @@ export class Feed implements OnInit {
 
   ngOnInit() {
     this.myId = Number(localStorage.getItem('userId'));
-
     this.activityService.getFeed().subscribe({
       next: (data) => {
-        this.activities = data;
+        this.activities = this.groupActivities(data);
         this.cdr.detectChanges(); 
-      },
-      error: (err) => console.error('Erro ao carregar feed', err)
+      }
     });
   }
 
+  groupActivities(data: any[]): any[] {
+  const grouped: any[] = [];
+  
+  data.forEach(activity => {
+    const existing = grouped.find(g => 
+      g.user.id === activity.user.id && 
+      g.game.rawgId === activity.game.rawgId &&
+      Math.abs(new Date(g.timestamp).getTime() - new Date(activity.timestamp).getTime()) < 10000
+    );
 
+    if (existing) {
+      existing.allActions.push({ type: activity.type, detail: activity.detail });
+      
+      if (activity.type === 'RATED') {
+        existing.ratingForBadge = activity.detail;
+      }
+      if (activity.type === 'REVIEWED') {
+        existing.fullReview = activity.detail;
+      }
+    } else {
+      grouped.push({
+        ...activity,
+        allActions: [{ type: activity.type, detail: activity.detail }],
+        ratingForBadge: activity.type === 'RATED' ? activity.detail : null,
+        fullReview: activity.type === 'REVIEWED' ? activity.detail : null,
+        showComments: false 
+      });
+    }
+  });
+  return grouped;
+}
   isLikedByMe(item: any): boolean {
     if (!item.likes) return false;
     return item.likes.some((l: any) => l.user.id === this.myId);
@@ -77,6 +117,14 @@ export class Feed implements OnInit {
     });
   }
 
+  hasAction(item: any, type: string): boolean {
+    return item.allActions?.some((a: any) => a.type === type);
+  }
+
+  getActionDetail(item: any, type: string): string {
+    const action = item.allActions?.find((a: any) => a.type === type);
+    return action ? action.detail : '';
+  }
 
   getActionText(type: string): string {
     switch(type) {
@@ -86,6 +134,11 @@ export class Feed implements OnInit {
       case 'REVIEWED': return 'fez uma review de';
       default: return 'atualizou';
     }
+  }
+
+  formatStatus(status: string): string {
+    if (!status) return '';
+    return status.replace(/_/g, ' ').toLowerCase();
   }
   
   formatDetail(type: string, detail: string): string {
