@@ -25,6 +25,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password; 
 
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Column(length = 500) 
@@ -32,6 +33,8 @@ public class User implements UserDetails {
     
     @Column(columnDefinition = "TEXT") 
     private String profilePicture;
+
+    private boolean rotatingAvatar = false;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -44,11 +47,8 @@ public class User implements UserDetails {
     @Override
     public String getPassword() { return password; }
 
-    public String getBio() { return bio; }
-    public void setBio(String bio) { this.bio = bio; }
-
-    public String getProfilePicture() { return profilePicture; }
-    public void setProfilePicture(String profilePicture) { this.profilePicture = profilePicture; }
+    public boolean isRotatingAvatar() { return rotatingAvatar; }
+    public void setRotatingAvatar(boolean rotatingAvatar) { this.rotatingAvatar = rotatingAvatar; }
 
     private boolean enabled = false;
     private String verificationCode;
@@ -60,6 +60,7 @@ public class User implements UserDetails {
     public boolean isAccountNonLocked() { return true; }
     @Override
     public boolean isCredentialsNonExpired() { return true; }
+    
     @Override
     public boolean isEnabled() {
         return this.enabled;

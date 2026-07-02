@@ -1,7 +1,6 @@
 package com.caiotcruz.mygamelist.controller;
 
 import com.caiotcruz.mygamelist.service.UserFollowService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,17 +8,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users")
 public class UserFollowController {
 
-    @Autowired
-    private UserFollowService followService;
+    private final UserFollowService followService;
+
+    public UserFollowController(UserFollowService followService) {
+        this.followService = followService;
+    }
 
     @PostMapping("/{id}/follow")
-    public ResponseEntity follow(@PathVariable Long id) {
+    public ResponseEntity<Void> follow(@PathVariable Long id) {
         followService.followUser(id);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}/unfollow")
-    public ResponseEntity unfollow(@PathVariable Long id) {
+    public ResponseEntity<Void> unfollow(@PathVariable Long id) {
         followService.unfollowUser(id);
         return ResponseEntity.ok().build();
     }

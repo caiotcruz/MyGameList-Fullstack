@@ -16,7 +16,8 @@ import com.caiotcruz.mygamelist.repository.ReviewVoteRepository;
 import com.caiotcruz.mygamelist.repository.UserGameListRepository;
 import com.caiotcruz.mygamelist.repository.UserRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -26,23 +27,24 @@ import java.util.Optional;
 @Service
 public class GameService {
 
-    @Autowired
-    private GameRepository gameRepository;
+    private static final Logger log = LoggerFactory.getLogger(GameService.class);
 
-    @Autowired
-    private UserGameListRepository userGameListRepository; 
-
-    @Autowired
-    private RawgClient rawgClient;
-
-    @Autowired 
-    private ReviewVoteRepository reviewVoteRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final GameRepository gameRepository;
+    private final UserGameListRepository userGameListRepository; 
+    private final RawgClient rawgClient;
+    private final ReviewVoteRepository reviewVoteRepository;
+    private final UserRepository userRepository;
 
     @Value("${api.rawg.key}")
     private String apiKey;
+
+    public GameService(GameRepository gameRepository, UserGameListRepository userGameListRepository, RawgClient rawgClient, ReviewVoteRepository reviewVoteRepository, UserRepository userRepository) {
+        this.gameRepository = gameRepository;
+        this.userGameListRepository = userGameListRepository;
+        this.rawgClient = rawgClient;
+        this.reviewVoteRepository = reviewVoteRepository;
+        this.userRepository = userRepository;
+    }
 
     public List<GameResultDTO> searchGames(String query, Integer page) {
         int pageNumber = (page != null && page > 0) ? page : 1;
@@ -52,7 +54,7 @@ public class GameService {
     public Game getGameContent(Long rawgId) {
         return gameRepository.findByRawgId(rawgId)
                 .orElseGet(() -> {
-                    System.out.println("🔍 Jogo não encontrado no DB. Buscando na RAWG API: " + rawgId);
+                    log.info("🔍 Jogo não encontrado no DB. Buscando na RAWG API: {}", rawgId);
                     GameDetailsDTO externalGame = rawgClient.getGameDetails(apiKey, rawgId);
 
                     Game newGame = new Game();
@@ -92,43 +94,59 @@ public class GameService {
     }
 
     public GameHubDTO getGameHubData(Long rawgId, Long currentUserId) {
-        
         Game game = getGameContent(rawgId);
         Long internalId = game.getId();
 
+        GameStats stats = loadStatistics(internalId);
+        UserGameEntry myEntry = loadMyEntry(internalId, currentUserId);
+        List<GameReviewDTO> reviews = loadReviews(internalId, currentUserId);
+
+        return new GameHubDTO(
+                internalId,
+                rawgId,
+                game.getTitle(),
+                game.getCoverUrl(),
+                stats.totalPlayers(),
+                stats.playingCount(),
+                stats.completedCount(),
+                stats.platinumCount(),
+                stats.avgScore(),
+                myEntry.status(),
+                myEntry.score(),
+                myEntry.favorite(),
+                reviews
+        );
+    }
+
+    private GameStats loadStatistics(Long internalId) {
         long totalPlayers = userGameListRepository.countPlayersByGameId(internalId);
         long playingCount = userGameListRepository.countByGameIdAndStatus(internalId, GameStatus.PLAYING);
         long completedCount = userGameListRepository.countByGameIdAndStatus(internalId, GameStatus.COMPLETED);
         long platinumCount = userGameListRepository.countByGameIdAndStatus(internalId, GameStatus.PLATINUM);
         Double avgScore = userGameListRepository.getAverageScoreByGameId(internalId);
+        
+        return new GameStats(totalPlayers, playingCount, completedCount, platinumCount, avgScore != null ? avgScore : 0.0);
+    }
 
-        String myStatus = null;
-        Integer myScore = 0;
-        boolean myFavorite = false;
-
-        if (currentUserId != null) {
-            Optional<UserGameList> myEntry = userGameListRepository.findByUserIdAndGameId(currentUserId, internalId);
-            if (myEntry.isPresent()) {
-                myStatus = myEntry.get().getStatus().name();
-                myScore = myEntry.get().getScore();
-                myFavorite = myEntry.get().isFavorite();
-            }
+    private UserGameEntry loadMyEntry(Long internalId, Long currentUserId) {
+        if (currentUserId == null) {
+            return new UserGameEntry(null, 0, false);
         }
 
+        return userGameListRepository.findByUserIdAndGameId(currentUserId, internalId)
+                .map(entry -> new UserGameEntry(entry.getStatus().name(), entry.getScore(), entry.isFavorite()))
+                .orElseGet(() -> new UserGameEntry(null, 0, false));
+    }
+
+    private List<GameReviewDTO> loadReviews(Long internalId, Long currentUserId) {
         List<UserGameList> reviewEntities = userGameListRepository.findReviewsByGameId(internalId);
 
-        List<GameReviewDTO> reviews = reviewEntities.stream().map(r -> {
+        return reviewEntities.stream().map(r -> {
             long likes = reviewVoteRepository.countByReviewAndType(r, VoteType.LIKE);
             long dislikes = reviewVoteRepository.countByReviewAndType(r, VoteType.DISLIKE);
-            
             int karmaScore = (int) ((likes * 2) - dislikes);
             
-            String myVote = null;
-            if (currentUserId != null) {
-                var userObj = new User(); userObj.setId(currentUserId);
-                var vote = reviewVoteRepository.findByUserAndReview(userObj, r);
-                if (vote.isPresent()) myVote = vote.get().getType().name();
-            }
+            String myVote = loadUserVoteForReview(r, currentUserId);
 
             return new GameReviewDTO(
                 r.getId(),
@@ -142,24 +160,34 @@ public class GameService {
                 karmaScore,
                 myVote
             );
-        }).sorted((r1, r2) -> Integer.compare(r2.voteScore(), r1.voteScore()))
+        })
+        .sorted((r1, r2) -> Integer.compare(r2.voteScore(), r1.voteScore()))
         .limit(10)
         .toList();
-
-        return new GameHubDTO(
-                internalId,
-                rawgId,
-                game.getTitle(),
-                game.getCoverUrl(),
-                totalPlayers,
-                playingCount,
-                completedCount,
-                platinumCount,
-                avgScore != null ? avgScore : 0.0,
-                myStatus,
-                myScore,
-                myFavorite,
-                reviews
-        );
     }
+
+    private String loadUserVoteForReview(UserGameList review, Long currentUserId) {
+        if (currentUserId == null) {
+            return null;
+        }
+        var userObj = new User(); 
+        userObj.setId(currentUserId);
+        return reviewVoteRepository.findByUserAndReview(userObj, review)
+                .map(vote -> vote.getType().name())
+                .orElse(null);
+    }
+
+    private record GameStats(
+        long totalPlayers, 
+        long playingCount, 
+        long completedCount, 
+        long platinumCount, 
+        double avgScore
+    ) {}
+
+    private record UserGameEntry(
+        String status, 
+        Integer score, 
+        boolean favorite
+    ) {}
 }

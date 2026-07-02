@@ -6,7 +6,6 @@ import com.caiotcruz.mygamelist.model.Game;
 import com.caiotcruz.mygamelist.model.User;
 import com.caiotcruz.mygamelist.repository.UserRepository;
 import com.caiotcruz.mygamelist.service.GameService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +16,13 @@ import java.util.List;
 @RequestMapping("/games")
 public class GameController {
 
-    @Autowired
-    private GameService gameService;
+    private final GameService gameService;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    public GameController(GameService gameService, UserRepository userRepository) {
+        this.gameService = gameService;
+        this.userRepository = userRepository;
+    }
 
     @GetMapping("/search")
     public List<GameResultDTO> search(

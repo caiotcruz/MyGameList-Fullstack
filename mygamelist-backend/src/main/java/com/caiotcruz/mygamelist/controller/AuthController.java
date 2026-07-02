@@ -18,10 +18,8 @@ import jakarta.validation.Valid;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,20 +36,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    
-    @Autowired
-    private UserRepository userRepository;
-    
-    @Autowired
-    private TokenService tokenService;
-    
-    @Autowired
-    private UserFollowRepository followRepository;
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final TokenService tokenService;
+    private final UserFollowRepository followRepository;
+    private final EmailService emailService;
 
-    @Autowired
-    private EmailService emailService;
+    public AuthController( AuthenticationManager authenticationManager, UserRepository userRepository, TokenService tokenService, UserFollowRepository followRepository, EmailService emailService) {
+
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.tokenService = tokenService;
+        this.followRepository = followRepository;
+        this.emailService = emailService;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponseDTO<LoginResponseDTO>> login(@RequestBody @Valid LoginDTO data) {
@@ -155,11 +153,10 @@ public class AuthController {
         User user = (User) userRepository.findByEmail(data.email());
         
         if (user != null) {
-            // Geramos um token longo e único
             String token = java.util.UUID.randomUUID().toString();
             
-            user.setVerificationCode(token); // Reutilizamos a coluna, mas agora com o UUID
-            user.setVerificationExpiry(LocalDateTime.now().plusHours(1)); // Tokens de link costumam durar mais (ex: 1h)
+            user.setVerificationCode(token); 
+            user.setVerificationExpiry(LocalDateTime.now().plusHours(1)); 
             userRepository.save(user);
             
             try {
@@ -182,7 +179,7 @@ public class AuthController {
             
             String encryptedPassword = new BCryptPasswordEncoder().encode(data.newPassword());
             user.setPassword(encryptedPassword);
-            user.setVerificationCode(null); // Limpa o código
+            user.setVerificationCode(null);
             userRepository.save(user);
 
             return ResponseEntity.ok(new ApiResponseDTO<>("Senha alterada com sucesso!", null));
@@ -203,7 +200,6 @@ public class AuthController {
                     .findByFollowerAndFollowed(currentUser, u)
                     .isPresent();
 
-                // Agora passando o 4º parâmetro: imageUrl
                 return new UserSummaryDTO(u.getId(), u.getName(), isFollowing, u.getProfilePicture());
             })
             .collect(Collectors.toList());

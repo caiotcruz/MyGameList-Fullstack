@@ -3,10 +3,12 @@ package com.caiotcruz.mygamelist.model;
 import com.caiotcruz.mygamelist.model.enums.VoteType;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "tb_review_votes", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"user_id", "review_id"}) // Um voto por pessoa por review
+    @UniqueConstraint(columnNames = {"user_id", "review_id"})
 })
 public class ReviewVote {
 
@@ -19,13 +21,12 @@ public class ReviewVote {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "review_id") // A review é representada pelo UserGameList
+    @JoinColumn(name = "review_id") 
     private UserGameList review;
 
     @Enumerated(EnumType.STRING)
-    private VoteType type; // LIKE ou DISLIKE
+    private VoteType type; 
 
-    // Construtores, Getters e Setters
     public ReviewVote() {}
 
     public ReviewVote(User user, UserGameList review, VoteType type) {
@@ -34,11 +35,4 @@ public class ReviewVote {
         this.type = type;
     }
 
-    public Long getId() { return id; }
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
-    public UserGameList getReview() { return review; }
-    public void setReview(UserGameList review) { this.review = review; }
-    public VoteType getType() { return type; }
-    public void setType(VoteType type) { this.type = type; }
 }

@@ -1,6 +1,5 @@
 package com.caiotcruz.mygamelist.repository;
 
-import com.caiotcruz.mygamelist.dto.GameReviewDTO;
 import com.caiotcruz.mygamelist.model.Game;
 import com.caiotcruz.mygamelist.model.User;
 import com.caiotcruz.mygamelist.model.UserGameList;

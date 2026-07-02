@@ -1,8 +1,11 @@
 package com.caiotcruz.mygamelist.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "tb_comments")
 public class Comment {
@@ -31,13 +34,4 @@ public class Comment {
         this.user = user;
         this.activity = activity;
     }
-
-    public Long getId() { return id; }
-    public String getText() { return text; }
-    public void setText(String text) { this.text = text; }
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
-    public Activity getActivity() { return activity; }
-    public void setActivity(Activity activity) { this.activity = activity; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
 }

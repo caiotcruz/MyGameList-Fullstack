@@ -1,10 +1,13 @@
 package com.caiotcruz.mygamelist.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
 import com.caiotcruz.mygamelist.model.enums.NotificationType;
 
+@Data
 @Entity
 @Table(name = "tb_notifications")
 public class Notification {
@@ -39,17 +42,4 @@ public class Notification {
         this.type = type;
         this.activity = activity;
     }
-
-    public Long getId() { return id; }
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
-    public User getActor() { return actor; }
-    public void setActor(User actor) { this.actor = actor; }
-    public NotificationType getType() { return type; }
-    public void setType(NotificationType type) { this.type = type; }
-    public Activity getActivity() { return activity; }
-    public void setActivity(Activity activity) { this.activity = activity; }
-    public boolean isRead() { return isRead; }
-    public void setRead(boolean read) { isRead = read; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
 }

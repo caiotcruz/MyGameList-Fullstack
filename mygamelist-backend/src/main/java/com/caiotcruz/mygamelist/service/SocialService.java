@@ -3,7 +3,6 @@ package com.caiotcruz.mygamelist.service;
 import com.caiotcruz.mygamelist.dto.CommentDTO;
 import com.caiotcruz.mygamelist.model.*;
 import com.caiotcruz.mygamelist.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.caiotcruz.mygamelist.model.enums.NotificationType;
@@ -13,16 +12,24 @@ import java.util.Optional;
 @Service
 public class SocialService {
 
-    @Autowired
-    private ActivityLikeRepository likeRepository;
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private ActivityRepository activityRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private NotificationService notificationService;
+    private final ActivityLikeRepository likeRepository;
+    private final CommentRepository commentRepository;
+    private final ActivityRepository activityRepository;
+    private final UserRepository userRepository;
+    private final NotificationService notificationService;
+
+    public SocialService(ActivityLikeRepository likeRepository,
+                         CommentRepository commentRepository,
+                         ActivityRepository activityRepository,
+                         UserRepository userRepository,
+                         NotificationService notificationService) {
+        this.likeRepository = likeRepository;
+        this.commentRepository = commentRepository;
+        this.activityRepository = activityRepository;
+        this.userRepository = userRepository;
+        this.notificationService = notificationService;
+    }
+
 
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();

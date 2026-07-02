@@ -9,7 +9,6 @@ import com.caiotcruz.mygamelist.model.UserGameList;
 import com.caiotcruz.mygamelist.repository.UserFollowRepository; 
 import com.caiotcruz.mygamelist.repository.UserGameListRepository;
 import com.caiotcruz.mygamelist.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder; 
 import org.springframework.web.bind.annotation.*;
@@ -23,14 +22,17 @@ import java.util.stream.Collectors;
 @RequestMapping("/community")
 public class CommunityController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final UserGameListRepository listRepository;
+    private final UserFollowRepository followRepository;
 
-    @Autowired
-    private UserGameListRepository listRepository;
-
-    @Autowired
-    private UserFollowRepository followRepository; 
+    public CommunityController(UserRepository userRepository, 
+                               UserGameListRepository listRepository, 
+                               UserFollowRepository followRepository) {
+        this.userRepository = userRepository;
+        this.listRepository = listRepository;
+        this.followRepository = followRepository;
+    }
 
     @GetMapping("/users")
     public List<UserSummaryDTO> getAllUsers() {

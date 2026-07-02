@@ -3,7 +3,6 @@ package com.caiotcruz.mygamelist.controller;
 import com.caiotcruz.mygamelist.dto.UserProfileDTO;
 import com.caiotcruz.mygamelist.model.User;
 import com.caiotcruz.mygamelist.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +13,11 @@ import java.util.Optional;
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         Optional<User> user = userRepository.findById(id);

@@ -4,7 +4,6 @@ import com.caiotcruz.mygamelist.model.Notification;
 import com.caiotcruz.mygamelist.model.User;
 import com.caiotcruz.mygamelist.repository.UserRepository;
 import com.caiotcruz.mygamelist.service.NotificationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,10 +13,13 @@ import java.util.List;
 @RequestMapping("/notifications")
 public class NotificationController {
 
-    @Autowired
-    private NotificationService notificationService;
-    @Autowired
-    private UserRepository userRepository;
+    private final NotificationService notificationService;
+    private final UserRepository userRepository;
+
+    public NotificationController(NotificationService notificationService, UserRepository userRepository) {
+        this.notificationService = notificationService;
+        this.userRepository = userRepository;
+    }
 
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();

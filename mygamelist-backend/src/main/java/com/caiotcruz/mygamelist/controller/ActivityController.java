@@ -8,7 +8,6 @@ import com.caiotcruz.mygamelist.repository.ActivityRepository;
 import com.caiotcruz.mygamelist.repository.UserRepository;
 import com.caiotcruz.mygamelist.service.SocialService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,13 +23,19 @@ import java.util.List;
 @RequestMapping("/community/activities")
 public class ActivityController {
 
-    @Autowired
-    private ActivityRepository activityRepository;
-    @Autowired
-    private UserRepository userRepository;
+    private final ActivityRepository activityRepository;
+    private final UserRepository userRepository;
+    private final SocialService socialService;
 
-    @Autowired
-    private SocialService socialService;
+    public ActivityController(
+            ActivityRepository activityRepository,
+            UserRepository userRepository,
+            SocialService socialService) {
+
+        this.activityRepository = activityRepository;
+        this.userRepository = userRepository;
+        this.socialService = socialService;
+    }
 
     @GetMapping
     public List<Activity> getMyFeed() {

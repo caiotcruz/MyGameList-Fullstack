@@ -1,13 +1,11 @@
 package com.caiotcruz.mygamelist.infra.security;
 
-import com.caiotcruz.mygamelist.repository.UserRepository;
 import com.caiotcruz.mygamelist.service.AuthorizationService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,14 +22,14 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityFilter.class);
 
-    @Autowired
-    TokenService tokenService;
+    private final TokenService tokenService;
+    private final AuthorizationService authorizationService;
 
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    AuthorizationService authorizationService;
+    public SecurityFilter(TokenService tokenService, 
+                          AuthorizationService authorizationService) {
+        this.tokenService = tokenService;
+        this.authorizationService = authorizationService;
+    }
 
     @Override
     protected void doFilterInternal(

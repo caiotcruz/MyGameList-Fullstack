@@ -3,7 +3,6 @@ package com.caiotcruz.mygamelist.controller;
 import com.caiotcruz.mygamelist.dto.AddGameDTO;
 import com.caiotcruz.mygamelist.model.UserGameList;
 import com.caiotcruz.mygamelist.service.UserGameListService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,8 +11,11 @@ import java.util.List;
 @RequestMapping("/my-games")
 public class MyListController {
 
-    @Autowired
-    private UserGameListService listService;
+    private final UserGameListService listService;
+
+    public MyListController(UserGameListService listService) {
+        this.listService = listService;
+    }
 
     @PostMapping
     public UserGameList addGame(@RequestBody AddGameDTO dto) {

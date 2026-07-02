@@ -38,6 +38,4 @@ public class UserGameList {
 
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    public boolean isFavorite() { return isFavorite; }
-    public void setFavorite(boolean favorite) { isFavorite = favorite; }
 }

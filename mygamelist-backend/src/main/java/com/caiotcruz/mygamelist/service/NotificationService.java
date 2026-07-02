@@ -3,7 +3,6 @@ package com.caiotcruz.mygamelist.service;
 import com.caiotcruz.mygamelist.model.*;
 import com.caiotcruz.mygamelist.model.enums.NotificationType;
 import com.caiotcruz.mygamelist.repository.NotificationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,8 +10,11 @@ import java.util.List;
 @Service
 public class NotificationService {
 
-    @Autowired
-    private NotificationRepository notificationRepository;
+    private final NotificationRepository notificationRepository;
+
+    public NotificationService(NotificationRepository notificationRepository) {
+        this.notificationRepository = notificationRepository;
+    }
 
     public void send(User recipient, User actor, NotificationType type, Activity activity) {
         if (recipient.getId().equals(actor.getId())) {
