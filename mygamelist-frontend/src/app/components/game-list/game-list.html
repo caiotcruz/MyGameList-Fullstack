@@ -6,7 +6,7 @@
     
     <div class="header-info-group">
       <button class="btn-reset-sort" *ngIf="sortColumn" (click)="limparOrdenacao()">
-        ✕ Ordem Padrão
+        <span class="fa-solid fa-xmark"></span> Ordem Padrão
       </button>
 
       <div class="header-col sortable" (click)="ordenar('status')">
@@ -27,14 +27,20 @@
       <div class="card-left">
         <div class="poster-vessel">
           <img [src]="item.game.coverUrl || item.game.background_image">
-          <div class="fav-icon" *ngIf="item.favorite">★</div>
+          <div class="fav-icon" *ngIf="item.favorite">
+            <span class="fa-solid fa-star"></span>
+          </div>
         </div>
         <div class="game-info-vessel">
           <h4>{{ item.game.title }}</h4>
           <div class="game-meta-pills">
             <span class="status-pill" [style.border-color]="getStatusColor(item.status)">{{ item.status }}</span>
-            <span class="score-pill" *ngIf="item.score > 0">⭐ {{ item.score }}</span>
-            <button class="review-pill-btn" *ngIf="item.review" (click)="lerReview(item, $event)">📝 Ver Review</button>
+            <span class="score-pill" *ngIf="item.score > 0">
+              <span class="fa-solid fa-star text-warning"></span> {{ item.score }}
+            </span>
+            <button class="review-pill-btn" *ngIf="item.review" (click)="lerReview(item, $event)">
+              <span class="fa-solid fa-file-lines"></span> Ver Review
+            </button>
           </div>
         </div>
       </div>
@@ -44,23 +50,31 @@
                 (click)="toggleFavorite(item, $event)" 
                 [class.active]="item.favorite" 
                 type="button"
-                title="Favoritar">★</button>
+                title="Favoritar">
+          <span class="fa-solid fa-star"></span>
+        </button>
         
         <button class="action-trigger" 
                 (click)="abrirEdicao(item, $event)" 
                 type="button"
-                title="Editar entrada">✏️</button>
+                title="Editar entrada">
+          <span class="fa-solid fa-pen"></span>
+        </button>
         
         <button class="action-trigger del" 
                 (click)="removerJogo(item, $event)" 
                 type="button"
-                title="Remover da lista">🗑️</button>
+                title="Remover da lista">
+          <span class="fa-solid fa-trash"></span>
+        </button>
       </div>
     </div>
   </div>
 
   <div *ngIf="games.length === 0" class="empty-list-vibe">
-    <div class="empty-icon">🎮</div>
+    <div class="empty-icon">
+      <span class="fa-solid fa-gamepad"></span>
+    </div>
     <p>Nenhum jogo encontrado nesta jornada.</p>
   </div>
 
@@ -68,7 +82,9 @@
     <div class="modal-glass-card review-modal">
       <div class="review-header-pop">
         <h3>{{ reviewSelecionada.title }}</h3>
-        <span class="score-pop">⭐ {{ reviewSelecionada.score }}/10</span>
+        <span class="score-pop">
+          <span class="fa-solid fa-star"></span> {{ reviewSelecionada.score }}/10
+        </span>
       </div>
       <div class="review-body-pop">
         <p>{{ reviewSelecionada.text }}</p>
@@ -87,7 +103,7 @@
           <select [(ngModel)]="editingGame.status">
             <option value="PLAYING">Jogando</option>
             <option value="COMPLETED">Zerado</option>
-            <option value="PLATINUM">Platinado 🏆</option>
+            <option value="PLATINUM">Platinado</option>
             <option value="PLAN_TO_PLAY">Planejo Jogar</option>
             <option value="DROPPED">Larguei</option>
           </select>
@@ -115,7 +131,9 @@
 
   <div class="modal-blur" *ngIf="gameParaRemover" (click)="cancelarRemocao()">
     <div class="modal-glass-card confirm-modal" (click)="$event.stopPropagation()">
-      <div class="confirm-icon">⚠️</div>
+      <div class="confirm-icon">
+        <span class="fa-solid fa-triangle-exclamation"></span>
+      </div>
       <h3 class="modal-title">Remover Jogo?</h3>
       <p class="confirm-text">
         Você tem certeza que deseja remover <strong>{{ gameParaRemover.game.title }}</strong> da sua coleção? 
@@ -128,5 +146,4 @@
       </div>
     </div>
   </div>
-
 </div>

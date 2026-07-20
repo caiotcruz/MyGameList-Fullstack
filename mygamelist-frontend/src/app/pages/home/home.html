@@ -16,7 +16,9 @@
     <section class="bento-grid">
       <div class="bento-item main-cta" routerLink="/search">
         <div class="bento-content">
-          <span class="bento-icon">🔍</span>
+          <span class="bento-icon">
+            <span class="fa-solid fa-magnifying-glass"></span>
+          </span>
           <div class="text">
             <h3>Explorar Biblioteca</h3>
             <p>Descubra seu próximo jogo favorito.</p>
@@ -25,13 +27,17 @@
       </div>
 
       <div class="bento-item profile-card" [routerLink]="['/profile', myId]">
-        <span class="bento-icon">👤</span>
+        <span class="bento-icon">
+          <span class="fa-solid fa-user"></span>
+        </span>
         <h3>Meu Perfil</h3>
         <p>Ver conquistas</p>
       </div>
 
       <div class="bento-item community-card" routerLink="/community">
-        <span class="bento-icon">🔥</span>
+        <span class="bento-icon">
+          <span class="fa-solid fa-fire"></span>
+        </span>
         <h3>Trending</h3>
         <p>Comunidade ativa</p>
       </div>

@@ -27,7 +27,7 @@
           </span>
           
           <span class="mini-tag review" *ngIf="item.fullReview || hasAction(item, 'REVIEWED')">
-            📝 Review
+            <span class="fa-solid fa-file-lines"></span> Review
           </span>
         </div>
 
@@ -40,12 +40,16 @@
 
       <div class="activity-actions">
         <button class="action-btn" [class.active-like]="isLikedByMe(item)" (click)="toggleLike(item)">
-          <span class="icon">{{ isLikedByMe(item) ? '❤️' : '🤍' }}</span>
+          <span class="icon">
+            <span [className]="isLikedByMe(item) ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></span>
+          </span>
           <span class="count">{{ item.likes?.length || 0 }}</span>
         </button>
 
         <button class="action-btn" (click)="toggleComments(item)">
-          <span class="icon">💬</span>
+          <span class="icon">
+            <span class="fa-solid fa-comment"></span>
+          </span>
           <span class="count">{{ item.comments?.length || 0 }}</span>
         </button>
       </div>
@@ -58,7 +62,9 @@
         </div>
         <div class="comment-input-box">
           <input #ipt type="text" placeholder="Adicionar comentário..." (keyup.enter)="enviarComentario(item, ipt)">
-          <button (click)="enviarComentario(item, ipt)">🚀</button>
+          <button (click)="enviarComentario(item, ipt)">
+            <span class="fa-solid fa-paper-plane"></span>
+          </button>
         </div>
       </div>
     </div>

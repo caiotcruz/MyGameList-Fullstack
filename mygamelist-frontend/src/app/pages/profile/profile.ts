@@ -21,6 +21,7 @@ interface ChartBar {
   count: number;   
   heightPc: number; 
 }
+
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -38,10 +39,11 @@ export class Profile implements OnInit, OnDestroy {
   userGames: any[] = [];
   userName: string = 'Carregando...';
   userBio: string = '';  
-  userAvatar: string = ''; 
+  userAvatar: string = '';
+  isRotatingAvatar: boolean = false; 
   isMyProfile: boolean = false;
   isEditingProfile = false; 
-  editData = { name: '', bio: '', profilePicture: '' };
+  editData = { name: '', bio: '', profilePicture: '', RotatingAvatar: false };
 
   statsCounts = { following: 0, followers: 0 };
   stats = { total: 0, completed: 0, playing: 0, platinum: 0, avgScore: 0 };
@@ -84,6 +86,7 @@ export class Profile implements OnInit, OnDestroy {
         this.userName = res.user.name;
         this.userBio = res.user.bio;
         this.userAvatar = res.user.profilePicture;
+        this.isRotatingAvatar = res.user.rotatingAvatar; 
         this.userGames = res.games;
         this.statsCounts = res.stats;
 
@@ -101,7 +104,8 @@ export class Profile implements OnInit, OnDestroy {
     this.editData = {
       name: this.userName || '', 
       bio: this.userBio || '',   
-      profilePicture: this.userAvatar || ''
+      profilePicture: this.userAvatar || '',
+      RotatingAvatar: this.isRotatingAvatar || false
     };
     this.isEditingProfile = true;
   }
@@ -112,6 +116,7 @@ export class Profile implements OnInit, OnDestroy {
         this.userName = userAtualizado.name;
         this.userBio = userAtualizado.bio;
         this.userAvatar = userAtualizado.profilePicture;
+        this.isRotatingAvatar = userAtualizado.rotatingAvatar;
         this.isEditingProfile = false;
         this.cdr.detectChanges(); 
       },
@@ -120,7 +125,6 @@ export class Profile implements OnInit, OnDestroy {
   }
 
   onListUpdated() {
-    // Ao atualizar a lista, buscamos apenas os jogos e as estatísticas sociais
     this.communityService.getUserList(this.userId).subscribe(dados => {
       this.userGames = dados;
       this.calcularHallDaFama();
@@ -130,11 +134,10 @@ export class Profile implements OnInit, OnDestroy {
 
   calcularHallDaFama() {
     if (!this.userGames || this.userGames.length === 0) {
-      this.favoriteGame = null; // Se não tem jogo, banner fica preto (cor de fundo do CSS)
+      this.favoriteGame = null;
       return;
     }
 
-    // Cálculos Básicos
     const total = this.userGames.length;
     const completed = this.userGames.filter(g => g.status === 'COMPLETED').length;
     const platinum = this.userGames.filter(g => g.status === 'PLATINUM').length;
@@ -146,7 +149,6 @@ export class Profile implements OnInit, OnDestroy {
 
     this.stats = { total, completed, playing, platinum, avgScore };
 
-    // Lógica do Gráfico
     const counts = new Array(11).fill(0); 
     let maxCount = 0;
     ratedGames.forEach(g => {
@@ -163,7 +165,6 @@ export class Profile implements OnInit, OnDestroy {
       };
     });
 
-    // Lógica de Favorito
     const manualFavorite = this.userGames.find(g => g.favorite === true);
     this.favoriteGame = manualFavorite || 
                        (ratedGames.length > 0 ? [...ratedGames].sort((a, b) => b.score - a.score)[0] : this.userGames[0]);
@@ -173,17 +174,27 @@ export class Profile implements OnInit, OnDestroy {
 
   private definirBadges(ratedGames: any[]) {
     const b: Badge[] = [];
-    if (this.stats.total >= 1) b.push({ icon: '🎲', label: 'Iniciante', color: '#cd7f32', description: 'Iniciou a coleção.' });
-    if (this.stats.total >= 10) b.push({ icon: '📚', label: 'Bibliotecário', color: 'silver', description: '+10 jogos na conta.' });
-    if (this.stats.completed >= 5) b.push({ icon: '🏆', label: 'Zerador', color: '#4caf50', description: 'Completou 5 desafios.' });
-    if (this.stats.avgScore >= 9 && ratedGames.length >= 3) b.push({ icon: '⭐', label: 'Sommelier', color: '#ffbf00', description: 'Média de notas excelente.' });
+    if (this.stats.total >= 1) b.push({ icon: 'dice', label: 'Iniciante', color: '#cd7f32', description: 'Iniciou a coleção.' });
+    if (this.stats.total >= 10) b.push({ icon: 'book', label: 'Bibliotecário', color: 'silver', description: '+10 jogos na conta.' });
+    if (this.stats.completed >= 5) b.push({ icon: 'trophy', label: 'Zerador', color: '#4caf50', description: 'Completou 5 desafios.' });
+    if (this.stats.avgScore >= 9 && ratedGames.length >= 3) b.push({ icon: 'star', label: 'Sommelier', color: '#ffbf00', description: 'Média de notas excelente.' });
     if (this.stats.platinum >= 1) {
-        b.push({ icon: '💎', label: 'Perfeccionista', color: '#b400ff', description: 'Platinou seu primeiro jogo.' });
+        b.push({ icon: 'gem', label: 'Perfeccionista', color: '#b400ff', description: 'Platinou seu primeiro jogo.' });
     }
     this.badges = b;
   }
 
-  // TrackBys para performance
+  getBadgeIconClass(iconKey: string): string {
+    const map: { [key: string]: string } = {
+      'dice': 'fa-solid fa-dice',
+      'book': 'fa-solid fa-book',
+      'trophy': 'fa-solid fa-trophy',
+      'star': 'fa-solid fa-star',
+      'gem': 'fa-solid fa-gem'
+    };
+    return map[iconKey] || 'fa-solid fa-medal';
+  }
+
   trackByScore(index: number, item: ChartBar) { return item.score; }
   trackByBadge(index: number, item: Badge) { return item.label; }
 }

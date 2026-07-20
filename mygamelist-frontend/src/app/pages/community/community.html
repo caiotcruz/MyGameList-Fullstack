@@ -8,7 +8,9 @@
 
     <div class="user-search-box">
       <div class="input-glow-container">
-        <span class="search-icon">🔍</span>
+        <span class="search-icon">
+          <span class="fa-solid fa-magnifying-glass"></span>
+        </span>
         <input 
           type="text" 
           [(ngModel)]="searchQuery" 
@@ -45,7 +47,9 @@
               <div class="mutual-badge-button" 
                   *ngIf="user.mutualCount > 0" 
                   (click)="abrirModalMutual(user, $event)">
-                <span class="icon">👥</span>
+                <span class="icon">
+                  <span class="fa-solid fa-users"></span>
+                </span>
                 {{ user.mutualCount }} {{ user.mutualCount === 1 ? 'amigo' : 'amigos' }} em comum
               </div>
 
@@ -93,13 +97,15 @@
         class="follow-btn-neon"
         [class.following]="user.isFollowing"
         (click)="toggleFollow(user, $event)">
-        {{ user.isFollowing ? '✓ Seguindo' : '+ Seguir' }}
+        {{ user.isFollowing ? 'Seguindo' : 'Seguir' }}
       </button>
     </div>
   </main>
 
   <div class="empty-state-vibe" *ngIf="users.length === 0 && !isLoading">
-    <div class="empty-icon">🛸</div>
+    <div class="empty-icon">
+      <span class="fa-solid fa-satellite-dish"></span>
+    </div>
     <p>Nenhum explorador encontrado no radar.</p>
   </div>
 </div>
@@ -110,7 +116,9 @@
     
     <div class="modal-header">
       <h3 class="modal-title">Conexões com {{ selectedUserName }}</h3>
-      <button class="close-btn" (click)="isModalOpen = false">✕</button>
+      <button class="close-btn" (click)="isModalOpen = false">
+        <span class="fa-solid fa-xmark"></span>
+      </button>
     </div>
 
     <div class="modal-body">
@@ -119,7 +127,6 @@
         *ngFor="let friend of selectedMutuals"
         (click)="verPerfilDesdeModal(friend.id)">
 
-        <!-- Avatar compacto e centralizado -->
         <div class="avatar-mini">
           <img *ngIf="friend.profilePicture" [src]="friend.profilePicture" class="avatar-img">
           <div *ngIf="!friend.profilePicture" class="avatar-placeholder">

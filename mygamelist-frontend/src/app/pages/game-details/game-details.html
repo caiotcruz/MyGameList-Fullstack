@@ -19,12 +19,16 @@
         <div class="hero-actions-row">
           <div class="community-rating-glass">
             <span class="label-tiny">Média Global</span>
-            <div class="stars-neon">⭐ {{ data.communityScore | number:'1.1-1' }}</div>
+            <div class="stars-neon">
+              <span class="fa-solid fa-star text-warning"></span> {{ data.communityScore | number:'1.1-1' }}
+            </div>
           </div>
 
           <div class="user-status-glass" (click)="abrirModal()">
             <div class="status-icon-box">
-              <span>{{ data.userStatus ? '✅' : '➕' }}</span>
+              <span>
+                <span [className]="data.userStatus ? 'fa-solid fa-check text-success' : 'fa-solid fa-plus'"></span>
+              </span>
             </div>
             <div class="status-texts">
               <span class="status-label">{{ data.userStatus ? getStatusLabel(data.userStatus) : 'Adicionar à Lista' }}</span>
@@ -39,32 +43,37 @@
 
   <div class="stats-grid-container">
     <div class="glass-card stat-item">
-      <span class="label">👥 Comunidade</span>
+      <span class="label">
+        <span class="fa-solid fa-users icon-margin"></span> Comunidade
+      </span>
       <div class="stat-value">{{ data.totalPlayers }}</div>
       <span class="stat-desc">Jogadores</span>
     </div>
     
     <div class="glass-card stat-item accent-playing">
-      <span class="label">🔥 Atividade</span>
+      <span class="label">
+        <span class="fa-solid fa-fire icon-margin"></span> Atividade
+      </span>
       <div class="stat-value">{{ data.playingCount }}</div>
       <span class="stat-desc">Jogando Agora</span>
     </div>
     
     <div class="glass-card stat-item accent-completed">
-      <span class="label">🏆 Conquista</span>
+      <span class="label">
+        <span class="fa-solid fa-trophy icon-margin"></span> Conquista
+      </span>
       <div class="stat-value">{{ data.completedCount }}</div>
       <span class="stat-desc">Zeraram</span>
     </div>
 
     <div class="glass-card stat-item accent-platinum">
-      <span class="label">💎 Perfeição</span>
+      <span class="label">
+        <span class="fa-solid fa-gem icon-margin"></span> Perfeição
+      </span>
       <div class="stat-value">{{ data.platinumCount }}</div>
       <span class="stat-desc">Platinaram</span>
     </div>
-
   </div>
-
-  <option value="PLATINUM">Platinado</option>
 
   <div class="content-body-section">
     <div class="section-header">
@@ -95,10 +104,10 @@
         <div class="rev-footer">
         <div class="vote-group">
           <button class="vote-btn" [class.active-like]="rev.myVote === 'LIKE'" (click)="votar(rev, 'LIKE')">
-            👍 {{ rev.likesCount }}
+            <span class="fa-solid fa-thumbs-up"></span> {{ rev.likesCount }}
           </button>
           <button class="vote-btn" [class.active-dislike]="rev.myVote === 'DISLIKE'" (click)="votar(rev, 'DISLIKE')">
-            👎 {{ rev.dislikesCount }}
+            <span class="fa-solid fa-thumbs-down"></span> {{ rev.dislikesCount }}
           </button>
         </div>
         

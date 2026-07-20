@@ -30,7 +30,7 @@
           
           <div class="actions-column" *ngIf="isMyProfile">
             <button class="btn-edit-profile-action" (click)="abrirEdicao()" title="Editar perfil">
-              ✏️
+              <span class="fa-solid fa-pen"></span>
               <span class="edit-tooltip">Editar perfil</span>
             </button>
           </div>
@@ -53,18 +53,24 @@
 
   <div class="profile-dashboard-grid">
     <div class="glass-card fav-highlight" *ngIf="favoriteGame?.game">
-      <span class="label">🏆 Destaque</span>
+      <span class="label">
+        <span class="fa-solid fa-trophy icon-margin"></span> Destaque
+      </span>
       <div class="fav-body">
         <img [src]="favoriteGame.game.coverUrl || favoriteGame.game.background_image" class="fav-poster" alt="Cover" />
         <div class="fav-info">
           <h3>{{ favoriteGame.game.title }}</h3>
-          <div class="score-neon">⭐ {{ favoriteGame.score || '10' }}<span>/10</span></div>
+          <div class="score-neon">
+            <span class="fa-solid fa-star text-warning"></span> {{ favoriteGame.score || '10' }}<span>/10</span>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="glass-card career-stats">
-      <span class="label">📊 Carreira</span>
+      <span class="label">
+        <span class="fa-solid fa-chart-simple icon-margin"></span> Carreira
+      </span>
       <div class="stats-row-horizontal">
         <div class="s-item">
           <span class="v">{{ stats.total }}</span>
@@ -86,10 +92,14 @@
     </div>
 
     <div class="glass-card achievements-card" *ngIf="badges.length > 0">
-      <span class="label">🎖️ Conquistas</span>
+      <span class="label">
+        <span class="fa-solid fa-medal icon-margin"></span> Conquistas
+      </span>
       <div class="badges-flex">
         <div class="badge-vessel" *ngFor="let badge of badges; trackBy: trackByBadge">
-          <span class="b-icon">{{ badge.icon }}</span>
+          <span class="b-icon">
+            <span [className]="getBadgeIconClass(badge.icon || badge.description)"></span>
+          </span>
           <div class="b-glow" [style.background]="badge.color"></div>
           <div class="custom-tooltip">
             <strong>{{ badge.label }}</strong>
@@ -100,7 +110,9 @@
     </div>
 
     <div class="glass-card distribution-chart full-width" *ngIf="stats.avgScore > 0">
-      <span class="label">📈 Distribuição de Notas</span>
+      <span class="label">
+        <span class="fa-solid fa-chart-line icon-margin"></span> Distribuição de Notas
+      </span>
       <div class="chart-main-area">
         <div class="chart-bar-vessel" *ngFor="let data of chartData; trackBy: trackByScore">
           <div class="bar-outer">

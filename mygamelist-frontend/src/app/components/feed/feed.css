@@ -48,8 +48,6 @@
 .action-tag { color: #888; margin: 0 5px; }
 .game-link { color: #6200ea; font-weight: 600; cursor: pointer; }
 
-.activity-time { font-size: 0.75rem; color: #555; text-transform: uppercase; letter-spacing: 1px; }
-
 .activity-actions { display: flex; gap: 15px; margin-top: 15px; }
 
 .action-btn {
@@ -106,12 +104,6 @@
   transition: 0.2s;
 }
 
-.combo-details {
-  display: flex;
-  gap: 8px;
-  margin: 8px 0;
-}
-
 .mini-tag {
   font-size: 0.7rem;
   font-weight: 800;
@@ -133,6 +125,10 @@
 .activity-time {
   display: block;
   margin-top: 5px;
+  font-size: 0.75rem;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .post-review-content {
@@ -154,12 +150,6 @@
   gap: 8px;
   margin: 8px 0;
   flex-wrap: wrap;
-}
-
-.mini-tag.score {
-  background: rgba(255, 202, 40, 0.05);
-  border-color: rgba(255, 202, 40, 0.2);
-  color: #ffca28;
 }
 
 .comment-input-box button:hover { background: #7c4dff; transform: scale(1.05); }

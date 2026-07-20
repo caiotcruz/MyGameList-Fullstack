@@ -6,7 +6,8 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type=number] {
+input[type="number"] {
+  appearance: textfield;
   -moz-appearance: textfield;
 }
 
@@ -167,15 +168,7 @@ input[type=number] {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-   width: 100%;
-  background: #050505;
-  border: 1px solid #222;
-  padding: 12px;
   padding-right: 40px;
-  border-radius: 12px;
-  color: white;
-  outline: none;
-  font-family: inherit;
 
   background-image: url("data:image/svg+xml;utf8,<svg fill='%23aaa' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
@@ -188,9 +181,6 @@ input[type=number] {
 }
 
 .field-box select:focus {
-  border-color: #6200ea;
-  background-color: #0a0a0a;
-
   background-image: url("data:image/svg+xml;utf8,<svg fill='%236200ea' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 5 5-5z'/></svg>");
 }
 

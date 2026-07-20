@@ -3,7 +3,9 @@
   <header class="search-header">
     <div class="search-box">
       <div class="input-container">
-        <span class="icon">🔍</span>
+        <span class="icon">
+          <span class="fa-solid fa-magnifying-glass"></span>
+        </span>
         <input 
           type="text" 
           [(ngModel)]="query" 
@@ -36,11 +38,11 @@
           (click)="adicionar(game)">
           
           <ng-container *ngIf="!estaNaLista(game.id)">
-            <span class="plus">+</span> Minha Lista
+            <span class="fa-solid fa-plus icon-margin"></span> Minha Lista
           </ng-container>
 
           <ng-container *ngIf="estaNaLista(game.id)">
-            <span class="check">✓</span> Na minha lista
+            <span class="fa-solid fa-check icon-margin"></span> Na minha lista
           </ng-container>
         </button>
       </div>
@@ -53,7 +55,9 @@
   </div>
 
   <div class="search-feedback" *ngIf="!isLoading && games.length === 0 && query">
-    <div class="empty-void">👾</div>
+    <div class="empty-void">
+      <span class="fa-solid fa-satellite-dish"></span>
+    </div>
     <p>Nenhum sinal de "{{ query }}" no radar.</p>
   </div>
 
