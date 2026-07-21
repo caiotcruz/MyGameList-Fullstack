@@ -9,7 +9,6 @@ html {
   overflow-x: hidden;
 }
 
-/* Header */
 .main-header {
   position: fixed;
   top: 0;
@@ -73,7 +72,6 @@ html {
   box-shadow: 0 5px 15px rgba(98, 0, 234, 0.4);
 }
 
-/* Hero Section */
 .hero {
   min-height: 100vh;
   display: flex;
@@ -136,7 +134,6 @@ html {
 
 .btn-secondary:hover { background: #111; border-color: #444; }
 
-/* MINI PROFILE (Fiel à Profile Page) */
 .mini-profile-vessel {
   position: relative;
   background: #0a0a0a;
@@ -225,7 +222,6 @@ html {
 
 @keyframes rotateGlow { to { transform: rotate(360deg); } }
 
-/* Features */
 .features { padding: 120px 20px; text-align: center; }
 .features h2 { font-size: 2.5rem; font-weight: 900; margin-bottom: 60px; letter-spacing: -1px; }
 
@@ -246,7 +242,6 @@ html {
 .feature-card h3 { font-size: 1.3rem; margin-bottom: 10px; }
 .feature-card p { color: #666; font-size: 0.95rem; line-height: 1.5; }
 
-/* Final CTA */
 .cta-final { text-align: center; padding: 120px 20px; background: #080808; }
 .cta-final h2 { font-size: 3rem; font-weight: 900; margin-bottom: 15px; }
 .cta-final p { color: #555; margin-bottom: 40px; font-size: 1.1rem; }
@@ -256,7 +251,6 @@ footer {
   font-size: 0.9rem; border-top: 1px solid #111;
 }
 
-/* Animations */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(40px); filter: blur(10px); }
   to { opacity: 1; transform: translateY(0); filter: blur(0); }
@@ -271,8 +265,116 @@ footer {
 .hero-right { animation-delay: 0.5s; }
 
 @media (max-width: 900px) {
-  .hero-inner { grid-template-columns: 1fr; text-align: center; gap: 80px; }
+  .hero-inner { grid-template-columns: 1fr; text-align: center; gap: 60px; }
   .hero-left p { margin: 0 auto 40px; }
   .cta-group { justify-content: center; }
   .hero-right { display: flex; justify-content: center; }
+}
+
+@media (max-width: 768px) {
+  .header-inner {
+    padding: 15px 20px;
+  }
+  
+  .nav-links .nav-link {
+    display: none;
+  }
+
+  .nav-links {
+    gap: 12px;
+  }
+
+  .register-btn {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+
+  .hero {
+    padding: 120px 16px 60px;
+  }
+
+  .hero-left h1 {
+    font-size: 2.4rem;
+    letter-spacing: -1.5px;
+  }
+
+  .hero-left p {
+    font-size: 1rem;
+    margin-bottom: 30px;
+  }
+
+  .cta-group {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .btn-primary, .btn-secondary {
+    padding: 14px 24px;
+    text-align: center;
+    font-size: 0.95rem;
+    border-radius: 14px;
+  }
+
+  .mini-profile-vessel {
+    max-width: 100%;
+    border-radius: 28px;
+  }
+
+  .mini-profile-content {
+    padding: 0 20px 25px;
+  }
+
+  .mini-avatar-container {
+    width: 90px;
+  }
+
+  .mini-avatar-glow {
+    width: 90px;
+    height: 90px;
+  }
+
+  .mini-profile-name {
+    font-size: 1.6rem;
+  }
+
+  .features {
+    padding: 80px 16px;
+  }
+
+  .features h2 {
+    font-size: 1.8rem;
+    margin-bottom: 40px;
+  }
+
+  .grid-container {
+    gap: 20px;
+  }
+
+  .feature-card {
+    padding: 30px 20px;
+    border-radius: 20px;
+  }
+
+  .icon {
+    font-size: 2rem;
+    margin-bottom: 15px;
+  }
+
+  .cta-final {
+    padding: 80px 16px;
+  }
+
+  .cta-final h2 {
+    font-size: 2rem;
+  }
+
+  .btn-primary.large {
+    width: 100%;
+    max-width: 280px;
+    display: inline-block;
+    padding: 14px;
+  }
 }

@@ -3,12 +3,19 @@
   background: #050505;
   min-height: 100vh;
   color: #fff;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 .search-page-wrapper {
   max-width: 1300px;
   margin: 0 auto;
   padding: 40px 20px 80px 110px; 
+  width: 100%;
 }
 
 input::-webkit-outer-spin-button,
@@ -26,6 +33,7 @@ input[type="number"] {
   margin-bottom: 50px;
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
 .search-box {
@@ -42,6 +50,7 @@ input[type="number"] {
   align-items: center;
   backdrop-filter: blur(15px);
   transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
 }
 
 .input-container:focus-within {
@@ -61,12 +70,14 @@ input[type="number"] {
   color: #fff;
   font-size: 1.1rem;
   outline: none;
+  width: 100%;
 }
 
 .results-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 25px;
+  width: 100%;
 }
 
 .game-card-bento {
@@ -76,6 +87,9 @@ input[type="number"] {
   padding: 12px;
   transition: all 0.4s ease;
   backdrop-filter: blur(5px);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .game-card-bento:hover {
@@ -86,11 +100,12 @@ input[type="number"] {
 
 .card-visual {
   position: relative;
-  height: 160px;
+  height: 180px;
   border-radius: 22px;
   overflow: hidden;
   margin-bottom: 15px;
   background: #111;
+  width: 100%;
 }
 
 .game-poster {
@@ -121,7 +136,13 @@ input[type="number"] {
   border: 1px solid rgba(255,255,255,0.05);
 }
 
-.card-content { padding: 0 5px 8px; }
+.card-content { 
+  padding: 0 5px 8px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+}
 
 .game-title {
   font-size: 1.1rem;
@@ -164,7 +185,7 @@ input[type="number"] {
 
 .btn-add-list.already-added .check { margin-right: 6px; font-weight: 900; }
 
-.search-feedback { text-align: center; padding: 100px 0; color: #444; }
+.search-feedback { text-align: center; padding: 80px 0; color: #444; width: 100%; }
 
 .pulse-loader {
   width: 50px; height: 50px;
@@ -268,6 +289,8 @@ input[type="number"] {
 
 .btn-cancel-glass:hover { color: #fff; border-color: #444; background: rgba(255, 255, 255, 0.07); }
 
+.load-more-footer { text-align: center; margin-top: 40px; }
+
 .btn-glass-more {
   background: transparent; border: 1px solid #333; color: #888;
   padding: 14px 40px; border-radius: 18px; font-weight: 800;
@@ -277,3 +300,63 @@ input[type="number"] {
 .btn-glass-more:hover { border-color: #6200ea; color: #fff; background: rgba(98, 0, 234, 0.05); }
 
 .game-card-bento:has(.already-added) { border-color: rgba(46, 213, 115, 0.15); }
+
+@media (max-width: 900px) {
+  .search-page-wrapper {
+    padding: 30px 16px 120px 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-header {
+    margin-bottom: 25px;
+  }
+
+  .results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+
+  .game-card-bento {
+    border-radius: 20px;
+    padding: 10px;
+  }
+
+  .card-visual {
+    height: 150px;
+    border-radius: 16px;
+  }
+
+  .game-title {
+    font-size: 0.95rem;
+    margin-bottom: 10px;
+  }
+
+  .btn-add-list {
+    padding: 10px;
+    font-size: 0.75rem;
+    border-radius: 12px;
+  }
+
+  .modal-glass-card {
+    padding: 24px;
+    border-radius: 24px;
+    width: 90%;
+  }
+
+  .flex-fields-row {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 380px) {
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-visual {
+    height: 200px;
+  }
+}

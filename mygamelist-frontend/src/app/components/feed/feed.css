@@ -155,3 +155,71 @@
 .comment-input-box button:hover { background: #7c4dff; transform: scale(1.05); }
 
 .empty-state-glass { text-align: center; padding: 40px; color: #444; border: 2px dashed rgba(255,255,255,0.05); border-radius: 20px; }
+
+@media (max-width: 768px) {
+  .activity-card-glass {
+    flex-direction: column; 
+    padding: 15px;
+  }
+
+  .game-cover-wrapper {
+    margin-right: 0;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .game-cover {
+    width: 70px;
+    height: 95px;
+  }
+
+  .rating-badge {
+    top: -5px;
+    right: calc(50% - 45px);
+  }
+
+  .activity-text {
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .combo-details {
+    justify-content: center;
+  }
+
+  .post-review-content {
+    padding-left: 10px;
+    margin: 10px 0;
+  }
+
+  .review-text-bubble {
+    font-size: 0.9rem;
+  }
+
+  .activity-time {
+    text-align: center;
+  }
+
+  .activity-actions {
+    justify-content: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 12px;
+  }
+
+  .action-btn {
+    flex: 1;
+    justify-content: center;
+    max-width: 140px;
+    padding: 8px 0;
+  }
+
+  .comment-input-box {
+    gap: 8px;
+  }
+  
+  .comment-input-box input {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+}

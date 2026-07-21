@@ -271,46 +271,6 @@
   text-align: center;
 }
 
-.suggestions-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.suggestion-item {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  padding: 15px 20px !important;
-  gap: 15px;
-  text-align: left !important;
-  border-radius: 20px !important;
-}
-
-.suggestion-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.suggestion-info .user-name {
-  margin: 0;
-  font-size: 1rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.mutual-badge {
-  background: rgba(98, 0, 234, 0.2);
-  color: #b388ff;
-  font-size: 0.7rem;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-weight: 700;
-  display: inline-block;
-  margin: 8px 0;
-}
-
 .mutual-badge-button {
   background: rgba(98, 0, 234, 0.1);
   color: #b388ff;
@@ -338,54 +298,11 @@
   font-size: 0.9rem;
 }
 
-.mutual-names {
-  font-size: 0.75rem;
-  color: #888;
-  margin: 0;
-}
-
 .mutual-names-info {
   font-size: 0.7rem;
   color: #666;
   margin: 0;
   pointer-events: none;
-}
-
-.mutual-count {
-  font-size: 0.75rem;
-  color: #666;
-  margin-top: 4px;
-}
-
-.mutual-text {
-  font-size: 0.7rem;
-  color: #666;
-  margin: 4px 0 0;
-}
-
-.mini-avatar {
-  width: 35px;
-  height: 35px;
-  background: #6200ea;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 0.8rem;
-}
-
-.highlight {
-  color: #b388ff;
-  font-weight: 700;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.follow-btn-neon.mini {
-  width: auto;
-  padding: 8px 15px;
-  font-size: 0.75rem;
 }
 
 .follow-btn-premium {
@@ -521,9 +438,140 @@
   font-weight: 500;
 }
 
+.empty-state-vibe {
+  text-align: center;
+  padding: 80px 20px;
+  color: #444;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 15px;
+  opacity: 0.3;
+}
+
 @media (max-width: 900px) {
-  .community-page-wrapper { padding: 40px 20px 80px 20px; }
-  .community-header { flex-direction: column; align-items: stretch; gap: 30px; }
+  .community-page-wrapper { padding: 40px 20px 120px 20px; }
+  .community-header { flex-direction: column; align-items: stretch; gap: 30px; margin-bottom: 35px; }
   .user-search-box { max-width: 100%; }
-  .page-title { font-size: 2.5rem; }
+  .page-title { font-size: 2.2rem; }
+  .page-subtitle { font-size: 0.95rem; margin-top: 8px; }
+}
+
+@media (max-width: 768px) {
+  .suggestions-premium-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    margin-bottom: 35px;
+  }
+
+  .premium-suggestion-card {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .card-content {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 15px;
+  }
+
+  .avatar-vessel.large {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+  }
+
+  .avatar-outglow-static {
+    width: 60px;
+    height: 60px;
+  }
+
+  .avatar-glow {
+    font-size: 1.3rem;
+  }
+
+  .user-info {
+    text-align: left;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .user-name {
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mutual-badge-button {
+    margin: 4px 0;
+    padding: 4px 10px;
+    font-size: 0.7rem;
+  }
+
+  .follow-btn-premium {
+    width: auto;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    border-radius: 10px;
+    align-self: center;
+  }
+
+  .users-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .user-card-glass {
+    padding: 14px 18px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    gap: 15px;
+  }
+
+  .user-card-glass:hover {
+    transform: translateY(-2px);
+  }
+
+  .avatar-vessel {
+    width: 50px;
+    height: 50px;
+    margin: 0;
+    flex-shrink: 0;
+  }
+
+  .avatar-outglow-static {
+    width: 50px;
+    height: 50px;
+  }
+
+  .status-dot {
+    width: 12px;
+    height: 12px;
+    bottom: 0;
+    right: 0;
+    border-width: 2px;
+  }
+
+  .users-grid .user-name {
+    margin: 0;
+    flex: 1;
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .follow-btn-neon {
+    width: auto;
+    padding: 8px 18px;
+    font-size: 0.8rem;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
 }

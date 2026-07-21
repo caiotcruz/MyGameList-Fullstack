@@ -5,6 +5,8 @@
   min-height: 100vh;
   background: radial-gradient(circle at center, #2a0a4d 0%, #121212 80%);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-sizing: border-box;
+  padding: 20px;
 }
 
 .login-container {
@@ -16,6 +18,8 @@
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
   text-align: center;
   color: #333;
+  position: relative;
+  box-sizing: border-box;
 }
 
 h2 {
@@ -84,7 +88,7 @@ input::placeholder {
   text-align: center;
 }
 
-button {
+.btn-submit {
   width: 100%;
   padding: 15px;
   background-color: #6200ea;
@@ -106,16 +110,16 @@ button {
   gap: 10px;
 }
 
-button:hover:not(:disabled) {
+.btn-submit:hover:not(:disabled) {
   background-color: #5000d0;
   transform: translateY(-2px);
 }
 
-button:active:not(:disabled) {
+.btn-submit:active:not(:disabled) {
   transform: translateY(0);
 }
 
-button:disabled {
+.btn-submit:disabled {
   background-color: #aaa;
   cursor: not-allowed;
   transform: none;
@@ -189,16 +193,60 @@ a:hover {
 
 .btn-close:hover {
   background-color: #e2e5e9;
-  color: #ff4757; /* Fica vermelhinho ao passar o mouse */
-  transform: rotate(90deg); /* Efeito de rotação suave */
+  color: #ff4757;
+  transform: rotate(90deg);
 }
 
-/* Removemos as sombras e transforms que você aplicou no seletor 'button' geral */
 .btn-close:active {
   transform: rotate(90deg) scale(0.9);
 }
 
-/* Garante que o spinner e outros estilos do botão principal não afetem o fechar */
 .btn-close .spinner-mini, .btn-close span {
   display: none;
+}
+.btn-close .fa-solid { font-size: 1rem; display: block; }
+
+@media (max-width: 480px) {
+  :host {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .login-container {
+    max-width: 100%;
+    border-radius: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px 24px;
+  }
+
+  .btn-close {
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+  }
+
+  .brand-logo {
+    margin-top: 20px;
+  }
+
+  .subtitle {
+    margin-bottom: 40px;
+  }
+
+  input {
+    padding: 16px;
+  }
+
+  .btn-submit {
+    padding: 18px;
+    margin-top: 10px;
+  }
 }

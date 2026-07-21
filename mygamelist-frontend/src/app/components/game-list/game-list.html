@@ -1,4 +1,5 @@
 <div class="list-wrapper-pro">
+  <!-- Cabeçalho de Ordenação para Desktop -->
   <div class="list-header-pro" *ngIf="games.length > 0">
     <div class="header-col sortable" (click)="ordenar('title')">
       Nome do Jogo <span class="sort-icon">{{ getSortIcon('title') }}</span>
@@ -19,7 +20,27 @@
     </div>
   </div>
 
- <div class="game-stack" *ngIf="games.length > 0">
+  <!-- Novo Painel de Ordenação Exclusivo para Mobile -->
+  <div class="mobile-sort-bar" *ngIf="games.length > 0">
+    <span class="sort-label">Ordenar por:</span>
+    <div class="sort-options">
+      <button (click)="ordenar('title')" [class.active]="sortColumn === 'title'">
+        Nome <span class="sort-icon">{{ getSortIcon('title') }}</span>
+      </button>
+      <button (click)="ordenar('status')" [class.active]="sortColumn === 'status'">
+        Status <span class="sort-icon">{{ getSortIcon('status') }}</span>
+      </button>
+      <button (click)="ordenar('score')" [class.active]="sortColumn === 'score'">
+        Nota <span class="sort-icon">{{ getSortIcon('score') }}</span>
+      </button>
+      <button class="btn-reset-mobile" *ngIf="sortColumn" (click)="limparOrdenacao()">
+        <span class="fa-solid fa-xmark"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Grid/Stack de Jogos -->
+  <div class="game-stack" *ngIf="games.length > 0">
     <div *ngFor="let item of games; trackBy: trackByGameId" 
          class="game-stack-card" 
          [class.is-favorite]="item.favorite"
@@ -39,7 +60,7 @@
               <span class="fa-solid fa-star text-warning"></span> {{ item.score }}
             </span>
             <button class="review-pill-btn" *ngIf="item.review" (click)="lerReview(item, $event)">
-              <span class="fa-solid fa-file-lines"></span> Ver Review
+              <span class="fa-solid fa-file-lines"></span>
             </button>
           </div>
         </div>
@@ -71,6 +92,7 @@
     </div>
   </div>
 
+  <!-- Lista Vazia -->
   <div *ngIf="games.length === 0" class="empty-list-vibe">
     <div class="empty-icon">
       <span class="fa-solid fa-gamepad"></span>
@@ -78,6 +100,7 @@
     <p>Nenhum jogo encontrado nesta jornada.</p>
   </div>
 
+  <!-- Modais permanecem idênticos abaixo... -->
   <div class="modal-blur" *ngIf="reviewSelecionada">
     <div class="modal-glass-card review-modal">
       <div class="review-header-pop">
@@ -96,7 +119,6 @@
   <div class="modal-blur" *ngIf="isModalOpen">
     <div class="modal-glass-card">
       <h3 class="modal-title">Editar {{ editingGame.title }}</h3>
-      
       <div class="flex-fields-row">
         <div class="field-box small-field">
           <label>Status</label>
@@ -108,18 +130,15 @@
             <option value="DROPPED">Larguei</option>
           </select>
         </div>
-
         <div class="field-box tiny-field" *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
           <label>Nota</label>
           <input type="number" [(ngModel)]="editingGame.score" (change)="validarScore()" min="0" max="10">
         </div>
       </div>
-
       <div class="field-box" *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
         <label>Review Curto</label>
         <textarea [(ngModel)]="editingGame.review" rows="4"></textarea>
       </div>
-
       <div class="modal-footer-btns">
         <button class="btn-cancel" (click)="fecharModal()">Cancelar</button>
         <button class="btn-save-glow" (click)="salvarAlteracoes()" [disabled]="isSaving">
@@ -139,7 +158,6 @@
         Você tem certeza que deseja remover <strong>{{ gameParaRemover.game.title }}</strong> da sua coleção? 
         Esta ação não pode ser desfeita.
       </p>
-
       <div class="modal-footer-btns">
         <button class="btn-cancel" (click)="cancelarRemocao()">Cancelar</button>
         <button class="btn-confirm-delete" (click)="confirmarRemocao()">Sim, Remover</button>
