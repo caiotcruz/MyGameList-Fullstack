@@ -4,8 +4,8 @@ import { CommonModule } from '@angular/common';
 import { GameService } from '../../services/game';
 import { CommunityService } from '../../services/community';
 import { UserService } from '../../services/user';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { RouterModule, Router } from '@angular/router';
 
 @Component({
@@ -38,11 +38,20 @@ export class Search implements OnInit {
     this.carregarColecaoUsuario();
 
     this.searchSubject.pipe(
-      debounceTime(500), 
-      distinctUntilChanged() 
-    ).subscribe(termo => {
-       this.executarBusca(termo);
-    });
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(termo => {
+          if (!termo.trim()) {
+              return of([]);
+          }
+
+          this.isLoading = true;
+          return this.gameService.searchGames(termo, 1);
+      })
+  ).subscribe(resultados => {
+      this.games = resultados;
+      this.isLoading = false;
+  });
   }
 
   carregarColecaoUsuario() {
