@@ -41,6 +41,10 @@ public class UserController {
             user.setBio(dto.bio());
         }
 
+        if (dto.rotatingAvatar() != null) {
+            user.setRotatingAvatar(dto.rotatingAvatar());
+        }
+
         if (dto.profilePicture() != null) {
             user.setProfilePicture(dto.profilePicture());
         }

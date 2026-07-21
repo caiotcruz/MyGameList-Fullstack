@@ -10,7 +10,7 @@
 
     <div class="hero-content">
       <div class="avatar-container">
-        <div class="avatar-border-glow">
+        <div class="avatar-border-glow" [class.spinning]="isRotatingAvatar">
           <ng-container *ngIf="userAvatar; else noAvatar">
             <img [src]="userAvatar" class="avatar-main" alt="Avatar" />
           </ng-container>
@@ -140,7 +140,19 @@
 
   <div class="modal-blur" *ngIf="isEditingProfile" (click)="isEditingProfile = false">
     <div class="modal-glass-card" (click)="$event.stopPropagation()">
-      <h3 class="modal-title">Editar Perfil</h3>
+      
+      <div class="modal-header-secret">
+        <h3 class="modal-title">Editar Perfil</h3>
+        <button 
+          type="button"
+          class="secret-spin-btn" 
+          [class.active]="editData.rotatingAvatar"
+          (click)="editData.rotatingAvatar = !editData.rotatingAvatar"
+          title="???">
+          <span class="fa-solid fa-arrows-spin"></span>
+        </button>
+      </div>
+
       <div class="field-box">
         <label>Nome</label>
         <input [(ngModel)]="editData.name" placeholder="Seu nome" />

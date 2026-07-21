@@ -48,7 +48,6 @@ public class User implements UserDetails {
     public String getPassword() { return password; }
 
     public boolean isRotatingAvatar() { return rotatingAvatar; }
-    public void setRotatingAvatar(boolean rotatingAvatar) { this.rotatingAvatar = rotatingAvatar; }
 
     private boolean enabled = false;
     private String verificationCode;

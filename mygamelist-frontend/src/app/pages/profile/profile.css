@@ -62,13 +62,19 @@
   border-radius: 50%;
   padding: 4px;
   background: conic-gradient(from 180deg, #6200ea, #00e5ff, #9c27b0, #6200ea);
-  animation: rotateGlow 5s linear infinite;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-@keyframes rotateGlow { to { transform: rotate(360deg); } }
+.avatar-border-glow.spinning {
+  animation: rotateGlow 5s linear infinite;
+}
+
+@keyframes rotateGlow { 
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); } 
+}
 
 .avatar-main, .avatar-placeholder {
   width: 100%; height: 100%; border-radius: 50%; border: 6px solid #050505;
@@ -300,6 +306,47 @@
   animation: fadeIn 0.3s ease;
 }
 
+.modal-header-secret {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 35px;
+}
+
+.modal-header-secret .modal-title {
+  margin: 0;
+}
+
+.secret-spin-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.08);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+}
+
+.secret-spin-btn:hover {
+  color: rgba(98, 0, 234, 0.5);
+  transform: rotate(180deg);
+}
+
+.secret-spin-btn.active {
+  color: #00e5ff;
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+  animation: spinSecret 3s linear infinite;
+}
+
+@keyframes spinSecret {
+  to { transform: rotate(360deg); }
+}
+
 .modal-glass-card {
   background: #0f0f0f;
   border: 1px solid #222;
@@ -397,13 +444,36 @@
   }
 
   .avatar-border-glow {
-    width: 130px;
-    height: 130px;
+    width: 175px;
+    height: 175px;
+    border-radius: 50%;
+    padding: 4px;
+    background: conic-gradient(from 180deg, #6200ea, #00e5ff, #9c27b0, #6200ea);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
   }
 
-  .avatar-main, .avatar-placeholder {
-    font-size: 2.5rem;
-    border-width: 4px;
+  .avatar-border-glow.spinning {
+    animation: rotateGlow 5s linear infinite;
+  }
+
+  .avatar-main, 
+  .avatar-placeholder {
+    width: 100%; 
+    height: 100%; 
+    border-radius: 50%; 
+    border: 6px solid #050505;
+    object-fit: cover; 
+    background: #111; 
+    display: flex; 
+    align-items: center;
+    justify-content: center; 
+    font-size: 3.5rem; 
+    font-weight: 900; 
+    color: #fff;
+    box-sizing: border-box;
   }
 
   .header-main-row {

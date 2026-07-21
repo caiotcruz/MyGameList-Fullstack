@@ -43,7 +43,7 @@ export class Profile implements OnInit, OnDestroy {
   isRotatingAvatar: boolean = false; 
   isMyProfile: boolean = false;
   isEditingProfile = false; 
-  editData = { name: '', bio: '', profilePicture: '', RotatingAvatar: false };
+  editData = { name: '', bio: '', profilePicture: '', rotatingAvatar: false };
 
   statsCounts = { following: 0, followers: 0 };
   stats = { total: 0, completed: 0, playing: 0, platinum: 0, avgScore: 0 };
@@ -105,7 +105,7 @@ export class Profile implements OnInit, OnDestroy {
       name: this.userName || '', 
       bio: this.userBio || '',   
       profilePicture: this.userAvatar || '',
-      RotatingAvatar: this.isRotatingAvatar || false
+      rotatingAvatar: this.isRotatingAvatar || false
     };
     this.isEditingProfile = true;
   }
