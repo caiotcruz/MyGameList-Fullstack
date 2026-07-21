@@ -6,10 +6,10 @@
         <span class="icon">
           <span class="fa-solid fa-magnifying-glass"></span>
         </span>
-        <input 
-          type="text" 
-          [(ngModel)]="query" 
-          (input)="onSearchInput(query)"
+        <input
+          type="text"
+          [(ngModel)]="query"
+          (input)="onSearchInput($event)"
           placeholder="Qual será sua próxima aventura?"
           autofocus>
         <div *ngIf="isLoading" class="loader-neon"></div>

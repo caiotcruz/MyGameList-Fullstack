@@ -47,11 +47,12 @@ export class Search implements OnInit {
 
           this.isLoading = true;
           return this.gameService.searchGames(termo, 1);
-      })
-  ).subscribe(resultados => {
-      this.games = resultados;
-      this.isLoading = false;
-  });
+        })
+    ).subscribe(resultados => {
+        this.games = resultados;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+    });
   }
 
   carregarColecaoUsuario() {
@@ -67,33 +68,9 @@ export class Search implements OnInit {
     }
   }
 
-  onSearchInput(termo: string) {
-    this.searchSubject.next(termo);
-  }
-
-  executarBusca(termo: string) {
-    if (!termo.trim()) {
-        this.games = [];
-        this.isLoading = false;
-        return;
-    }
-
-    this.currentPage = 1;
-    this.isLoading = true;
-    this.games = []; 
-
-    this.gameService.searchGames(termo, this.currentPage).subscribe({
-      next: (resultados) => {
-        this.games = resultados;
-        this.isLoading = false;
-        this.cdr.detectChanges(); 
-      },
-      error: (err) => {
-        console.error('Erro na busca:', err);
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      }
-    });
+  onSearchInput(event: Event) {
+      const elemento = event.target as HTMLInputElement;
+      this.searchSubject.next(elemento.value);
   }
 
   carregarMais() {
