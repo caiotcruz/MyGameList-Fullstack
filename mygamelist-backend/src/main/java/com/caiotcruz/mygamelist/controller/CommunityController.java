@@ -46,12 +46,12 @@ public class CommunityController {
             .map(u -> {
                 boolean isFollowing = followRepository.findByFollowerAndFollowed(currentUser, u).isPresent();
                 
-                // Passando explicitamente o campo do Model para o DTO
                 return new UserSummaryDTO(
                     u.getId(), 
                     u.getName(), 
                     isFollowing, 
-                    u.getProfilePicture()
+                    u.getProfilePicture(),
+                    u.isRotatingAvatar()
                 );
             })
             .collect(Collectors.toList());
@@ -90,12 +90,12 @@ public class CommunityController {
             .map(u -> {
                 boolean isFollowing = followRepository.findByFollowerAndFollowed(currentUser, u).isPresent();
                 
-                // Passando explicitamente o campo do Model para o DTO
                 return new UserSummaryDTO(
                     u.getId(), 
                     u.getName(), 
                     isFollowing, 
-                    u.getProfilePicture()
+                    u.getProfilePicture(),
+                    u.isRotatingAvatar()
                 );
             })
             .collect(Collectors.toList());

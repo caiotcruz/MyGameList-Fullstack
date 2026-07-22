@@ -200,7 +200,7 @@ public class AuthController {
                     .findByFollowerAndFollowed(currentUser, u)
                     .isPresent();
 
-                return new UserSummaryDTO(u.getId(), u.getName(), isFollowing, u.getProfilePicture());
+                return new UserSummaryDTO(u.getId(), u.getName(), isFollowing, u.getProfilePicture(), u.isRotatingAvatar());
             })
             .collect(Collectors.toList());
 

@@ -32,12 +32,11 @@
       <div class="suggestions-premium-grid">
         <div class="premium-suggestion-card" *ngFor="let user of suggestions" (click)="verPerfil(user.id)">
           <div class="card-content">
+            
             <div class="avatar-vessel large">
-              <div class="avatar-outglow-static">
-                <div class="avatar-glow">
-                  <img *ngIf="user.profilePicture" [src]="user.profilePicture" class="user-avatar-img">
-                  <span *ngIf="!user.profilePicture">{{ user.name.charAt(0) }}</span>
-                </div>
+              <div class="avatar-border-glow" [class.spinning]="user.rotatingAvatar">
+                <img *ngIf="user.profilePicture" [src]="user.profilePicture" class="avatar-main" alt="Avatar">
+                <div *ngIf="!user.profilePicture" class="avatar-placeholder">{{ user.name.charAt(0) }}</div>
               </div>
             </div>
 
@@ -75,17 +74,15 @@
          (click)="verPerfil(user.id)">
       
       <div class="avatar-vessel">
-        <div class="avatar-outglow-static">
-          <div class="avatar-glow">
-            <img 
-              *ngIf="user.profilePicture" 
-              [src]="user.profilePicture" 
-              [alt]="user.name" 
-              class="user-avatar-img">
-            
-            <span *ngIf="!user.profilePicture">
-              {{ user.name.charAt(0) }}
-            </span>
+        <div class="avatar-border-glow" [class.spinning]="user.rotatingAvatar">
+          <img 
+            *ngIf="user.profilePicture" 
+            [src]="user.profilePicture" 
+            [alt]="user.name" 
+            class="avatar-main">
+          
+          <div *ngIf="!user.profilePicture" class="avatar-placeholder">
+            {{ user.name.charAt(0) }}
           </div>
         </div>
         <div class="status-dot"></div>
@@ -110,7 +107,6 @@
   </div>
 </div>
 
-
 <div class="modal-overlay" *ngIf="isModalOpen" (click)="isModalOpen = false">
   <div class="modal-card" (click)="$event.stopPropagation()">
     
@@ -128,9 +124,11 @@
         (click)="verPerfilDesdeModal(friend.id)">
 
         <div class="avatar-mini">
-          <img *ngIf="friend.profilePicture" [src]="friend.profilePicture" class="avatar-img">
-          <div *ngIf="!friend.profilePicture" class="avatar-placeholder">
-            {{ friend.name.charAt(0) }}
+          <div class="avatar-border-glow mini" [class.spinning]="friend.rotatingAvatar">
+            <img *ngIf="friend.profilePicture" [src]="friend.profilePicture" class="avatar-main">
+            <div *ngIf="!friend.profilePicture" class="avatar-placeholder">
+              {{ friend.name.charAt(0) }}
+            </div>
           </div>
         </div>
 
