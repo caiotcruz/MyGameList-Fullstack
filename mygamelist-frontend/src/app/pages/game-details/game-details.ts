@@ -49,38 +49,59 @@ export class GameDetails implements OnInit {
   abrirModal() {
     if (!this.data) return;
 
+    const userId = localStorage.getItem('userId');
+    let myExistingReview = '';
+
+    if (userId && this.data.latestReviews) {
+      const userReview = this.data.latestReviews.find(r => r.myVote !== undefined); 
+      if (userReview) {
+        myExistingReview = userReview.review;
+      }
+    }
+
     this.editingGame = {
       rawgId: this.data.externalId,
       title: this.data.title,
       coverUrl: this.data.coverUrl,
       status: this.data.userStatus || 'PLAN_TO_PLAY',
       score: this.data.userScore || 0,
-      review: '' 
+      review: myExistingReview
     };
+
     this.isModalOpen = true;
+    this.cdr.detectChanges();
   }
 
   fecharModal() {
     this.isModalOpen = false;
   }
 
+  verificarStatus() {
+    if (this.editingGame.status === 'PLAN_TO_PLAY') {
+      this.editingGame.score = 0;
+      this.editingGame.review = '';
+    }
+  }
+
   validarScore() {
-    if (this.editingGame.score > 10) this.editingGame.score = 10;
-    if (this.editingGame.score < 0) this.editingGame.score = 0;
+    this.editingGame.score = Math.min(10, Math.max(0, Math.floor(this.editingGame.score || 0)));
   }
 
   salvar() {
+    if (this.isSaving) return;
+    this.validarScore();
     this.isSaving = true;
+
     this.gameService.addGameToList(this.editingGame).subscribe({
       next: () => {
-        alert('Lista atualizada!');
         this.isSaving = false;
         this.fecharModal();
         if (this.data) this.carregarHub(this.data.externalId.toString());
       },
       error: (err) => {
-        alert('Erro ao salvar. Você está logado?');
+        alert('Erro ao salvar. Verifique se você está logado.');
         this.isSaving = false;
+        this.cdr.detectChanges();
       }
     });
   }

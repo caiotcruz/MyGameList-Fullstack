@@ -231,8 +231,55 @@
 .field-box input, .field-box select, .field-box textarea {
   background: #050505; border: 1px solid #222; padding: 14px; border-radius: 14px; color: #fff;
 }
-.btn-save-neon { background: #6200ea; color: #fff; border: none; padding: 14px 30px; border-radius: 14px; font-weight: 800; cursor: pointer; }
-.btn-cancel-glass { background: transparent; border: 1px solid #333; color: #888; padding: 14px 30px; border-radius: 14px; cursor: pointer; }
+
+.modal-footer-btns { 
+  display: flex; 
+  gap: 12px; 
+  justify-content: flex-end; 
+  margin-top: 30px;
+  width: 100%;
+}
+
+.btn-save-neon { 
+  background: #6200ea; 
+  color: #fff; 
+  border: none; 
+  padding: 14px 28px; 
+  border-radius: 14px; 
+  font-weight: 800; 
+  cursor: pointer; 
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(98, 0, 234, 0.3);
+}
+
+.btn-save-neon:hover {
+  transform: translateY(-2px);
+  background: #7c4dff;
+  box-shadow: 0 10px 25px rgba(98, 0, 234, 0.5);
+}
+
+.btn-save-neon:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-cancel-glass { 
+  background: rgba(255, 255, 255, 0.03); 
+  border: 1px solid #333; 
+  color: #888; 
+  padding: 14px 28px; 
+  border-radius: 14px; 
+  cursor: pointer; 
+  font-weight: 700; 
+  transition: all 0.2s ease;
+}
+
+.btn-cancel-glass:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #444;
+  color: #fff;
+}
 
 .karma-tag {
   margin-left: auto;
