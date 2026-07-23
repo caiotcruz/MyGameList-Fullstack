@@ -42,36 +42,51 @@
   </div>
 
   <div class="stats-grid-container">
-    <div class="glass-card stat-item">
-      <span class="label">
-        <span class="fa-solid fa-users icon-margin"></span> Comunidade
-      </span>
+    <div class="glass-card stat-item accent-community">
+      <div class="stat-icon-badge"><span class="fa-solid fa-users"></span></div>
+      <span class="label">Comunidade</span>
       <div class="stat-value">{{ data.totalPlayers }}</div>
       <span class="stat-desc">Jogadores</span>
     </div>
     
     <div class="glass-card stat-item accent-playing">
-      <span class="label">
-        <span class="fa-solid fa-fire icon-margin"></span> Atividade
-      </span>
+      <div class="stat-icon-badge"><span class="fa-solid fa-fire"></span></div>
+      <span class="label">Atividade</span>
       <div class="stat-value">{{ data.playingCount }}</div>
       <span class="stat-desc">Jogando Agora</span>
     </div>
     
     <div class="glass-card stat-item accent-completed">
-      <span class="label">
-        <span class="fa-solid fa-trophy icon-margin"></span> Conquista
-      </span>
+      <div class="stat-icon-badge"><span class="fa-solid fa-trophy"></span></div>
+      <span class="label">Conquista</span>
       <div class="stat-value">{{ data.completedCount }}</div>
       <span class="stat-desc">Zeraram</span>
     </div>
 
     <div class="glass-card stat-item accent-platinum">
-      <span class="label">
-        <span class="fa-solid fa-gem icon-margin"></span> Perfeição
-      </span>
+      <div class="stat-icon-badge"><span class="fa-solid fa-gem"></span></div>
+      <span class="label">Perfeição</span>
       <div class="stat-value">{{ data.platinumCount }}</div>
       <span class="stat-desc">Platinaram</span>
+    </div>
+  </div>
+
+  <div class="chart-section-container" *ngIf="data.communityScore > 0">
+    <div class="glass-card distribution-chart">
+      <span class="label">
+        <span class="fa-solid fa-chart-line icon-margin"></span> Distribuição de Notas da Comunidade
+      </span>
+      
+      <div class="chart-main-area">
+        <div class="chart-bar-vessel" *ngFor="let bar of chartData; trackBy: trackByScore">
+          <div class="bar-outer">
+            <div class="bar-inner" [style.height.%]="bar.heightPc">
+              <span class="count-pop" *ngIf="bar.count > 0">{{ bar.count }}</span>
+            </div>
+          </div>
+          <span class="bar-idx">{{ bar.score }}</span>
+        </div>
+      </div>
     </div>
   </div>
 

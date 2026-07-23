@@ -1,6 +1,7 @@
 package com.caiotcruz.mygamelist.dto;
 
 import java.util.List;
+import java.util.Map;
 
 public record GameHubDTO(
     Long gameId,        
@@ -13,6 +14,7 @@ public record GameHubDTO(
     long completedCount,
     long platinumCount,
     Double communityScore, 
+    Map<Integer, Long> scoreDistribution,
     
     String userStatus,    
     Integer userScore,     

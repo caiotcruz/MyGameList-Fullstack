@@ -231,6 +231,46 @@
 .platinum .v { color: #00e5ff; text-shadow: 0 0 15px rgba(0, 229, 255, 0.4); }
 .platinum:hover .v { filter: brightness(1.2); transition: 0.3s ease; }
 
+.s-icon-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.s-item:hover .s-icon-badge {
+  transform: scale(1.08);
+}
+
+.accent .s-icon-badge {
+  color: #6200ea;
+  background: rgba(98, 0, 234, 0.08);
+  border-color: rgba(98, 0, 234, 0.35);
+  box-shadow: 0 0 16px rgba(98, 0, 234, 0.25);
+}
+
+.platinum .s-icon-badge {
+  color: #00e5ff;
+  background: rgba(0, 229, 255, 0.08);
+  border-color: rgba(0, 229, 255, 0.35);
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.25);
+}
+
+.gold .s-icon-badge {
+  color: #ffbf00;
+  background: rgba(255, 191, 0, 0.08);
+  border-color: rgba(255, 191, 0, 0.35);
+  box-shadow: 0 0 16px rgba(255, 191, 0, 0.25);
+}
+
 .badges-flex { display: flex; gap: 12px; flex-wrap: wrap; }
 
 .badge-vessel {
@@ -290,7 +330,22 @@
 .chart-bar-vessel { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; position: relative; }
 .bar-outer { background: rgba(255,255,255,0.03); width: 100%; flex: 1; border-radius: 8px; position: relative; }
 .bar-inner { background: linear-gradient(to top, #6200ea, #00e5ff); width: 100%; position: absolute; bottom: 0; border-radius: 8px; }
-.count-pop { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 0.75rem; color: #6200ea; font-weight: 800; opacity: 0; transition: 0.2s; }
+.count-pop {
+  position: absolute;
+  top: -34px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  color: #fff;
+  font-weight: 800;
+  opacity: 0;
+  transition: 0.2s;
+  background: #111;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 4px 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
 .chart-bar-vessel:hover .count-pop { opacity: 1; }
 .bar-idx { margin-top: 10px; font-size: 0.75rem; font-weight: 800; color: #444; }
 
@@ -523,6 +578,13 @@
 
   .s-item {
     flex: 1 1 40%;
+  }
+
+  .s-icon-badge {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
   }
 
   .s-item .v {

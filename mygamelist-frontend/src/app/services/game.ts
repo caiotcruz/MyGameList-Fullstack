@@ -29,6 +29,7 @@ export interface GameHubData {
   userScore: number;
   isFavorite: boolean;
   latestReviews: GameReview[];
+  scoreDistribution?: { [key: string]: number };
 }
 
 @Injectable({

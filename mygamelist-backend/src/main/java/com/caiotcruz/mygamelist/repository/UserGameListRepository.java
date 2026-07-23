@@ -28,6 +28,9 @@ public interface UserGameListRepository extends JpaRepository<UserGameList, Long
     @Query("SELECT AVG(ugl.score) FROM UserGameList ugl WHERE ugl.game.id = :gameId AND ugl.score > 0")
     Double getAverageScoreByGameId(@Param("gameId") Long gameId);
 
+    @Query("SELECT ugl.score, COUNT(ugl) FROM UserGameList ugl WHERE ugl.game.id = :gameId AND ugl.score > 0 GROUP BY ugl.score")
+    List<Object[]> getScoreDistributionByGameId(@Param("gameId") Long gameId);
+
     @Query("SELECT ugl FROM UserGameList ugl WHERE ugl.user.id = :userId AND ugl.game.id = :gameId")
     Optional<UserGameList> findByUserIdAndGameId(@Param("userId") Long userId, @Param("gameId") Long gameId);
     

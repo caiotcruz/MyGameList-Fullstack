@@ -21,7 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -111,6 +113,7 @@ public class GameService {
                 stats.completedCount(),
                 stats.platinumCount(),
                 stats.avgScore(),
+                stats.scoreDistribution(),
                 myEntry.status(),
                 myEntry.score(),
                 myEntry.favorite(),
@@ -124,8 +127,23 @@ public class GameService {
         long completedCount = userGameListRepository.countByGameIdAndStatus(internalId, GameStatus.COMPLETED);
         long platinumCount = userGameListRepository.countByGameIdAndStatus(internalId, GameStatus.PLATINUM);
         Double avgScore = userGameListRepository.getAverageScoreByGameId(internalId);
+
+        List<Object[]> rawDistribution = userGameListRepository.getScoreDistributionByGameId(internalId);
+        Map<Integer, Long> scoreMap = new HashMap<>();
+
+        for (int i = 1; i <= 10; i++) {
+            scoreMap.put(i, 0L);
+        }
+
+        for (Object[] row : rawDistribution) {
+            Integer score = (Integer) row[0];
+            Long count = (Long) row[1];
+            if (score != null && score >= 1 && score <= 10) {
+                scoreMap.put(score, count);
+            }
+        }
         
-        return new GameStats(totalPlayers, playingCount, completedCount, platinumCount, avgScore != null ? avgScore : 0.0);
+        return new GameStats(totalPlayers, playingCount, completedCount, platinumCount, avgScore != null ? avgScore : 0.0, scoreMap);
     }
 
     private UserGameEntry loadMyEntry(Long internalId, Long currentUserId) {
@@ -182,7 +200,8 @@ public class GameService {
         long playingCount, 
         long completedCount, 
         long platinumCount, 
-        double avgScore
+        double avgScore,
+        Map<Integer, Long> scoreDistribution
     ) {}
 
     private record UserGameEntry(

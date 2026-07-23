@@ -4,6 +4,12 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms'; 
 import { GameService, GameHubData } from '../../services/game';
 
+interface ChartBar {
+  score: number;
+  count: number;
+  heightPc: number;
+}
+
 @Component({
   selector: 'app-game-details',
   standalone: true,
@@ -18,6 +24,7 @@ export class GameDetails implements OnInit {
 
   data: GameHubData | null = null;
   isLoading = true;
+  chartData: ChartBar[] = [];
   
   isModalOpen = false;
   isSaving = false;
@@ -35,6 +42,7 @@ export class GameDetails implements OnInit {
     this.gameService.getGameHub(id).subscribe({
       next: (res) => {
         this.data = res;
+        this.processarGraficoDeNotas(res.scoreDistribution);
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -45,6 +53,31 @@ export class GameDetails implements OnInit {
     });
   }
 
+  processarGraficoDeNotas(distributionMap: { [key: string]: number } | undefined) {
+    if (!distributionMap) {
+      this.chartData = [];
+      return;
+    }
+
+    let maxCount = 0;
+    Object.values(distributionMap).forEach(count => {
+      if (count > maxCount) maxCount = count;
+    });
+
+    this.chartData = Array.from({ length: 10 }, (_, i) => {
+      const score = i + 1;
+      const count = distributionMap[score.toString()] || distributionMap[score] || 0;
+      return {
+        score,
+        count,
+        heightPc: maxCount > 0 ? (count / maxCount) * 100 : 0
+      };
+    });
+  }
+
+  trackByScore(index: number, item: ChartBar) {
+    return item.score;
+  }
 
   abrirModal() {
     if (!this.data) return;
@@ -106,7 +139,6 @@ export class GameDetails implements OnInit {
     });
   }
 
-  
   getScoreColor(score: number): string {
     if (score >= 9) return '#4caf50';
     if (score >= 7) return '#2196f3';
