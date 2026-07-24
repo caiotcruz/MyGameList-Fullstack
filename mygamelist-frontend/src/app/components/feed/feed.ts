@@ -3,20 +3,7 @@ import { DatePipe, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
 import { ActivityService } from '../../services/activity'; 
 import { CommunityService } from '../../services/community'; 
-import { Activity } from '../../models/activity.model';
 import { RouterModule } from '@angular/router';
-
-export interface GroupedActivity {
-  id: number;
-  user: any;
-  game: any;
-  timestamp: any;
-  types: string[];
-  details: { [key: string]: string }; 
-  likes: any[];
-  comments: any[];
-  showComments?: boolean;
-}
 
 @Component({
   selector: 'app-feed',
@@ -37,60 +24,20 @@ export class Feed implements OnInit {
     this.myId = Number(localStorage.getItem('userId'));
     this.activityService.getFeed().subscribe({
       next: (data) => {
-        this.activities = this.groupActivities(data);
+        this.activities = data.map((a: any) => ({ ...a, showComments: false }));
         this.cdr.detectChanges(); 
       }
     });
   }
 
-  groupActivities(data: any[]): any[] {
-  const grouped: any[] = [];
-  
-  data.forEach(activity => {
-    const existing = grouped.find(g => 
-      g.user.id === activity.user.id && 
-      g.game.rawgId === activity.game.rawgId &&
-      Math.abs(new Date(g.timestamp).getTime() - new Date(activity.timestamp).getTime()) < 10000
-    );
-
-    if (existing) {
-      existing.allActions.push({ type: activity.type, detail: activity.detail });
-      
-      if (activity.type === 'RATED') {
-        existing.ratingForBadge = activity.detail;
-      }
-      if (activity.type === 'REVIEWED') {
-        existing.fullReview = activity.detail;
-      }
-    } else {
-      grouped.push({
-        ...activity,
-        allActions: [{ type: activity.type, detail: activity.detail }],
-        ratingForBadge: activity.type === 'RATED' ? activity.detail : null,
-        fullReview: activity.type === 'REVIEWED' ? activity.detail : null,
-        showComments: false 
-      });
-    }
-  });
-  return grouped;
-}
-  isLikedByMe(item: any): boolean {
-    if (!item.likes) return false;
-    return item.likes.some((l: any) => l.user.id === this.myId);
-  }
-
   toggleLike(item: any) {
-    const jaCurtiu = this.isLikedByMe(item);
-    
-    if (jaCurtiu) {
-      item.likes = item.likes.filter((l: any) => l.user.id !== this.myId);
-    } else {
-      if (!item.likes) item.likes = [];
-      item.likes.push({ user: { id: this.myId } }); 
-    }
+    item.likedByMe = !item.likedByMe;
+    item.likesCount += item.likedByMe ? 1 : -1;
 
     this.communityService.toggleLike(item.id).subscribe({
       error: () => {
+        item.likedByMe = !item.likedByMe;
+        item.likesCount += item.likedByMe ? 1 : -1;
         alert('Erro ao curtir');
       }
     });
@@ -106,10 +53,7 @@ export class Feed implements OnInit {
 
     this.communityService.postComment(item.id, texto).subscribe({
       next: (novoComentario) => {
-        const comentariosAtuais = item.comments || [];
-
-        item.comments = [...comentariosAtuais, novoComentario];
-        
+        item.comments = [...(item.comments || []), novoComentario];
         inputHtml.value = ''; 
         this.cdr.detectChanges();
       },
@@ -118,12 +62,7 @@ export class Feed implements OnInit {
   }
 
   hasAction(item: any, type: string): boolean {
-    return item.allActions?.some((a: any) => a.type === type);
-  }
-
-  getActionDetail(item: any, type: string): string {
-    const action = item.allActions?.find((a: any) => a.type === type);
-    return action ? action.detail : '';
+    return item.types?.includes(type);
   }
 
   getActionText(type: string): string {
@@ -139,11 +78,5 @@ export class Feed implements OnInit {
   formatStatus(status: string): string {
     if (!status) return '';
     return status.replace(/_/g, ' ').toLowerCase();
-  }
-  
-  formatDetail(type: string, detail: string): string {
-    if (type === 'RATED') return `⭐ ${detail}/10`;
-    if (type === 'CHANGED_STATUS') return detail?.replace('_', ' '); 
-    return detail || '';
   }
 }

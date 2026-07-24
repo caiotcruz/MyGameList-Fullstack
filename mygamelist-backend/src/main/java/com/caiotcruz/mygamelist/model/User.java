@@ -6,6 +6,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -22,6 +24,7 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password; 
 
@@ -50,7 +53,11 @@ public class User implements UserDetails {
     public boolean isRotatingAvatar() { return rotatingAvatar; }
 
     private boolean enabled = false;
+    
+    @JsonIgnore
     private String verificationCode;
+
+    @JsonIgnore
     private LocalDateTime verificationExpiry;
 
     @Override

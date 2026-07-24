@@ -104,34 +104,37 @@ public class UserGameListService {
     }
 
     private void createActivities(User user, Game game, boolean isNew, AddGameDTO dto, 
-                                  GameStatus oldStatus, Integer oldScore, String oldReview) {
+                                GameStatus oldStatus, Integer oldScore, String oldReview) {
+        String groupId = java.util.UUID.randomUUID().toString();
+
         if (isNew) {
-            createActivity(user, game, ActivityType.ADDED_TO_LIST, null);
+            createActivity(user, game, ActivityType.ADDED_TO_LIST, null, groupId);
         } 
 
         boolean statusMudou = dto.status() != null && oldStatus != dto.status();
         if (statusMudou) {
-            createActivity(user, game, ActivityType.CHANGED_STATUS, dto.status().toString());
+            createActivity(user, game, ActivityType.CHANGED_STATUS, dto.status().toString(), groupId);
         }
 
         if (dto.score() != null && dto.score() > 0) {
             boolean notaMudou = !dto.score().equals(oldScore);
             if (notaMudou) {
-                createActivity(user, game, ActivityType.RATED, String.valueOf(dto.score()));
+                createActivity(user, game, ActivityType.RATED, String.valueOf(dto.score()), groupId);
             }
         }
 
         if (dto.review() != null && !dto.review().isEmpty() && !dto.review().equals(oldReview)) {
-            createActivity(user, game, ActivityType.REVIEWED, dto.review());
+            createActivity(user, game, ActivityType.REVIEWED, dto.review(), groupId);
         }
     }
 
-    private void createActivity(User user, Game game, ActivityType type, String detail) {
+    private void createActivity(User user, Game game, ActivityType type, String detail, String groupId) {
         Activity activity = new Activity();
         activity.setUser(user);
         activity.setGame(game);
         activity.setType(type);
         activity.setDetail(detail);
+        activity.setGroupId(groupId);
         activityRepository.save(activity);
     }
 }

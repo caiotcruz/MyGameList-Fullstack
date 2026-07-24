@@ -36,6 +36,9 @@ public class UserGameList {
     @Column(name = "is_favorite", nullable = false)
     private boolean isFavorite = false;
 
+    @Column(name = "is_spoiler", nullable = false)
+    private boolean isSpoiler = false;
+
     private LocalDateTime updatedAt = LocalDateTime.now();
 
 }

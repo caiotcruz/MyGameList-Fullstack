@@ -1,6 +1,7 @@
 package com.caiotcruz.mygamelist.service;
 
 import com.caiotcruz.mygamelist.dto.CommentDTO;
+import com.caiotcruz.mygamelist.dto.CreateCommentDTO;
 import com.caiotcruz.mygamelist.model.*;
 import com.caiotcruz.mygamelist.repository.*;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -62,5 +63,16 @@ public class SocialService {
         Comment comment = new Comment(dto.text(), currentUser, activity);
         notificationService.send(activity.getUser(), currentUser, NotificationType.COMMENT, activity);
         return commentRepository.save(comment);
+    }
+
+    public CommentDTO addComment(Long activityId, CreateCommentDTO dto) {
+        User currentUser = getCurrentUser();
+        Activity activity = activityRepository.findById(activityId)
+                .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
+
+        Comment comment = new Comment(dto.text(), currentUser, activity);
+        Comment saved = commentRepository.save(comment);
+        notificationService.send(activity.getUser(), currentUser, NotificationType.COMMENT, activity);
+        return CommentDTO.from(saved);
     }
 }

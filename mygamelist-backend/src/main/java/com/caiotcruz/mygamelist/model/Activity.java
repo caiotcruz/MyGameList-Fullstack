@@ -27,6 +27,9 @@ public class Activity {
     @JoinColumn(name = "game_id", nullable = false)
     private Game game;
 
+    @Column(name = "group_id")
+    private String groupId;
+
     @Enumerated(EnumType.STRING)
     private ActivityType type;
 
@@ -42,19 +45,4 @@ public class Activity {
     @JsonIgnoreProperties("activity")
     private List<Comment> comments = new ArrayList<>();
 
-    public List<ActivityLike> getLikes() {
-        return likes;
-    }
-
-    public void setLikes(List<ActivityLike> likes) {
-        this.likes = likes;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
 }

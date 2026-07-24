@@ -5,7 +5,7 @@
       <img [src]="item.game.coverUrl" class="game-cover" [routerLink]="['/game', item.game.rawgId]">
       
       <div class="rating-badge" *ngIf="item.ratingForBadge || item.type === 'RATED'">
-        {{ item.ratingForBadge || item.detail }}
+        {{ item.ratingValue }}
       </div>
     </div>
 
@@ -23,27 +23,27 @@
 
         <div class="combo-details">
           <span class="mini-tag status" *ngIf="hasAction(item, 'CHANGED_STATUS')">
-            {{ formatStatus(getActionDetail(item, 'CHANGED_STATUS')) }}
+            {{ formatStatus(item.statusDetail) }}
           </span>
           
-          <span class="mini-tag review" *ngIf="item.fullReview || hasAction(item, 'REVIEWED')">
+          <span class="mini-tag review" *ngIf="item.reviewText || hasAction(item, 'REVIEWED')">
             <span class="fa-solid fa-file-lines"></span> Review
           </span>
         </div>
 
-        <div class="post-review-content" *ngIf="item.fullReview">
-          <p class="review-text-bubble">"{{ item.fullReview }}"</p>
+        <div class="post-review-content" *ngIf="item.reviewText">
+          <p class="review-text-bubble">"{{ item.reviewText }}"</p>
         </div>
 
         <span class="activity-time">{{ item.timestamp | date:'dd MMM • HH:mm' }}</span>
       </div>
 
       <div class="activity-actions">
-        <button class="action-btn" [class.active-like]="isLikedByMe(item)" (click)="toggleLike(item)">
+        <button class="action-btn" [class.active-like]="item.likedByMe" (click)="toggleLike(item)">
           <span class="icon">
-            <span [className]="isLikedByMe(item) ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></span>
+            <span [className]="item.likedByMe ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"></span>
           </span>
-          <span class="count">{{ item.likes?.length || 0 }}</span>
+          <span class="count">{{ item.likesCount || 0 }}</span>
         </button>
 
         <button class="action-btn" (click)="toggleComments(item)">
