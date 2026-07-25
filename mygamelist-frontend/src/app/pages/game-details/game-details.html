@@ -114,25 +114,39 @@
           </div>
         </div>
         
-        <p class="rev-text">"{{ rev.review }}"</p>
+        <div class="review-body-box">
+          <div class="spoiler-warning-glass" *ngIf="rev.isSpoiler && !rev.showSpoilerText" (click)="toggleSpoiler(rev)">
+            <span class="fa-solid fa-eye-slash spoiler-icon"></span>
+            <span class="spoiler-text">Contém spoilers • <strong>Clique para ver</strong></span>
+          </div>
+
+          <div class="review-text-container" *ngIf="!rev.isSpoiler || rev.showSpoilerText">
+            <p class="rev-text">"{{ rev.review }}"</p>
+            
+            <button type="button" class="btn-hide-spoiler-glass" *ngIf="rev.isSpoiler" (click)="toggleSpoiler(rev)">
+              <span class="fa-solid fa-eye"></span>
+              <span>Ocultar spoiler</span>
+            </button>
+          </div>
+        </div>
 
         <div class="rev-footer">
-        <div class="vote-group">
-          <button class="vote-btn" [class.active-like]="rev.myVote === 'LIKE'" (click)="votar(rev, 'LIKE')">
-            <span class="fa-solid fa-thumbs-up"></span> {{ rev.likesCount }}
-          </button>
-          <button class="vote-btn" [class.active-dislike]="rev.myVote === 'DISLIKE'" (click)="votar(rev, 'DISLIKE')">
-            <span class="fa-solid fa-thumbs-down"></span> {{ rev.dislikesCount }}
-          </button>
+          <div class="vote-group">
+            <button class="vote-btn" [class.active-like]="rev.myVote === 'LIKE'" (click)="votar(rev, 'LIKE')">
+              <span class="fa-solid fa-thumbs-up"></span> {{ rev.likesCount }}
+            </button>
+            <button class="vote-btn" [class.active-dislike]="rev.myVote === 'DISLIKE'" (click)="votar(rev, 'DISLIKE')">
+              <span class="fa-solid fa-thumbs-down"></span> {{ rev.dislikesCount }}
+            </button>
+          </div>
+          
+          <span class="karma-tag" 
+                [class.positive]="rev.voteScore > 0" 
+                [class.negative]="rev.voteScore < 0"
+                [class.neutral]="rev.voteScore === 0">
+            {{ rev.voteScore > 0 ? '+' : '' }}{{ rev.voteScore }} pts
+          </span>
         </div>
-        
-        <span class="karma-tag" 
-              [class.positive]="rev.voteScore > 0" 
-              [class.negative]="rev.voteScore < 0"
-              [class.neutral]="rev.voteScore === 0">
-          {{ rev.voteScore > 0 ? '+' : '' }}{{ rev.voteScore }} pts
-        </span>
-      </div>
       </div>
     </div>
 
@@ -171,6 +185,14 @@
     <div class="field-box" *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
       <label>Review Rápido</label>
       <textarea rows="4" [(ngModel)]="editingGame.review" placeholder="O que achou desse título?"></textarea>
+    </div>
+
+    <div class="field-box-checkbox" *ngIf="editingGame.status !== 'PLAN_TO_PLAY' && editingGame.review?.trim()">
+      <label class="custom-checkbox-container">
+        <input type="checkbox" [(ngModel)]="editingGame.isSpoiler">
+        <span class="checkmark"></span>
+        <span class="checkbox-label"><span class="fa-solid fa-triangle-exclamation text-danger"></span> Esta review contém spoilers</span>
+      </label>
     </div>
 
     <div class="modal-footer-btns">

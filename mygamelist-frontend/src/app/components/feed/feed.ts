@@ -24,10 +24,19 @@ export class Feed implements OnInit {
     this.myId = Number(localStorage.getItem('userId'));
     this.activityService.getFeed().subscribe({
       next: (data) => {
-        this.activities = data.map((a: any) => ({ ...a, showComments: false }));
+        this.activities = data.map((a: any) => ({ 
+          ...a, 
+          showComments: false,
+          showSpoilerText: false
+        }));
         this.cdr.detectChanges(); 
       }
     });
+  }
+
+  toggleSpoiler(item: any) {
+    item.showSpoilerText = !item.showSpoilerText;
+    this.cdr.detectChanges();
   }
 
   toggleLike(item: any) {

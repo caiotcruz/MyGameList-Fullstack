@@ -97,6 +97,14 @@
         <textarea rows="4" [(ngModel)]="editingGame.review" placeholder="O que achou desse título?"></textarea>
       </div>
 
+      <div class="field-box-checkbox" *ngIf="editingGame.status !== 'PLAN_TO_PLAY' && editingGame.review?.trim()">
+        <label class="custom-checkbox-container">
+          <input type="checkbox" [(ngModel)]="editingGame.isSpoiler">
+          <span class="checkmark"></span>
+          <span class="checkbox-label"><span class="fa-solid fa-triangle-exclamation text-danger"></span> Esta review contém spoilers</span>
+        </label>
+      </div>
+
       <div class="modal-footer-btns">
         <button class="btn-cancel-glass" (click)="fecharModal()">Cancelar</button>
         <button class="btn-save-neon" (click)="salvar()" [disabled]="isSaving">

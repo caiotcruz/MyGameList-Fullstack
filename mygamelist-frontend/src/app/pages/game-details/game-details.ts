@@ -41,6 +41,12 @@ export class GameDetails implements OnInit {
     this.isLoading = true;
     this.gameService.getGameHub(id).subscribe({
       next: (res) => {
+        if (res.latestReviews) {
+          res.latestReviews = res.latestReviews.map((r: any) => ({
+            ...r,
+            showSpoilerText: false
+          }));
+        }
         this.data = res;
         this.processarGraficoDeNotas(res.scoreDistribution);
         this.isLoading = false;
@@ -51,6 +57,11 @@ export class GameDetails implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  toggleSpoiler(rev: any) {
+    rev.showSpoilerText = !rev.showSpoilerText;
+    this.cdr.detectChanges();
   }
 
   processarGraficoDeNotas(distributionMap: { [key: string]: number } | undefined) {
@@ -84,11 +95,13 @@ export class GameDetails implements OnInit {
 
     const userId = localStorage.getItem('userId');
     let myExistingReview = '';
+    let myExistingIsSpoiler = false;
 
     if (userId && this.data.latestReviews) {
-      const userReview = this.data.latestReviews.find(r => r.myVote !== undefined); 
+      const userReview = this.data.latestReviews.find((r: any) => r.myVote !== undefined); 
       if (userReview) {
         myExistingReview = userReview.review;
+        myExistingIsSpoiler = userReview.isSpoiler || false;
       }
     }
 
@@ -98,7 +111,8 @@ export class GameDetails implements OnInit {
       coverUrl: this.data.coverUrl,
       status: this.data.userStatus || 'PLAN_TO_PLAY',
       score: this.data.userScore || 0,
-      review: myExistingReview
+      review: myExistingReview,
+      isSpoiler: myExistingIsSpoiler
     };
 
     this.isModalOpen = true;
@@ -113,6 +127,7 @@ export class GameDetails implements OnInit {
     if (this.editingGame.status === 'PLAN_TO_PLAY') {
       this.editingGame.score = 0;
       this.editingGame.review = '';
+      this.editingGame.isSpoiler = false;
     }
   }
 
@@ -165,7 +180,6 @@ export class GameDetails implements OnInit {
       return;
     }
 
-    const oldVote = rev.myVote;
     if (rev.myVote === type) {
         rev.myVote = null;
         if (type === 'LIKE') rev.likesCount--;

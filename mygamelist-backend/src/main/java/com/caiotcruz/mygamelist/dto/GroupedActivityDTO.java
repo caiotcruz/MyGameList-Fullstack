@@ -15,6 +15,7 @@ public record GroupedActivityDTO(
         String statusDetail,
         Integer ratingValue,
         String reviewText,
+        boolean reviewSpoiler,
         int likesCount,
         boolean likedByMe,
         List<CommentDTO> comments
@@ -32,9 +33,12 @@ public record GroupedActivityDTO(
                 .filter(a -> a.getType() == ActivityType.RATED)
                 .map(a -> Integer.valueOf(a.getDetail())).findFirst().orElse(null);
 
-        String reviewText = group.stream()
+        Activity reviewActivity = group.stream()
                 .filter(a -> a.getType() == ActivityType.REVIEWED)
-                .map(Activity::getDetail).findFirst().orElse(null);
+                .findFirst().orElse(null);
+
+        String reviewText = reviewActivity != null ? reviewActivity.getDetail() : null;
+        boolean reviewSpoiler = reviewActivity != null && reviewActivity.isSpoiler();
 
         boolean likedByMe = primary.getLikes().stream()
                 .anyMatch(l -> l.getUser().getId().equals(currentUserId));
@@ -45,7 +49,7 @@ public record GroupedActivityDTO(
         return new GroupedActivityDTO(
                 primary.getId(), primary.getTimestamp(),
                 ActivityUserDTO.from(primary.getUser()), ActivityGameDTO.from(primary.getGame()),
-                types, statusDetail, ratingValue, reviewText,
+                types, statusDetail, ratingValue, reviewText, reviewSpoiler,
                 primary.getLikes().size(), likedByMe, comments
         );
     }

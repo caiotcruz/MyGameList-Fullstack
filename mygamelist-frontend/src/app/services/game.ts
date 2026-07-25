@@ -3,16 +3,18 @@ import { Injectable, inject } from '@angular/core';
 import { environment } from '../../environments/environment'; 
 
 export interface GameReview {
-  reviewId: number; // Precisamos do ID
+  reviewId: number;
   userName: string;
   userAvatar: string;
   score: number;
   review: string;
+  isSpoiler: boolean;
+  showSpoilerText: boolean;
   date: string;
   likesCount: number;
   dislikesCount: number;
   voteScore: number;
-  myVote: string | null; // 'LIKE' | 'DISLIKE' | null
+  myVote: string | null;
 }
 
 export interface GameHubData {

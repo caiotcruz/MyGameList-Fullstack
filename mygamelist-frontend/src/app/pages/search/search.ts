@@ -69,8 +69,8 @@ export class Search implements OnInit {
   }
 
   onSearchInput(event: Event) {
-      const elemento = event.target as HTMLInputElement;
-      this.searchSubject.next(elemento.value);
+    const elemento = event.target as HTMLInputElement;
+    this.searchSubject.next(elemento.value);
   }
 
   carregarMais() {
@@ -102,7 +102,8 @@ export class Search implements OnInit {
       title: game.name,
       status: 'PLAN_TO_PLAY', 
       score: 0,
-      review: ''
+      review: '',
+      isSpoiler: false
     };
     this.isModalOpen = true;
   }
@@ -113,8 +114,9 @@ export class Search implements OnInit {
 
   verificarStatus() {
     if (this.editingGame.status === 'PLAN_TO_PLAY') {
-       this.editingGame.score = 0;
-       this.editingGame.review = '';
+      this.editingGame.score = 0;
+      this.editingGame.review = '';
+      this.editingGame.isSpoiler = false;
     }
   }
 

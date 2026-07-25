@@ -37,6 +37,9 @@ public class Activity {
 
     private LocalDateTime timestamp = LocalDateTime.now();
 
+    @Column(name = "is_spoiler", nullable = false)
+    private boolean isSpoiler = false;
+
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("activity") 
     private List<ActivityLike> likes = new ArrayList<>();

@@ -7,6 +7,7 @@ public record GameReviewDTO(
     String userAvatar,
     Integer score,
     String review,
+    boolean isSpoiler,
     LocalDateTime date,
     long likesCount,
     long dislikesCount,

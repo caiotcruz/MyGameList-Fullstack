@@ -172,6 +172,7 @@ public class GameService {
                 r.getUser().getProfilePicture(),
                 r.getScore(),
                 r.getReview(),
+                r.isSpoiler(),
                 r.getUpdatedAt(),
                 likes,
                 dislikes,

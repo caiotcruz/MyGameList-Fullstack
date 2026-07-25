@@ -10,5 +10,6 @@ public record AddGameDTO(
     GameStatus status,    
     @Min(0) @Max(10) Integer score, 
     String review,
-    Boolean isFavorite 
+    Boolean isFavorite,
+    Boolean isSpoiler
 ) {}

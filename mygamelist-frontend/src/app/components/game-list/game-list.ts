@@ -36,15 +36,12 @@ export class GameList implements OnChanges {
     }
   }
 
-  // --- LÓGICA DE ORDENAÇÃO PADRÃO (Favorito > Recentes) ---
   aplicarOrdenacaoPadrao() {
-    this.sortColumn = ''; // Reseta indicador visual de sort
+    this.sortColumn = ''; 
     this.games.sort((a, b) => {
-      // 1. Prioridade máxima: Favorito
       if (a.favorite && !b.favorite) return -1;
       if (!a.favorite && b.favorite) return 1;
 
-      // 2. Segunda prioridade: Data de atualização (Mais recente primeiro)
       const dateA = new Date(a.updatedAt || 0).getTime();
       const dateB = new Date(b.updatedAt || 0).getTime();
       return dateB - dateA;
@@ -82,7 +79,6 @@ export class GameList implements OnChanges {
     return this.sortDirection === 'asc' ? '▲' : '▼';
   }
 
-  // --- MÉTODOS DE APOIO (Favorito, Navegação, Edição) ---
   toggleFavorite(item: any, event: Event) {
     event.stopPropagation();
     event.preventDefault();
@@ -102,7 +98,9 @@ export class GameList implements OnChanges {
     }).subscribe(() => this.listUpdated.emit());
   }
 
-  navegarParaJogo(item: any) { this.router.navigate(['/game', item.game.rawgId]); }
+  navegarParaJogo(item: any) { 
+    this.router.navigate(['/game', item.game.rawgId]); 
+  }
   
   getStatusColor(status: string): string {
     const colors: any = { 
@@ -117,12 +115,26 @@ export class GameList implements OnChanges {
 
   abrirEdicao(item: any, event: Event) {
     event.stopPropagation();
-    this.editingGame = { rawgId: item.game.rawgId, title: item.game.title, status: item.status, score: item.score, review: item.review };
+    const temSpoiler = Boolean(item.spoiler || item.isSpoiler || item.reviewIsSpoiler);
+
+    this.editingGame = { 
+      rawgId: item.game.rawgId, 
+      title: item.game.title, 
+      status: item.status, 
+      score: item.score, 
+      review: item.review,
+      isSpoiler: temSpoiler
+    };
     this.isModalOpen = true;
   }
 
-  fecharModal() { this.isModalOpen = false; }
-  validarScore() { this.editingGame.score = Math.min(10, Math.max(0, Math.floor(this.editingGame.score))); }
+  fecharModal() { 
+    this.isModalOpen = false; 
+  }
+
+  validarScore() { 
+    this.editingGame.score = Math.min(10, Math.max(0, Math.floor(this.editingGame.score || 0))); 
+  }
 
   salvarAlteracoes() {
     this.isSaving = true;
@@ -138,7 +150,6 @@ export class GameList implements OnChanges {
 
   removerJogo(item: any, event?: Event) {
     if (event) event.stopPropagation();
-    // Em vez de confirm(), apenas guardamos o item e abrimos o modal
     this.gameParaRemover = item;
   }
 
@@ -148,7 +159,7 @@ export class GameList implements OnChanges {
     this.gameService.deleteGame(this.gameParaRemover.id).subscribe({
       next: () => {
         this.listUpdated.emit();
-        this.gameParaRemover = null; // Fecha o modal
+        this.gameParaRemover = null;
       },
       error: () => {
         alert('Erro ao remover jogo.');
@@ -163,15 +174,35 @@ export class GameList implements OnChanges {
 
   lerReview(item: any, event: Event) {
     event.stopPropagation();
-    this.reviewSelecionada = { title: item.game.title, text: item.review, score: item.score };
+    const temSpoiler = Boolean(item.spoiler || item.isSpoiler || item.reviewIsSpoiler);
+    this.reviewSelecionada = { 
+      title: item.game.title, 
+      text: item.review, 
+      score: item.score,
+      isSpoiler: temSpoiler,
+      showSpoilerText: false 
+    };
   }
 
-  fecharReview() { this.reviewSelecionada = null; }
-  trackByGameId(index: number, item: any) { return item.id; }
+  toggleSpoilerReviewModal() {
+    if (this.reviewSelecionada) {
+      this.reviewSelecionada.showSpoilerText = !this.reviewSelecionada.showSpoilerText;
+      this.cdr.detectChanges();
+    }
+  }
+
+  fecharReview() { 
+    this.reviewSelecionada = null; 
+  }
+
+  trackByGameId(index: number, item: any) { 
+    return item.id; 
+  }
+
   calcularStats() {
     this.stats.total = this.games.length;
     this.stats.completed = this.games.filter(g => g.status === 'COMPLETED').length;
     this.stats.playing = this.games.filter(g => g.status === 'PLAYING').length;
-    this.stats.platinum = this.games.filter(g => g.status === 'PLATINUM').length; // Adicionado
+    this.stats.platinum = this.games.filter(g => g.status === 'PLATINUM').length;
   }
 }

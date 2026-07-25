@@ -1,5 +1,4 @@
 <div class="list-wrapper-pro">
-  <!-- Cabeçalho de Ordenação para Desktop -->
   <div class="list-header-pro" *ngIf="games.length > 0">
     <div class="header-col sortable" (click)="ordenar('title')">
       Nome do Jogo <span class="sort-icon">{{ getSortIcon('title') }}</span>
@@ -20,7 +19,6 @@
     </div>
   </div>
 
-  <!-- Novo Painel de Ordenação Exclusivo para Mobile -->
   <div class="mobile-sort-bar" *ngIf="games.length > 0">
     <span class="sort-label">Ordenar por:</span>
     <div class="sort-options">
@@ -39,7 +37,6 @@
     </div>
   </div>
 
-  <!-- Grid/Stack de Jogos -->
   <div class="game-stack" *ngIf="games.length > 0">
     <div *ngFor="let item of games; trackBy: trackByGameId" 
          class="game-stack-card" 
@@ -92,7 +89,6 @@
     </div>
   </div>
 
-  <!-- Lista Vazia -->
   <div *ngIf="games.length === 0" class="empty-list-vibe">
     <div class="empty-icon">
       <span class="fa-solid fa-gamepad"></span>
@@ -100,25 +96,42 @@
     <p>Nenhum jogo encontrado nesta jornada.</p>
   </div>
 
-  <!-- Modais permanecem idênticos abaixo... -->
-  <div class="modal-blur" *ngIf="reviewSelecionada">
-    <div class="modal-glass-card review-modal">
+  <div class="modal-blur" *ngIf="reviewSelecionada" (click)="fecharReview()">
+    <div class="modal-glass-card review-modal" (click)="$event.stopPropagation()">
+      
       <div class="review-header-pop">
         <h3>{{ reviewSelecionada.title }}</h3>
-        <span class="score-pop">
+        <span class="score-pop" *ngIf="reviewSelecionada.score > 0">
           <span class="fa-solid fa-star"></span> {{ reviewSelecionada.score }}/10
         </span>
       </div>
+
       <div class="review-body-pop">
-        <p>{{ reviewSelecionada.text }}</p>
+        
+        <div class="spoiler-warning-glass" *ngIf="reviewSelecionada.isSpoiler && !reviewSelecionada.showSpoilerText" (click)="toggleSpoilerReviewModal()">
+          <span class="fa-solid fa-eye-slash spoiler-icon"></span>
+          <span class="spoiler-text">Contém spoilers • <strong>Clique para ver</strong></span>
+        </div>
+
+        <div class="review-text-container" *ngIf="!reviewSelecionada.isSpoiler || reviewSelecionada.showSpoilerText">
+          <p class="review-quote-text">"{{ reviewSelecionada.text }}"</p>
+          
+          <button type="button" class="btn-hide-spoiler-glass" *ngIf="reviewSelecionada.isSpoiler" (click)="toggleSpoilerReviewModal()">
+            <span class="fa-solid fa-eye"></span>
+            <span>Ocultar spoiler</span>
+          </button>
+        </div>
+
       </div>
+
       <button class="btn-save-glow" (click)="fecharReview()">Fechar</button>
     </div>
   </div>
 
-  <div class="modal-blur" *ngIf="isModalOpen">
-    <div class="modal-glass-card">
+  <div class="modal-blur" *ngIf="isModalOpen" (click)="fecharModal()">
+    <div class="modal-glass-card" (click)="$event.stopPropagation()">
       <h3 class="modal-title">Editar {{ editingGame.title }}</h3>
+      
       <div class="flex-fields-row">
         <div class="field-box small-field">
           <label>Status</label>
@@ -135,10 +148,20 @@
           <input type="number" [(ngModel)]="editingGame.score" (change)="validarScore()" min="0" max="10">
         </div>
       </div>
+
       <div class="field-box" *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
         <label>Review Curto</label>
         <textarea [(ngModel)]="editingGame.review" rows="4"></textarea>
       </div>
+
+      <div class="field-box-checkbox" *ngIf="editingGame.status !== 'PLAN_TO_PLAY' && editingGame.review?.trim()">
+        <label class="custom-checkbox-container">
+          <input type="checkbox" [(ngModel)]="editingGame.isSpoiler">
+          <span class="checkmark"></span>
+          <span class="checkbox-label"><span class="fa-solid fa-triangle-exclamation text-danger"></span> Esta review contém spoilers</span>
+        </label>
+      </div>
+
       <div class="modal-footer-btns">
         <button class="btn-cancel" (click)="fecharModal()">Cancelar</button>
         <button class="btn-save-glow" (click)="salvarAlteracoes()" [disabled]="isSaving">

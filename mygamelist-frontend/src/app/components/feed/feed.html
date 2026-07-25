@@ -29,10 +29,28 @@
           <span class="mini-tag review" *ngIf="item.reviewText || hasAction(item, 'REVIEWED')">
             <span class="fa-solid fa-file-lines"></span> Review
           </span>
+
+          <span class="mini-tag spoiler" *ngIf="item.reviewSpoiler">
+            <span class="fa-solid fa-triangle-exclamation"></span> Spoiler
+          </span>
         </div>
 
         <div class="post-review-content" *ngIf="item.reviewText">
-          <p class="review-text-bubble">"{{ item.reviewText }}"</p>
+  
+          <div class="spoiler-warning-glass" *ngIf="item.reviewSpoiler && !item.showSpoilerText" (click)="toggleSpoiler(item)">
+            <span class="fa-solid fa-eye-slash spoiler-icon"></span>
+            <span class="spoiler-text">Contém spoilers • <strong>Clique para ver</strong></span>
+          </div>
+
+          <div class="review-text-container" *ngIf="!item.reviewSpoiler || item.showSpoilerText">
+            <p class="review-text-bubble">"{{ item.reviewText }}"</p>
+            
+            <button type="button" class="btn-hide-spoiler-glass" *ngIf="item.reviewSpoiler" (click)="toggleSpoiler(item)">
+              <span class="fa-solid fa-eye"></span>
+              <span>Ocultar spoiler</span>
+            </button>
+          </div>
+
         </div>
 
         <span class="activity-time">{{ item.timestamp | date:'dd MMM • HH:mm' }}</span>

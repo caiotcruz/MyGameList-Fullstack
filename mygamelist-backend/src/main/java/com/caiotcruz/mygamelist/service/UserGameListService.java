@@ -78,8 +78,6 @@ public class UserGameListService {
         listRepository.delete(item);
     }
 
-    // --- Métodos Privados de Refatoração ---
-
     private User getAuthenticatedUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return (User) userRepository.findByEmail(email);
@@ -90,6 +88,7 @@ public class UserGameListService {
         if (dto.status() != null) item.setStatus(dto.status());
         if (dto.score() != null) item.setScore(dto.score());
         if (dto.review() != null) item.setReview(dto.review());
+        if (dto.isSpoiler() != null) item.setSpoiler(dto.isSpoiler());
     }
 
     private void handleFavoriteConstraint(User user, UserGameList item, Boolean isFavorite) {
@@ -106,35 +105,37 @@ public class UserGameListService {
     private void createActivities(User user, Game game, boolean isNew, AddGameDTO dto, 
                                 GameStatus oldStatus, Integer oldScore, String oldReview) {
         String groupId = java.util.UUID.randomUUID().toString();
+        boolean isSpoiler = Boolean.TRUE.equals(dto.isSpoiler());
 
         if (isNew) {
-            createActivity(user, game, ActivityType.ADDED_TO_LIST, null, groupId);
+            createActivity(user, game, ActivityType.ADDED_TO_LIST, null, groupId, isSpoiler);
         } 
 
         boolean statusMudou = dto.status() != null && oldStatus != dto.status();
         if (statusMudou) {
-            createActivity(user, game, ActivityType.CHANGED_STATUS, dto.status().toString(), groupId);
+            createActivity(user, game, ActivityType.CHANGED_STATUS, dto.status().toString(), groupId, isSpoiler);
         }
 
         if (dto.score() != null && dto.score() > 0) {
             boolean notaMudou = !dto.score().equals(oldScore);
             if (notaMudou) {
-                createActivity(user, game, ActivityType.RATED, String.valueOf(dto.score()), groupId);
+                createActivity(user, game, ActivityType.RATED, String.valueOf(dto.score()), groupId, isSpoiler);
             }
         }
 
         if (dto.review() != null && !dto.review().isEmpty() && !dto.review().equals(oldReview)) {
-            createActivity(user, game, ActivityType.REVIEWED, dto.review(), groupId);
+            createActivity(user, game, ActivityType.REVIEWED, dto.review(), groupId, isSpoiler);
         }
     }
 
-    private void createActivity(User user, Game game, ActivityType type, String detail, String groupId) {
+    private void createActivity(User user, Game game, ActivityType type, String detail, String groupId, boolean spoiler) {
         Activity activity = new Activity();
         activity.setUser(user);
         activity.setGame(game);
         activity.setType(type);
         activity.setDetail(detail);
         activity.setGroupId(groupId);
+        activity.setSpoiler(spoiler);
         activityRepository.save(activity);
     }
 }
