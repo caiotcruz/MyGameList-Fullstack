@@ -44,8 +44,12 @@
         </div>
 
         <div class="social-metrics">
-          <div class="metric"><span class="num">{{ statsCounts.followers }}</span> seguidores</div>
-          <div class="metric"><span class="num">{{ statsCounts.following }}</span> seguindo</div>
+          <div class="metric clickable" (click)="abrirFollowModal('followers')">
+            <span class="num">{{ statsData.followersCount }}</span> seguidores
+          </div>
+          <div class="metric clickable" (click)="abrirFollowModal('following')">
+            <span class="num">{{ statsData.followingCount }}</span> seguindo
+          </div>
         </div>
       </div>
     </div>
@@ -142,9 +146,86 @@
     </app-game-list>
   </section>
 
+  <div class="modal-blur" *ngIf="isFollowModalOpen" (click)="fecharFollowModal()">
+    <div class="modal-glass-card follow-modal" (click)="$event.stopPropagation()">
+      
+      <div class="follow-tabs-header">
+        <button 
+          class="tab-btn" 
+          [class.active]="activeFollowTab === 'followers'"
+          (click)="activeFollowTab = 'followers'">
+          Seguidores ({{ statsData.followersCount }})
+        </button>
+        <button 
+          class="tab-btn" 
+          [class.active]="activeFollowTab === 'following'"
+          (click)="activeFollowTab = 'following'">
+          Seguindo ({{ statsData.followingCount }})
+        </button>
+      </div>
+
+      <div class="follow-list-container">
+        
+        <ng-container *ngIf="activeFollowTab === 'followers'">
+          <div class="follow-user-card" *ngFor="let user of statsData.followers">
+            <div class="user-info-side" (click)="navegarParaPerfil(user.id)">
+              <div class="avatar-mini-follow">
+                <img *ngIf="user.profilePicture" [src]="user.profilePicture">
+                <span *ngIf="!user.profilePicture">{{ user.name.charAt(0) }}</span>
+              </div>
+              <span class="user-name-link">{{ user.name }}</span>
+            </div>
+
+            <button 
+              *ngIf="user.id !== myId"
+              class="btn-follow-action" 
+              [class.is-following]="euSigo(user.id)"
+              (click)="toggleFollowUser(user, $event)">
+              {{ euSigo(user.id) ? 'Seguindo' : 'Seguir de volta' }}
+            </button>
+          </div>
+
+          <div class="empty-follow-state" *ngIf="!statsData.followers.length">
+            <span class="fa-solid fa-users-slash"></span>
+            <p>Nenhum seguidor por enquanto.</p>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="activeFollowTab === 'following'">
+          <div class="follow-user-card" *ngFor="let user of statsData.following">
+            <div class="user-info-side" (click)="navegarParaPerfil(user.id)">
+              <div class="avatar-mini-follow">
+                <img *ngIf="user.profilePicture" [src]="user.profilePicture">
+                <span *ngIf="!user.profilePicture">{{ user.name.charAt(0) }}</span>
+              </div>
+              <span class="user-name-link">{{ user.name }}</span>
+            </div>
+
+            <button 
+              *ngIf="user.id !== myId"
+              class="btn-follow-action" 
+              [class.is-following]="euSigo(user.id)"
+              (click)="toggleFollowUser(user, $event)">
+              {{ euSigo(user.id) ? 'Seguindo' : 'Seguir' }}
+            </button>
+          </div>
+
+          <div class="empty-follow-state" *ngIf="!statsData.following.length">
+            <span class="fa-solid fa-user-plus"></span>
+            <p>Não está seguindo ninguém ainda.</p>
+          </div>
+        </ng-container>
+
+      </div>
+
+      <div class="modal-footer-btns">
+        <button class="btn-cancel" (click)="fecharFollowModal()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-blur" *ngIf="isEditingProfile" (click)="isEditingProfile = false">
     <div class="modal-glass-card" (click)="$event.stopPropagation()">
-      
       <div class="modal-header-secret">
         <h3 class="modal-title">Editar Perfil</h3>
         <button 

@@ -1,7 +1,9 @@
 package com.caiotcruz.mygamelist.controller;
 
+import com.caiotcruz.mygamelist.dto.ActivityUserDTO;
 import com.caiotcruz.mygamelist.dto.ApiResponseDTO;
 import com.caiotcruz.mygamelist.dto.MutualFriendDTO;
+import com.caiotcruz.mygamelist.dto.UserStatsDTO;
 import com.caiotcruz.mygamelist.dto.UserSuggestionDTO;
 import com.caiotcruz.mygamelist.dto.UserSummaryDTO;
 import com.caiotcruz.mygamelist.model.User;
@@ -13,9 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder; 
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -64,16 +64,19 @@ public class CommunityController {
     }
 
     @GetMapping("/users/{userId}/stats")
-    public ResponseEntity<Map<String, Long>> getUserStats(@PathVariable Long userId) {
+    public ResponseEntity<UserStatsDTO> getUserStats(@PathVariable Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        long following = followRepository.countByFollower(user);
-        long followers = followRepository.countByFollowed(user);
+        List<ActivityUserDTO> followers = followRepository.findFollowersOf(user);
+        List<ActivityUserDTO> following = followRepository.findFollowingOf(user);
 
-        Map<String, Long> stats = new HashMap<>();
-        stats.put("following", following);
-        stats.put("followers", followers);
+        UserStatsDTO stats = new UserStatsDTO(
+                followers.size(),
+                following.size(),
+                followers,
+                following
+        );
 
         return ResponseEntity.ok(stats);
     }

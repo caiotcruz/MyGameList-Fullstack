@@ -1,12 +1,12 @@
 import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, Subject, takeUntil } from 'rxjs';
 
 import { CommunityService } from '../../services/community';
+import { FollowService } from '../../services/follow';
 import { GameList } from '../../components/game-list/game-list'; 
-import { AuthService } from '../../services/auth'; 
 import { UserService } from '../../services/user'; 
 
 interface Badge {
@@ -18,7 +18,7 @@ interface Badge {
 
 interface ChartBar {
   score: number;
-  count: number;   
+  count: number;    
   heightPc: number; 
 }
 
@@ -32,20 +32,33 @@ interface ChartBar {
 export class Profile implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private communityService = inject(CommunityService);
+  private followService = inject(FollowService);
   private userService = inject(UserService); 
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   userId: number = 0;
+  myId: number = 0;
   userGames: any[] = [];
   userName: string = 'Carregando...';
-  userBio: string = '';  
+  userBio: string = '';   
   userAvatar: string = '';
   isRotatingAvatar: boolean = false; 
   isMyProfile: boolean = false;
   isEditingProfile = false; 
   editData = { name: '', bio: '', profilePicture: '', rotatingAvatar: false };
 
-  statsCounts = { following: 0, followers: 0 };
+  statsData: {
+    followersCount: number;
+    followingCount: number;
+    followers: any[];
+    following: any[];
+  } = { followersCount: 0, followingCount: 0, followers: [], following: [] };
+
+  isFollowModalOpen = false;
+  activeFollowTab: 'followers' | 'following' = 'followers';
+  myFollowingIds: Set<number> = new Set();
+
   stats = { total: 0, completed: 0, playing: 0, platinum: 0, avgScore: 0 };
   badges: Badge[] = [];
   chartData: ChartBar[] = [];
@@ -54,6 +67,8 @@ export class Profile implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   ngOnInit() {
+    this.myId = Number(localStorage.getItem('userId') || 0);
+
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const idParam = params.get('id');
       if (idParam) {
@@ -70,34 +85,101 @@ export class Profile implements OnInit, OnDestroy {
   }
 
   private verificarPropriedade() {
-    const myId = localStorage.getItem('userId');
-    this.isMyProfile = !!myId && Number(myId) === this.userId;
+    this.isMyProfile = !!this.myId && this.myId === this.userId;
   }
 
   carregarPerfil() {
-    forkJoin({
+    const requests: any = {
       user: this.userService.getById(this.userId),
       games: this.communityService.getUserList(this.userId),
       stats: this.communityService.getUserStats(this.userId)
-    })
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: (res: any) => {
-        this.userName = res.user.name;
-        this.userBio = res.user.bio;
-        this.userAvatar = res.user.profilePicture;
-        this.isRotatingAvatar = res.user.rotatingAvatar; 
-        this.userGames = res.games;
-        this.statsCounts = res.stats;
+    };
 
-        this.calcularHallDaFama();
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Erro ao carregar perfil completo:', err);
-        this.userName = 'Usuário não encontrado';
+    if (!this.isMyProfile && this.myId > 0) {
+      requests.myStats = this.communityService.getUserStats(this.myId);
+    }
+
+    forkJoin(requests)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: any) => {
+          this.userName = res.user.name;
+          this.userBio = res.user.bio;
+          this.userAvatar = res.user.profilePicture;
+          this.isRotatingAvatar = res.user.rotatingAvatar; 
+          this.userGames = res.games;
+          this.statsData = res.stats;
+
+          if (this.isMyProfile) {
+            this.myFollowingIds = new Set(res.stats.following?.map((u: any) => u.id) || []);
+          } else if (res.myStats) {
+            this.myFollowingIds = new Set(res.myStats.following?.map((u: any) => u.id) || []);
+          }
+
+          this.calcularHallDaFama();
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Erro ao carregar perfil completo:', err);
+          this.userName = 'Usuário não encontrado';
+        }
+      });
+  }
+
+  abrirFollowModal(tab: 'followers' | 'following') {
+    this.activeFollowTab = tab;
+    this.isFollowModalOpen = true;
+    this.cdr.detectChanges();
+  }
+
+  fecharFollowModal() {
+    this.isFollowModalOpen = false;
+  }
+
+  euSigo(targetUserId: number): boolean {
+    return this.myFollowingIds.has(targetUserId);
+  }
+
+  toggleFollowUser(targetUser: any, event: Event) {
+    event.stopPropagation();
+    const isFollowing = this.euSigo(targetUser.id);
+
+    if (isFollowing) {
+      this.myFollowingIds.delete(targetUser.id);
+      if (this.isMyProfile) {
+        this.statsData.followingCount--;
+        this.statsData.following = this.statsData.following.filter(u => u.id !== targetUser.id);
       }
-    });
+      this.cdr.detectChanges();
+
+      this.followService.unfollow(targetUser.id).subscribe({
+        error: () => {
+          this.myFollowingIds.add(targetUser.id);
+          this.cdr.detectChanges();
+          alert('Erro ao deixar de seguir.');
+        }
+      });
+    } else {
+      this.myFollowingIds.add(targetUser.id);
+      if (this.isMyProfile) {
+        this.statsData.followingCount++;
+        this.statsData.following.push(targetUser);
+      }
+      this.cdr.detectChanges();
+
+      this.followService.follow(targetUser.id).subscribe({
+        error: () => {
+          this.myFollowingIds.delete(targetUser.id);
+          this.cdr.detectChanges();
+          alert('Erro ao seguir.');
+        }
+      });
+    }
+  }
+
+  navegarParaPerfil(targetUserId: number) {
+    this.fecharFollowModal();
+    this.router.navigate(['/profile', targetUserId]);
   }
 
   abrirEdicao() {

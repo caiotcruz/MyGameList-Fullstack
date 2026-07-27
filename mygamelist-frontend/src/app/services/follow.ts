@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -10,6 +10,15 @@ export class FollowService {
 
   private apiUrl = "https://mygamelist-api-65ts.onrender.com/users";
   //private apiUrl = 'http://localhost:8080/users'; 
+
+  private getHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      })
+    };
+  }
 
   follow(userId: number) {
     return this.http.post(`${this.apiUrl}/${userId}/follow`, {});
