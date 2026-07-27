@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 public record GameReviewDTO(
     Long reviewId,
     String userName,
+    Long userId,
     String userAvatar,
     Integer score,
     String review,

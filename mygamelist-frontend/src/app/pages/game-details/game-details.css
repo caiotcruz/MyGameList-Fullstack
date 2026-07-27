@@ -452,6 +452,15 @@
   display: flex;
   gap: 15px;
   align-items: center;
+  cursor: pointer;
+}
+
+.user-pill:hover .reviewer-name {
+  color: #6200ea;
+}
+
+.user-pill:hover .avatar-mini {
+  border-color: #6200ea;
 }
 
 .avatar-mini {

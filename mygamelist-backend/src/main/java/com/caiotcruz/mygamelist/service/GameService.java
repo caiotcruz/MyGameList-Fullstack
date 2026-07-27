@@ -169,6 +169,7 @@ public class GameService {
             return new GameReviewDTO(
                 r.getId(),
                 r.getUser().getName(),
+                r.getUser().getId(),
                 r.getUser().getProfilePicture(),
                 r.getScore(),
                 r.getReview(),

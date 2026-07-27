@@ -99,13 +99,13 @@
     <div class="reviews-stack" *ngIf="data.latestReviews.length > 0">
       <div class="review-card-glass" *ngFor="let rev of data.latestReviews">
         <div class="rev-header">
-          <div class="user-pill">
-            <div class="avatar-mini">
+          <div class="user-pill" [routerLink]="['/profile', rev.userId]">
+            <div class="avatar-mini clickable">
               <img *ngIf="rev.userAvatar" [src]="rev.userAvatar">
               <span *ngIf="!rev.userAvatar">{{ rev.userName.charAt(0) }}</span>
             </div>
             <div class="user-details">
-              <strong class="reviewer-name">{{ rev.userName }}</strong>
+              <strong class="reviewer-name user-link">{{ rev.userName }}</strong>
               <span class="review-date">{{ rev.date | date:'dd MMM yyyy' }}</span>
             </div>
           </div>

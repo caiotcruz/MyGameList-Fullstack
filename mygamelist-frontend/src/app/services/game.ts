@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 export interface GameReview {
   reviewId: number;
   userName: string;
+  userId: number;
   userAvatar: string;
   score: number;
   review: string;
