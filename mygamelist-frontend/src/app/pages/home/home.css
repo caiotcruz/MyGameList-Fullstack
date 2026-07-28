@@ -275,10 +275,48 @@
   color: #777;
 }
 
-.xp-quests-card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+.trending-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.trending-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  border-color: rgba(0, 229, 255, 0.4);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 
+              0 0 25px rgba(0, 229, 255, 0.15);
+}
+
+.trending-card .card-bg-blur {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+              filter 0.6s ease;
+}
+
+.trending-card:hover .card-bg-blur {
+  transform: scale(1.12);
+  filter: blur(1px) brightness(0.5);
+}
+
+.trending-card .pill-tag-neon {
+  transition: all 0.3s ease;
+}
+
+.trending-card:hover .pill-tag-neon {
+  background: rgba(0, 229, 255, 0.25);
+  border-color: #00e5ff;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+}
+
+.trending-card .stat-pill-mini {
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.trending-card:hover .stat-pill-mini {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .pill-tag-purple {

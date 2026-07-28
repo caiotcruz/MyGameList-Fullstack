@@ -47,28 +47,34 @@
         </div>
       </ng-template>
 
-      <div class="hub-card xp-quests-card">
-        <div class="quest-header">
-          <span class="pill-tag-purple"><span class="fa-solid fa-trophy"></span> Como subir de nível</span>
+      <div class="hub-card trending-card" *ngIf="trendingGame; else defaultSearchCard" [routerLink]="['/game', trendingGame.rawgId]">
+        <div class="card-bg-blur" [style.backgroundImage]="'url(' + trendingGame.coverUrl + ')'"></div>
+        <div class="trending-overlay"></div>
+
+        <div class="card-body-content">
+          <div class="header-tag-row">
+            <span class="pill-tag-neon"><span class="fa-solid fa-chart-line"></span> #1 Em Alta no Mês</span>
+          </div>
+
+          <h3 class="game-title-now">{{ trendingGame.title }}</h3>
+
+          <div class="trending-stats-pills">
+            <span class="stat-pill-mini" *ngIf="trendingGame.interactionsThisMonth">
+              <span class="fa-solid fa-fire text-orange"></span> {{ trendingGame.interactionsThisMonth }} interações
+            </span>
+          </div>
         </div>
-        <ul class="quests-list">
-          <li>
-            <span class="q-icon"><span class="fa-solid fa-flag-checkered text-blue"></span></span>
-            <span class="q-text">Finalize um jogo na sua lista</span>
-            <span class="q-xp">+200 XP</span>
-          </li>
-          <li>
-            <span class="q-icon"><span class="fa-solid fa-pen-to-square text-green"></span></span>
-            <span class="q-text">Escreva uma review sobre um título</span>
-            <span class="q-xp">+50 XP</span>
-          </li>
-          <li>
-            <span class="q-icon"><span class="fa-solid fa-user-plus text-cyan"></span></span>
-            <span class="q-text">Siga outros jogadores na comunidade</span>
-            <span class="q-xp">+10 XP</span>
-          </li>
-        </ul>
       </div>
+
+      <ng-template #defaultSearchCard>
+        <div class="hub-card empty-playing-card" routerLink="/search">
+          <div class="empty-icon-box"><span class="fa-solid fa-compass"></span></div>
+          <div class="empty-texts">
+            <h3>Explorar Títulos</h3>
+            <p>Descubra o que a comunidade está jogando.</p>
+          </div>
+        </div>
+      </ng-template>
 
     </section>
 

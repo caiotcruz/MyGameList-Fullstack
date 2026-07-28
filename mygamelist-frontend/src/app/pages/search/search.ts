@@ -24,6 +24,8 @@ export class Search implements OnInit {
   
   query = '';
   games: any[] = [];
+  trendingGames: any[] = [];
+  displayTrendingGames: any[] = []; 
   currentPage = 1;
   isLoading = false;
   isSaving = false;
@@ -36,13 +38,14 @@ export class Search implements OnInit {
 
   ngOnInit() {
     this.carregarColecaoUsuario();
+    this.carregarTrending();
 
     this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       switchMap(termo => {
           if (!termo.trim()) {
-              return of([]);
+            return of([]);
           }
 
           this.isLoading = true;
@@ -52,6 +55,17 @@ export class Search implements OnInit {
         this.games = resultados;
         this.isLoading = false;
         this.cdr.detectChanges();
+    });
+  }
+
+  carregarTrending() {
+    this.gameService.getTrendingGames(10).subscribe({
+      next: (res: any[]) => {
+        this.trendingGames = res || [];
+        this.displayTrendingGames = [...this.trendingGames, ...this.trendingGames];
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Erro ao carregar trending:', err)
     });
   }
 
@@ -95,11 +109,12 @@ export class Search implements OnInit {
   }
 
   adicionar(game: any) {
-    if (this.estaNaLista(game.id)) return;
+    const id = game.rawgId || game.id;
+    if (this.estaNaLista(id)) return;
 
     this.editingGame = {
-      rawgId: game.id,
-      title: game.name,
+      rawgId: id,
+      title: game.title || game.name,
       status: 'PLAN_TO_PLAY', 
       score: 0,
       review: '',

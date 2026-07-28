@@ -2,6 +2,7 @@ package com.caiotcruz.mygamelist.controller;
 
 import com.caiotcruz.mygamelist.dto.GameHubDTO;
 import com.caiotcruz.mygamelist.dto.GameResultDTO;
+import com.caiotcruz.mygamelist.dto.TrendingGameDTO;
 import com.caiotcruz.mygamelist.model.Game;
 import com.caiotcruz.mygamelist.model.User;
 import com.caiotcruz.mygamelist.repository.UserRepository;
@@ -58,5 +59,10 @@ public class GameController {
         GameHubDTO hubData = gameService.getGameHubData(id, userId);
         
         return ResponseEntity.ok(hubData);
+    }
+
+    @GetMapping("/trending")
+    public List<TrendingGameDTO> getTrendingGames(@RequestParam(defaultValue = "10") int limit) {
+        return gameService.getTrendingGames(limit);
     }
 }

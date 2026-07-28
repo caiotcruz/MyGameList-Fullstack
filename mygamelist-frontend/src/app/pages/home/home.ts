@@ -1,10 +1,11 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { Feed } from '../../components/feed/feed'; 
 import { AuthService } from '../../services/auth';
 import { UserService } from '../../services/user';
 import { CommunityService } from '../../services/community';
+import { GameService } from '../../services/game';
 
 @Component({
   selector: 'app-home',
@@ -17,6 +18,8 @@ export class Home implements OnInit {
   authService = inject(AuthService);
   userService = inject(UserService);
   communityService = inject(CommunityService);
+  gameService = inject(GameService);
+  router = inject(Router);
   cdr = inject(ChangeDetectorRef); 
   
   userName = 'Gamer'; 
@@ -27,12 +30,14 @@ export class Home implements OnInit {
   readonly xpPerLevel = 1000;
 
   currentlyPlayingGame: any = null;
+  trendingGame: any = null;
 
   ngOnInit(): void {
     this.updateUserName();
     this.myId = Number(localStorage.getItem('userId'));
     if (this.myId) {
       this.carregarDadosUsuario();
+      this.carregarJogoEmAlta();
     }
   }
 
@@ -63,6 +68,18 @@ export class Home implements OnInit {
           this.cdr.detectChanges();
         }
       }
+    });
+  }
+
+  carregarJogoEmAlta() {
+    this.gameService.getTrendingGames(1).subscribe({
+      next: (res: any[]) => {
+        if (res && res.length > 0) {
+          this.trendingGame = res[0];
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => console.error('Erro ao carregar jogo em alta:', err)
     });
   }
 

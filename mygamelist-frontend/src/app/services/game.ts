@@ -35,6 +35,14 @@ export interface GameHubData {
   scoreDistribution?: { [key: string]: number };
 }
 
+export interface TrendingGame {
+  id: number;
+  rawgId: number;
+  title: string;
+  coverUrl: string;
+  interactionsThisMonth: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -77,5 +85,9 @@ export class GameService {
 
   voteReview(reviewId: number, type: 'LIKE' | 'DISLIKE') {
     return this.http.post(`${this.apiUrl}/reviews/${reviewId}/vote`, { type }, this.getHeaders());
+  }
+
+  getTrendingGames(limit: number = 10) {
+    return this.http.get<TrendingGame[]>(`${this.apiUrl}/games/trending?limit=${limit}`, this.getHeaders());
   }
 }

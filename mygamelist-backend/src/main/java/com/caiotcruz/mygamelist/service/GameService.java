@@ -5,12 +5,15 @@ import com.caiotcruz.mygamelist.dto.GameDetailsDTO;
 import com.caiotcruz.mygamelist.dto.GameHubDTO;
 import com.caiotcruz.mygamelist.dto.GameResultDTO;
 import com.caiotcruz.mygamelist.dto.GameReviewDTO;
+import com.caiotcruz.mygamelist.dto.TrendingGameDTO;
 import com.caiotcruz.mygamelist.model.Game;
 import com.caiotcruz.mygamelist.model.ReviewVote;
 import com.caiotcruz.mygamelist.model.User;
+import com.caiotcruz.mygamelist.model.enums.ActivityType;
 import com.caiotcruz.mygamelist.model.enums.GameStatus;
 import com.caiotcruz.mygamelist.model.enums.VoteType;
 import com.caiotcruz.mygamelist.model.UserGameList;
+import com.caiotcruz.mygamelist.repository.ActivityRepository;
 import com.caiotcruz.mygamelist.repository.GameRepository;
 import com.caiotcruz.mygamelist.repository.ReviewVoteRepository;
 import com.caiotcruz.mygamelist.repository.UserGameListRepository;
@@ -19,8 +22,11 @@ import com.caiotcruz.mygamelist.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,16 +42,18 @@ public class GameService {
     private final RawgClient rawgClient;
     private final ReviewVoteRepository reviewVoteRepository;
     private final UserRepository userRepository;
+    private final ActivityRepository activityRepository; 
 
     @Value("${api.rawg.key}")
     private String apiKey;
 
-    public GameService(GameRepository gameRepository, UserGameListRepository userGameListRepository, RawgClient rawgClient, ReviewVoteRepository reviewVoteRepository, UserRepository userRepository) {
+    public GameService(GameRepository gameRepository, UserGameListRepository userGameListRepository, RawgClient rawgClient, ReviewVoteRepository reviewVoteRepository, UserRepository userRepository, ActivityRepository activityRepository) {
         this.gameRepository = gameRepository;
         this.userGameListRepository = userGameListRepository;
         this.rawgClient = rawgClient;
         this.reviewVoteRepository = reviewVoteRepository;
         this.userRepository = userRepository;
+        this.activityRepository = activityRepository;
     }
 
     public List<GameResultDTO> searchGames(String query, Integer page) {
@@ -195,6 +203,53 @@ public class GameService {
         return reviewVoteRepository.findByUserAndReview(userObj, review)
                 .map(vote -> vote.getType().name())
                 .orElse(null);
+    }
+
+    public List<TrendingGameDTO> getTrendingGames(int limit) {
+        int safeLimit = Math.min(Math.max(limit, 1), 50);
+
+        LocalDateTime startOfMonth = LocalDate.now().withDayOfMonth(1).atStartOfDay();
+        List<ActivityType> relevantTypes = List.of(ActivityType.ADDED_TO_LIST, ActivityType.REVIEWED);
+
+        List<TrendingGameDTO> trendingList = new java.util.ArrayList<>(
+                activityRepository.findTrendingGames(
+                        relevantTypes,
+                        startOfMonth,
+                        PageRequest.of(0, safeLimit)
+                )
+        );
+
+        if (trendingList.size() >= safeLimit) {
+            return trendingList;
+        }
+
+        List<TrendingGameDTO> fallbackGames = List.of(
+            new TrendingGameDTO(null, 730L, "Counter-Strike 2", "https://media.rawg.io/media/games/736/736192801c692b8941c23be6e0236164.jpg", 980),
+            new TrendingGameDTO(null, 5214L, "Minecraft", "https://media.rawg.io/media/games/14a/14a83c56ff292b7ae6a878892d3010ca.jpg", 930),
+            new TrendingGameDTO(null, 22511L, "Fortnite", "https://media.rawg.io/media/games/2d9/2d9a1e6ddc5f0f2b8f8c88e6b8b6b5d5.jpg", 910),
+            new TrendingGameDTO(null, 2572L, "League of Legends", "https://media.rawg.io/media/games/78b/78bc81e247fc7e7494ea2e882b5f450c.jpg", 890),
+            new TrendingGameDTO(null, 28121L, "VALORANT", "https://media.rawg.io/media/games/b72/b7233d7286622c77d036b1a78ee5770b.jpg", 860),
+            new TrendingGameDTO(null, 12020L, "Dota 2", "https://media.rawg.io/media/games/99b/99b9a5f6ef8aeecc4430ebdc80bd5139.jpg", 820),
+            new TrendingGameDTO(null, 3498L, "Grand Theft Auto V", "https://media.rawg.io/media/games/20a/20aa03a10cdaef09362d297b0a88e8bf.jpg", 1000),
+            new TrendingGameDTO(null, 274755L, "Marvel Rivals", "https://media.rawg.io/media/games/placeholder.jpg", 760),
+            new TrendingGameDTO(null, 11973L, "Apex Legends", "https://media.rawg.io/media/games/ea5/ea5f9e4b0b91cb3cbf1ebd7af5120a6d.jpg", 720),
+            new TrendingGameDTO(null, 278L, "Rocket League", "https://media.rawg.io/media/games/40d/40d5b37c6e5d0f0ebd8c4d7f82f6d01d.jpg", 680)
+        );
+
+        for (TrendingGameDTO fallback : fallbackGames) {
+            boolean jaExisteNaLista = trendingList.stream()
+                    .anyMatch(item -> item.rawgId().equals(fallback.rawgId()));
+
+            if (!jaExisteNaLista) {
+                trendingList.add(fallback);
+            }
+
+            if (trendingList.size() >= safeLimit) {
+                break; 
+            }
+        }
+
+        return trendingList;
     }
 
     private record GameStats(
