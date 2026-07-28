@@ -56,7 +56,7 @@ public class ActivityController {
         return ResponseEntity.ok(socialService.addComment(id, dto));
     }
 
-    @DeleteMapping("/{id}/comments/{commentId}")
+    @DeleteMapping("/{activityId}/comments/{commentId}")
     public ResponseEntity<Void> removeComment(@PathVariable Long activityId, @PathVariable Long commentId) {
         socialService.removeComment(commentId);
         return ResponseEntity.noContent().build();

@@ -46,4 +46,12 @@ export class CommunityService {
   getUserStats(userId: number){
     return this.http.get<any>(`${this.apiUrl}/users/${userId}/stats`)
   }
+
+  toggleFollow(userId: number) {
+    return this.http.post<any>(`${this.apiUrl}/follow/${userId}`, {}, this.getHeaders());
+  }
+
+  deleteComment(activityId: number, commentId: number) {
+    return this.http.delete<void>(`${this.apiUrl}/activities/${activityId}/comments/${commentId}`, this.getHeaders());  
+  }
 }
