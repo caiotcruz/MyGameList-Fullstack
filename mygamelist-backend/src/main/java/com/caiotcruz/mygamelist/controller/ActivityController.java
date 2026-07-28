@@ -12,6 +12,7 @@ import com.caiotcruz.mygamelist.service.ActivityService;
 import com.caiotcruz.mygamelist.service.SocialService;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,6 +54,12 @@ public class ActivityController {
     @PostMapping("/{id}/comments")
     public ResponseEntity<CommentDTO> addComment(@PathVariable Long id, @RequestBody CreateCommentDTO dto) {
         return ResponseEntity.ok(socialService.addComment(id, dto));
+    }
+
+    @DeleteMapping("/{id}/comments/{commentId}")
+    public ResponseEntity<Void> removeComment(@PathVariable Long activityId, @PathVariable Long commentId) {
+        socialService.removeComment(commentId);
+        return ResponseEntity.noContent().build();
     }
 
 }

@@ -2,45 +2,74 @@
   <main class="main-content">
     <header class="welcome-header">
       <div class="user-meta">
-        <span class="greeting">Status do Sistema: Online</span>
+        <span class="greeting"><span class="status-dot"></span> Central de Atividades</span>
         <h1 class="username-title">Olá, {{ userName }}<span>.</span></h1>
       </div>
-      <div class="quick-stats">
-        <div class="stat-pill highlight">
-          <span class="label">Nível</span>
-          <span class="value">42</span>
+
+      <div class="xp-hero-card">
+        <div class="level-badge-pill">
+          <span class="lvl-label">NÍVEL</span>
+          <span class="lvl-number">{{ userLevel }}</span>
+        </div>
+
+        <div class="xp-progress-group">
+          <div class="xp-labels">
+            <span class="xp-title"><span class="fa-solid fa-bolt text-cyan"></span> Experiência</span>
+            <span class="xp-count">{{ userExperience }} / {{ xpPerLevel }} XP</span>
+          </div>
+          <div class="xp-track-bar">
+            <div class="xp-fill-bar" [style.width.%]="xpPercentage"></div>
+          </div>
         </div>
       </div>
     </header>
 
-    <section class="bento-grid">
-      <div class="bento-item main-cta" routerLink="/search">
-        <div class="bento-content">
-          <span class="bento-icon">
-            <span class="fa-solid fa-magnifying-glass"></span>
-          </span>
-          <div class="text">
-            <h3>Explorar Biblioteca</h3>
-            <p>Descubra seu próximo jogo favorito.</p>
-          </div>
+    <section class="action-hub-grid">
+      
+      <div class="hub-card playing-now-card" *ngIf="currentlyPlayingGame; else searchPrompt" [routerLink]="['/game', currentlyPlayingGame.game?.rawgId]">
+        <div class="card-bg-blur" [style.backgroundImage]="'url(' + (currentlyPlayingGame.game?.background_image || currentlyPlayingGame.game?.coverUrl) + ')'"></div>
+        <div class="playing-overlay"></div>
+        
+        <div class="card-body-content">
+          <span class="pill-tag"><span class="fa-solid fa-fire text-orange"></span> Continuar Jogando</span>
+          <h3 class="game-title-now">{{ currentlyPlayingGame.game?.title }}</h3>
+          <span class="action-hint">Toque para atualizar status <span class="fa-solid fa-chevron-right"></span></span>
         </div>
       </div>
 
-      <div class="bento-item profile-card" [routerLink]="['/profile', myId]">
-        <span class="bento-icon">
-          <span class="fa-solid fa-user"></span>
-        </span>
-        <h3>Meu Perfil</h3>
-        <p>Ver conquistas</p>
+      <ng-template #searchPrompt>
+        <div class="hub-card empty-playing-card" routerLink="/search">
+          <div class="empty-icon-box"><span class="fa-solid fa-plus"></span></div>
+          <div class="empty-texts">
+            <h3>Nenhum jogo em andamento</h3>
+            <p>Explore o catálogo para definir sua próxima aventura.</p>
+          </div>
+        </div>
+      </ng-template>
+
+      <div class="hub-card xp-quests-card">
+        <div class="quest-header">
+          <span class="pill-tag-purple"><span class="fa-solid fa-trophy"></span> Como subir de nível</span>
+        </div>
+        <ul class="quests-list">
+          <li>
+            <span class="q-icon"><span class="fa-solid fa-flag-checkered text-blue"></span></span>
+            <span class="q-text">Finalize um jogo na sua lista</span>
+            <span class="q-xp">+200 XP</span>
+          </li>
+          <li>
+            <span class="q-icon"><span class="fa-solid fa-pen-to-square text-green"></span></span>
+            <span class="q-text">Escreva uma review sobre um título</span>
+            <span class="q-xp">+50 XP</span>
+          </li>
+          <li>
+            <span class="q-icon"><span class="fa-solid fa-user-plus text-cyan"></span></span>
+            <span class="q-text">Siga outros jogadores na comunidade</span>
+            <span class="q-xp">+10 XP</span>
+          </li>
+        </ul>
       </div>
 
-      <div class="bento-item community-card" routerLink="/community">
-        <span class="bento-icon">
-          <span class="fa-solid fa-fire"></span>
-        </span>
-        <h3>Trending</h3>
-        <p>Comunidade ativa</p>
-      </div>
     </section>
 
     <section class="feed-container-main">

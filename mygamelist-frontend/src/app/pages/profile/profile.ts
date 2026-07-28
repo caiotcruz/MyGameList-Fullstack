@@ -43,6 +43,10 @@ export class Profile implements OnInit, OnDestroy {
   userName: string = 'Carregando...';
   userBio: string = '';   
   userAvatar: string = '';
+  userLevel: number = 1;
+  userExperience: number = 0;
+  readonly xpPerLevel: number = 1000;
+
   isRotatingAvatar: boolean = false; 
   isMyProfile: boolean = false;
   isEditingProfile = false; 
@@ -107,6 +111,8 @@ export class Profile implements OnInit, OnDestroy {
           this.userBio = res.user.bio;
           this.userAvatar = res.user.profilePicture;
           this.isRotatingAvatar = res.user.rotatingAvatar; 
+          this.userLevel = res.user.level ?? 1;
+          this.userExperience = res.user.experience ?? 0;
           this.userGames = res.games;
           this.statsData = res.stats;
 
@@ -124,6 +130,10 @@ export class Profile implements OnInit, OnDestroy {
           this.userName = 'Usuário não encontrado';
         }
       });
+  }
+
+  get xpPercentage(): number {
+    return Math.min(100, Math.max(0, (this.userExperience / this.xpPerLevel) * 100));
   }
 
   abrirFollowModal(tab: 'followers' | 'following') {

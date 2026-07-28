@@ -6,6 +6,7 @@ import com.caiotcruz.mygamelist.model.Game;
 import com.caiotcruz.mygamelist.model.User;
 import com.caiotcruz.mygamelist.model.UserGameList;
 import com.caiotcruz.mygamelist.model.enums.ActivityType;
+import com.caiotcruz.mygamelist.model.enums.ExperienceSource;
 import com.caiotcruz.mygamelist.model.enums.GameStatus;
 import com.caiotcruz.mygamelist.repository.ActivityRepository;
 import com.caiotcruz.mygamelist.repository.UserGameListRepository;
@@ -23,12 +24,14 @@ public class UserGameListService {
     private final GameService gameService;
     private final UserRepository userRepository;
     private final ActivityRepository activityRepository;
+    private final LevelService levelService;
 
-    public UserGameListService(UserGameListRepository listRepository, GameService gameService, UserRepository userRepository, ActivityRepository activityRepository) {
+    public UserGameListService(UserGameListRepository listRepository, GameService gameService, UserRepository userRepository, ActivityRepository activityRepository, LevelService levelService) {
         this.listRepository = listRepository;
         this.gameService = gameService;
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
+        this.levelService = levelService;
     }
     
     public UserGameList addGameToList(AddGameDTO dto) {
@@ -39,7 +42,7 @@ public class UserGameListService {
                 .orElse(new UserGameList());
 
         boolean isNew = item.getId() == null;
-        
+
         GameStatus oldStatus = item.getStatus();
         Integer oldScore = item.getScore();
         String oldReview = item.getReview();
@@ -56,6 +59,7 @@ public class UserGameListService {
         UserGameList savedItem = listRepository.save(item);
 
         createActivities(user, game, isNew, dto, oldStatus, oldScore, oldReview);
+        applyExperienceChanges(user, oldStatus, item.getStatus(), oldReview, item.getReview());
 
         return savedItem;
     }
@@ -75,7 +79,46 @@ public class UserGameListService {
             throw new RuntimeException("Você não tem permissão para deletar este item.");
         }
 
+        applyExperienceChanges(user, item.getStatus(), null, item.getReview(), null);
+
         listRepository.delete(item);
+    }
+
+    private void applyExperienceChanges(User user, GameStatus oldStatus, GameStatus newStatus,
+                                        String oldReview, String newReview) {
+        int oldTierExp = tierExperienceFor(oldStatus);
+        int newTierExp = tierExperienceFor(newStatus);
+        int delta = newTierExp - oldTierExp;
+
+        if (delta != 0) {
+            levelService.applyDelta(user, delta);
+        }
+
+        boolean hadReview = oldReview != null && !oldReview.isBlank();
+        boolean hasReview = newReview != null && !newReview.isBlank();
+
+        if (!hadReview && hasReview) {
+            levelService.grant(user, ExperienceSource.REVIEW_WRITTEN);
+        } else if (hadReview && !hasReview) {
+            levelService.revoke(user, ExperienceSource.REVIEW_WRITTEN);
+        }
+    }
+
+    private int tierExperienceFor(GameStatus status) {
+        if (status == null) return 0;
+
+        int total = ExperienceSource.GAME_ADDED.getAmount();
+
+        boolean completed = status == GameStatus.COMPLETED || status == GameStatus.PLATINUM;
+        if (completed) {
+            total += ExperienceSource.GAME_COMPLETED.getAmount();
+        }
+
+        if (status == GameStatus.PLATINUM) {
+            total += ExperienceSource.GAME_PLATINUM.getAmount();
+        }
+
+        return total;
     }
 
     private User getAuthenticatedUser() {

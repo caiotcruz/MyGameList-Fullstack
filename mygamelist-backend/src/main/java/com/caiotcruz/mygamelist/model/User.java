@@ -37,6 +37,12 @@ public class User implements UserDetails {
     @Column(columnDefinition = "TEXT") 
     private String profilePicture;
 
+    @Column(nullable = false)
+    private int level = 1;
+
+    @Column(nullable = false)
+    private int experience = 0;
+
     private boolean rotatingAvatar = false;
 
     @Override

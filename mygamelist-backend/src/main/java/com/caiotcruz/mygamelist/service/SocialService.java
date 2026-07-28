@@ -6,6 +6,8 @@ import com.caiotcruz.mygamelist.model.*;
 import com.caiotcruz.mygamelist.repository.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import com.caiotcruz.mygamelist.model.enums.ExperienceSource;
 import com.caiotcruz.mygamelist.model.enums.NotificationType;
 
 import java.util.Optional;
@@ -18,17 +20,20 @@ public class SocialService {
     private final ActivityRepository activityRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final LevelService levelService;
 
     public SocialService(ActivityLikeRepository likeRepository,
                          CommentRepository commentRepository,
                          ActivityRepository activityRepository,
                          UserRepository userRepository,
-                         NotificationService notificationService) {
+                         NotificationService notificationService,
+                        LevelService levelService) {
         this.likeRepository = likeRepository;
         this.commentRepository = commentRepository;
         this.activityRepository = activityRepository;
         this.userRepository = userRepository;
         this.notificationService = notificationService;
+        this.levelService = levelService;
     }
 
 
@@ -42,37 +47,62 @@ public class SocialService {
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
 
+        boolean isSelfActivity = activity.getUser().getId().equals(currentUser.getId());
+
         Optional<ActivityLike> existingLike = likeRepository.findByUserAndActivity(currentUser, activity);
 
         if (existingLike.isPresent()) {
             likeRepository.delete(existingLike.get());
-            return false; 
+            if (!isSelfActivity) {
+                levelService.revoke(currentUser, ExperienceSource.LIKE_GIVEN);
+            }
+            return false;
         } else {
             ActivityLike newLike = new ActivityLike(currentUser, activity);
             likeRepository.save(newLike);
-            notificationService.send(activity.getUser(), currentUser, NotificationType.LIKE, activity);
-            return true; 
+            if (!isSelfActivity) {
+                levelService.grant(currentUser, ExperienceSource.LIKE_GIVEN);
+                notificationService.send(activity.getUser(), currentUser, NotificationType.LIKE, activity);
+            }
+            return true;
         }
     }
 
-    public Comment addComment(Long activityId, CommentDTO dto) {
-        User currentUser = getCurrentUser();
-        Activity activity = activityRepository.findById(activityId)
-                .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
-
-        Comment comment = new Comment(dto.text(), currentUser, activity);
-        notificationService.send(activity.getUser(), currentUser, NotificationType.COMMENT, activity);
-        return commentRepository.save(comment);
-    }
 
     public CommentDTO addComment(Long activityId, CreateCommentDTO dto) {
         User currentUser = getCurrentUser();
         Activity activity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new RuntimeException("Atividade não encontrada"));
 
+        boolean isSelfActivity = activity.getUser().getId().equals(currentUser.getId());
+
         Comment comment = new Comment(dto.text(), currentUser, activity);
         Comment saved = commentRepository.save(comment);
-        notificationService.send(activity.getUser(), currentUser, NotificationType.COMMENT, activity);
+
+        if (!isSelfActivity) {
+            levelService.grant(currentUser, ExperienceSource.COMMENT_POSTED);
+            notificationService.send(activity.getUser(), currentUser, NotificationType.COMMENT, activity);
+        }
+
         return CommentDTO.from(saved);
     }
+
+    public void removeComment(Long commentId) {
+        User currentUser = getCurrentUser();
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comentário não encontrado"));
+
+        if (!comment.getUser().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("Você não tem permissão para remover este comentário.");
+        }
+
+        boolean isSelfActivity = comment.getActivity().getUser().getId().equals(currentUser.getId());
+
+        commentRepository.delete(comment);
+
+        if (!isSelfActivity) {
+            levelService.revoke(currentUser, ExperienceSource.COMMENT_POSTED);
+        }
+    }
+    
 }

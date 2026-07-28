@@ -19,7 +19,8 @@
             <div class="avatar-placeholder">{{ userName[0] || '?' }}</div>
           </ng-template>
         </div>
-        <div class="lvl-tag">LEVEL 42</div>
+        
+        <div class="lvl-tag">LEVEL {{ userLevel }}</div>
       </div>
 
       <div class="user-meta-info">
@@ -41,6 +42,16 @@
           <ng-template #bioPlaceholder>
             <p class="user-bio-text placeholder">Membro lendário do MyGameList.</p>
           </ng-template>
+        </div>
+
+        <div class="xp-bar-wrapper" *ngIf="isMyProfile">
+          <div class="xp-info-labels">
+            <span class="xp-title"><span class="fa-solid fa-bolt"></span> Experiência</span>
+            <span class="xp-counter">{{ userExperience }} / {{ xpPerLevel }} XP</span>
+          </div>
+          <div class="xp-track">
+            <div class="xp-fill" [style.width.%]="xpPercentage"></div>
+          </div>
         </div>
 
         <div class="social-metrics">

@@ -6,6 +6,8 @@ import com.caiotcruz.mygamelist.repository.UserFollowRepository;
 import com.caiotcruz.mygamelist.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import com.caiotcruz.mygamelist.model.enums.ExperienceSource;
 import com.caiotcruz.mygamelist.model.enums.NotificationType;
 
 @Service
@@ -14,11 +16,14 @@ public class UserFollowService {
     private final UserFollowRepository followRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final LevelService levelService;
 
-    public UserFollowService(UserFollowRepository followRepository, UserRepository userRepository, NotificationService notificationService) {
+
+    public UserFollowService(UserFollowRepository followRepository, UserRepository userRepository, NotificationService notificationService, LevelService levelService) {
         this.followRepository = followRepository;
         this.userRepository = userRepository;
         this.notificationService = notificationService;
+        this.levelService = levelService;
     }
 
     public void followUser(Long userIdToFollow) {
@@ -38,6 +43,10 @@ public class UserFollowService {
         follow.setFollower(currentUser);
         follow.setFollowed(userToFollow);
         followRepository.save(follow);
+
+        levelService.grant(currentUser, ExperienceSource.USER_FOLLOWED);
+        levelService.grant(userToFollow, ExperienceSource.USER_GAINED_FOLLOWER);
+
         notificationService.send(userToFollow, currentUser, NotificationType.FOLLOW, null);
     }
 
@@ -50,6 +59,9 @@ public class UserFollowService {
                 .orElseThrow(() -> new RuntimeException("Você não segue este usuário."));
 
         followRepository.delete(follow);
+
+        levelService.revoke(currentUser, ExperienceSource.USER_FOLLOWED);
+        levelService.revoke(userToUnfollow, ExperienceSource.USER_GAINED_FOLLOWER);
     }
     
     public boolean isFollowing(Long userId) {
