@@ -75,9 +75,20 @@
       <div class="comments-container" *ngIf="item.showComments">
         <div class="comments-list">
           <div class="comment-bubble" *ngFor="let c of item.comments">
-            <strong>{{ c.user.name }}</strong> {{ c.text }}
+            <div class="comment-main-content">
+              <strong>{{ c.user.name }}</strong> {{ c.text }}
+            </div>
+            
+            <button 
+              *ngIf="podeDeletarComentario(c, item.user)" 
+              class="btn-delete-comment" 
+              (click)="deletarComentario(item, c.id)"
+              title="Apagar comentário">
+              <span class="fa-solid fa-trash-can"></span>
+            </button>
           </div>
         </div>
+        
         <div class="comment-input-box">
           <input #ipt type="text" placeholder="Adicionar comentário..." (keyup.enter)="enviarComentario(item, ipt)">
           <button (click)="enviarComentario(item, ipt)">

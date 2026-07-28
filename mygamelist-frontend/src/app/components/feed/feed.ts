@@ -70,6 +70,25 @@ export class Feed implements OnInit {
     });
   }
 
+  podeDeletarComentario(comment: any, activityUser: any): boolean {
+    if (!this.myId) return false;
+    return comment.user?.id === this.myId || activityUser?.id === this.myId;
+  }
+
+  deletarComentario(item: any, commentId: number) {
+    const backupComments = [...(item.comments || [])];
+    item.comments = item.comments.filter((c: any) => c.id !== commentId);
+    this.cdr.detectChanges();
+
+    this.communityService.deleteComment(item.id, commentId).subscribe({
+      error: () => {
+        item.comments = backupComments;
+        this.cdr.detectChanges();
+        alert('Erro ao deletar comentário.');
+      }
+    });
+  }
+
   hasAction(item: any, type: string): boolean {
     return item.types?.includes(type);
   }

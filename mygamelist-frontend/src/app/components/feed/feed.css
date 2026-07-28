@@ -73,15 +73,52 @@
 }
 
 .comment-bubble {
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   padding: 10px 15px;
   border-radius: 12px;
   font-size: 0.9rem;
   margin-bottom: 8px;
   color: #bbb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  transition: background 0.2s ease;
 }
 
-.comment-bubble strong { color: #6200ea; margin-right: 5px; }
+.comment-bubble:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.comment-main-content {
+  flex: 1;
+}
+
+.comment-bubble strong { 
+  color: #6200ea; 
+  margin-right: 5px; 
+}
+
+.comment-bubble:hover .btn-delete-comment {
+  opacity: 1;
+}
+
+.btn-delete-comment {
+  background: transparent;
+  border: none;
+  color: #666;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  opacity: 0.5;
+}
+
+.btn-delete-comment:hover {
+  color: #ff4757;
+  background: rgba(255, 71, 87, 0.15);
+}
 
 .comment-input-box { display: flex; gap: 10px; margin-top: 15px; }
 
