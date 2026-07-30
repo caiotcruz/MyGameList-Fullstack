@@ -8,6 +8,7 @@ public record GameHubDTO(
     Long externalId,    
     String title,
     String coverUrl,
+    Integer metacritic,
     
     long totalPlayers,
     long playingCount,

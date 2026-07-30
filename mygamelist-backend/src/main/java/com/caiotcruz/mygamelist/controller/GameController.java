@@ -1,7 +1,12 @@
 package com.caiotcruz.mygamelist.controller;
 
+import com.caiotcruz.mygamelist.dto.GameAchievementDTO;
 import com.caiotcruz.mygamelist.dto.GameHubDTO;
 import com.caiotcruz.mygamelist.dto.GameResultDTO;
+import com.caiotcruz.mygamelist.dto.GameScreenshotDTO;
+import com.caiotcruz.mygamelist.dto.GameStoreDTO;
+import com.caiotcruz.mygamelist.dto.GameTrailerDTO;
+import com.caiotcruz.mygamelist.dto.RelatedGameDTO;
 import com.caiotcruz.mygamelist.dto.TrendingGameDTO;
 import com.caiotcruz.mygamelist.model.Game;
 import com.caiotcruz.mygamelist.model.User;
@@ -64,5 +69,35 @@ public class GameController {
     @GetMapping("/trending")
     public List<TrendingGameDTO> getTrendingGames(@RequestParam(defaultValue = "10") int limit) {
         return gameService.getTrendingGames(limit);
+    }
+
+    @GetMapping("/{rawgId}/additions")
+    public List<RelatedGameDTO> getAdditions(@PathVariable Long rawgId) {
+        return gameService.getAdditions(rawgId);
+    }
+
+    @GetMapping("/{rawgId}/series")
+    public List<RelatedGameDTO> getGameSeries(@PathVariable Long rawgId) {
+        return gameService.getGameSeries(rawgId);
+    }
+
+    @GetMapping("/{rawgId}/screenshots")
+    public List<GameScreenshotDTO> getScreenshots(@PathVariable Long rawgId) {
+        return gameService.getScreenshots(rawgId);
+    }
+
+    @GetMapping("/{rawgId}/stores")
+    public List<GameStoreDTO> getStores(@PathVariable Long rawgId) {
+        return gameService.getStores(rawgId);
+    }
+
+    @GetMapping("/{rawgId}/achievements")
+    public List<GameAchievementDTO> getAchievements(@PathVariable Long rawgId) {
+        return gameService.getAchievements(rawgId);
+    }
+
+    @GetMapping("/{rawgId}/trailers")
+    public List<GameTrailerDTO> getTrailers(@PathVariable Long rawgId) {
+        return gameService.getTrailers(rawgId);
     }
 }

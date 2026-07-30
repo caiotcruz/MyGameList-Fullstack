@@ -23,4 +23,6 @@ public class Game {
     private String coverUrl; 
     
     private String releaseDate;
+
+    private Integer metacritic;
 }

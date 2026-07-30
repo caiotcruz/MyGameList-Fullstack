@@ -1,11 +1,18 @@
 package com.caiotcruz.mygamelist.service;
 
 import com.caiotcruz.mygamelist.client.RawgClient;
+import com.caiotcruz.mygamelist.dto.GameAchievementDTO;
 import com.caiotcruz.mygamelist.dto.GameDetailsDTO;
 import com.caiotcruz.mygamelist.dto.GameHubDTO;
 import com.caiotcruz.mygamelist.dto.GameResultDTO;
 import com.caiotcruz.mygamelist.dto.GameReviewDTO;
+import com.caiotcruz.mygamelist.dto.GameScreenshotDTO;
+import com.caiotcruz.mygamelist.dto.GameStoreDTO;
+import com.caiotcruz.mygamelist.dto.GameTrailerDTO;
+import com.caiotcruz.mygamelist.dto.RelatedGameDTO;
 import com.caiotcruz.mygamelist.dto.TrendingGameDTO;
+import com.caiotcruz.mygamelist.dto.rawg.RawgAchievementDTO;
+import com.caiotcruz.mygamelist.dto.rawg.RawgAchievementsResponse;
 import com.caiotcruz.mygamelist.model.Game;
 import com.caiotcruz.mygamelist.model.ReviewVote;
 import com.caiotcruz.mygamelist.model.User;
@@ -27,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,15 +78,16 @@ public class GameService {
                     Game newGame = new Game();
                     newGame.setRawgId(externalGame.id());
                     newGame.setTitle(externalGame.name());
-                    newGame.setDescription(externalGame.description()); 
+                    newGame.setDescription(externalGame.description());
                     newGame.setCoverUrl(externalGame.backgroundImage());
                     newGame.setReleaseDate(externalGame.released());
+                    newGame.setMetacritic(externalGame.metacritic());
 
                     return gameRepository.save(newGame);
                 });
     }
 
-    public void voteOnReview(Long reviewId, Long userId, String voteTypeStr) {
+        public void voteOnReview(Long reviewId, Long userId, String voteTypeStr) {
         var review = userGameListRepository.findById(reviewId)
                 .orElseThrow(() -> new RuntimeException("Review não encontrada"));
         
@@ -116,6 +125,7 @@ public class GameService {
                 rawgId,
                 game.getTitle(),
                 game.getCoverUrl(),
+                game.getMetacritic(),
                 stats.totalPlayers(),
                 stats.playingCount(),
                 stats.completedCount(),
@@ -127,6 +137,65 @@ public class GameService {
                 myEntry.favorite(),
                 reviews
         );
+    }
+
+    public List<RelatedGameDTO> getAdditions(Long rawgId) {
+        return rawgClient.getAdditions(apiKey, rawgId).results().stream()
+                .map(g -> new RelatedGameDTO(g.id(), g.name(), g.backgroundImage(), g.released(), g.metacritic()))
+                .toList();
+    }
+
+   
+    public List<RelatedGameDTO> getGameSeries(Long rawgId) {
+        return rawgClient.getGameSeries(apiKey, rawgId).results().stream()
+                .map(g -> new RelatedGameDTO(g.id(), g.name(), g.backgroundImage(), g.released(), g.metacritic()))
+                .toList();
+    }
+
+    public List<GameScreenshotDTO> getScreenshots(Long rawgId) {
+        return rawgClient.getScreenshots(apiKey, rawgId).results().stream()
+                .map(s -> new GameScreenshotDTO(s.id(), s.image()))
+                .toList();
+    }
+
+    public List<GameStoreDTO> getStores(Long rawgId) {
+        return rawgClient.getStores(apiKey, rawgId).results().stream()
+                .map(s -> new GameStoreDTO(s.storeId(), RawgStoreCatalog.nameFor(s.storeId()), s.url()))
+                .toList();
+    }
+
+    public List<GameAchievementDTO> getAchievements(Long rawgId) {
+        List<GameAchievementDTO> all = new ArrayList<>();
+        int page = 1;
+        int pageSize = 40;
+        int maxPages = 10;
+
+        while (page <= maxPages) {
+            RawgAchievementsResponse response = rawgClient.getAchievements(apiKey, rawgId, page, pageSize);
+            List<RawgAchievementDTO> results = response.results();
+
+            all.addAll(results.stream()
+                    .map(a -> new GameAchievementDTO(a.id(), a.name(), a.description(), a.image(), a.percent()))
+                    .toList());
+
+            boolean isLastPage = response.next() == null || results.isEmpty();
+            if (isLastPage) break;
+
+            page++;
+        }
+
+        return all;
+    }
+
+    public List<GameTrailerDTO> getTrailers(Long rawgId) {
+        return rawgClient.getMovies(apiKey, rawgId).results().stream()
+                .map(m -> new GameTrailerDTO(
+                        m.id(),
+                        m.name(),
+                        m.preview(),
+                        m.data().max() != null ? m.data().max() : m.data().p480()
+                ))
+                .toList();
     }
 
     private GameStats loadStatistics(Long internalId) {
