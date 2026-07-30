@@ -136,8 +136,8 @@
     <div class="related-block" *ngIf="additions.length > 0">
       <span class="related-subheader">Edições e DLCs</span>
       <div class="related-strip">
-        <div class="related-card" *ngFor="let item of additions">
-          <img [src]="item.backgroundImage" alt="{{ item.name }}">
+        <div class="related-card" *ngFor="let item of additions" [routerLink]="['/game', item.rawgId]">
+          <img [src]="item.backgroundImage || 'assets/no-image.jpg'" [alt]="item.name">
           <div class="related-info">
             <span class="related-name">{{ item.name }}</span>
             <span class="related-meta" *ngIf="item.metacritic">
@@ -151,8 +151,8 @@
     <div class="related-block" *ngIf="series.length > 0">
       <span class="related-subheader">Jogos da Série</span>
       <div class="related-strip">
-        <div class="related-card" *ngFor="let item of series">
-          <img [src]="item.backgroundImage" alt="{{ item.name }}">
+        <div class="related-card" *ngFor="let item of series" [routerLink]="['/game', item.rawgId]">
+          <img [src]="item.backgroundImage || 'assets/no-image.jpg'" [alt]="item.name">
           <div class="related-info">
             <span class="related-name">{{ item.name }}</span>
             <span class="related-meta" *ngIf="item.metacritic">
