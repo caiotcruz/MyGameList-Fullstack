@@ -1,8 +1,12 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms'; 
-import { GameService, GameHubData } from '../../services/game';
+import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
+import {
+  GameService, GameHubData, RelatedGame, GameStore,
+  GameAchievement, GameScreenshot, GameTrailer
+} from '../../services/game';
 
 interface ChartBar {
   score: number;
@@ -14,7 +18,7 @@ interface ChartBar {
   selector: 'app-game-details',
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
-  templateUrl: './game-details.html', 
+  templateUrl: './game-details.html',
   styleUrl: './game-details.css'
 })
 export class GameDetails implements OnInit {
@@ -25,10 +29,21 @@ export class GameDetails implements OnInit {
   data: GameHubData | null = null;
   isLoading = true;
   chartData: ChartBar[] = [];
-  
+
   isModalOpen = false;
   isSaving = false;
   editingGame: any = {};
+
+  additions: RelatedGame[] = [];
+  series: RelatedGame[] = [];
+  stores: GameStore[] = [];
+  achievements: GameAchievement[] = [];
+  screenshots: GameScreenshot[] = [];
+  trailers: GameTrailer[] = [];
+
+  showAllAchievements = false;
+  lightboxIndex: number | null = null;
+  activeTrailer: GameTrailer | null = null;
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -39,6 +54,8 @@ export class GameDetails implements OnInit {
 
   carregarHub(id: string) {
     this.isLoading = true;
+    this.resetExtras();
+
     this.gameService.getGameHub(id).subscribe({
       next: (res) => {
         if (res.latestReviews) {
@@ -51,12 +68,108 @@ export class GameDetails implements OnInit {
         this.processarGraficoDeNotas(res.scoreDistribution);
         this.isLoading = false;
         this.cdr.detectChanges();
+        this.carregarExtras(id);
       },
       error: (err) => {
         console.error(err);
         this.isLoading = false;
       }
     });
+  }
+
+  private resetExtras() {
+    this.additions = [];
+    this.series = [];
+    this.stores = [];
+    this.achievements = [];
+    this.screenshots = [];
+    this.trailers = [];
+    this.showAllAchievements = false;
+    this.lightboxIndex = null;
+    this.activeTrailer = null;
+  }
+
+  private carregarExtras(rawgId: string) {
+    forkJoin({
+      additions: this.gameService.getAdditions(rawgId),
+      series: this.gameService.getGameSeries(rawgId),
+      stores: this.gameService.getStores(rawgId),
+      achievements: this.gameService.getAchievements(rawgId)
+    }).subscribe({
+      next: ({ additions, series, stores, achievements }) => {
+        this.additions = additions;
+        this.series = series;
+        this.stores = stores;
+        this.achievements = [...achievements].sort((a, b) => a.percent - b.percent);
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Erro ao carregar dados extras da RAWG:', err)
+    });
+
+    this.gameService.getScreenshots(rawgId).subscribe({
+      next: (res) => {
+        this.screenshots = res;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Erro ao carregar screenshots:', err)
+    });
+
+    this.gameService.getTrailers(rawgId).subscribe({
+      next: (res) => {
+        this.trailers = res;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Erro ao carregar trailers:', err)
+    });
+  }
+
+  get visibleAchievements(): GameAchievement[] {
+    return this.showAllAchievements ? this.achievements : this.achievements.slice(0, 6);
+  }
+
+  toggleShowAchievements() {
+    this.showAllAchievements = !this.showAllAchievements;
+  }
+
+  rarityClass(percent: number): string {
+    if (percent < 10) return 'rarity-legendary';
+    if (percent < 40) return 'rarity-rare';
+    return 'rarity-common';
+  }
+
+  metacriticClass(score: number | null): string {
+    if (score == null) return '';
+    if (score >= 75) return 'meta-high';
+    if (score >= 50) return 'meta-mid';
+    return 'meta-low';
+  }
+
+  openLightbox(index: number) {
+    this.lightboxIndex = index;
+  }
+
+  closeLightbox() {
+    this.lightboxIndex = null;
+  }
+
+  nextScreenshot(event: MouseEvent) {
+    event.stopPropagation();
+    if (this.lightboxIndex === null) return;
+    this.lightboxIndex = (this.lightboxIndex + 1) % this.screenshots.length;
+  }
+
+  prevScreenshot(event: MouseEvent) {
+    event.stopPropagation();
+    if (this.lightboxIndex === null) return;
+    this.lightboxIndex = (this.lightboxIndex - 1 + this.screenshots.length) % this.screenshots.length;
+  }
+
+  playTrailer(trailer: GameTrailer) {
+    this.activeTrailer = trailer;
+  }
+
+  closeTrailer() {
+    this.activeTrailer = null;
   }
 
   toggleSpoiler(rev: any) {
@@ -98,7 +211,7 @@ export class GameDetails implements OnInit {
     let myExistingIsSpoiler = false;
 
     if (userId && this.data.latestReviews) {
-      const userReview = this.data.latestReviews.find((r: any) => r.myVote !== undefined); 
+      const userReview = this.data.latestReviews.find((r: any) => r.myVote !== undefined);
       if (userReview) {
         myExistingReview = userReview.review;
         myExistingIsSpoiler = userReview.isSpoiler || false;
@@ -162,12 +275,12 @@ export class GameDetails implements OnInit {
   }
 
   getStatusLabel(status: string): string {
-    const map: any = { 
-      'PLAYING': 'Jogando', 
-      'COMPLETED': 'Zerado', 
+    const map: any = {
+      'PLAYING': 'Jogando',
+      'COMPLETED': 'Zerado',
       'PLATINUM': 'Platinado',
-      'PLAN_TO_PLAY': 'Quero Jogar', 
-      'DROPPED': 'Larguei' 
+      'PLAN_TO_PLAY': 'Quero Jogar',
+      'DROPPED': 'Larguei'
     };
     return map[status] || status;
   }
@@ -181,24 +294,24 @@ export class GameDetails implements OnInit {
     }
 
     if (rev.myVote === type) {
-        rev.myVote = null;
-        if (type === 'LIKE') rev.likesCount--;
-        else rev.dislikesCount--;
+      rev.myVote = null;
+      if (type === 'LIKE') rev.likesCount--;
+      else rev.dislikesCount--;
     } else {
-        if (rev.myVote === 'LIKE') rev.likesCount--;
-        if (rev.myVote === 'DISLIKE') rev.dislikesCount--;
-        
-        rev.myVote = type;
-        if (type === 'LIKE') rev.likesCount++;
-        else rev.dislikesCount++;
+      if (rev.myVote === 'LIKE') rev.likesCount--;
+      if (rev.myVote === 'DISLIKE') rev.dislikesCount--;
+
+      rev.myVote = type;
+      if (type === 'LIKE') rev.likesCount++;
+      else rev.dislikesCount++;
     }
-    
+
     rev.voteScore = (rev.likesCount * 2) - rev.dislikesCount;
 
     this.gameService.voteReview(reviewId, type).subscribe({
-        error: (err) => {
-            console.error('Erro no voto:', err);
-        }
+      error: (err) => {
+        console.error('Erro no voto:', err);
+      }
     });
   }
 }

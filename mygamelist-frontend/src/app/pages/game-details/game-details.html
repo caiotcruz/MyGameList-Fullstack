@@ -3,10 +3,10 @@
 </div>
 
 <div class="hub-container" *ngIf="data">
-  
+
   <div class="hero-section" [style.backgroundImage]="'url(' + (data.coverUrl) + ')'">
     <div class="hero-overlay"></div>
-    
+
     <div class="hero-content">
       <div class="cover-vessel">
         <img [src]="data.coverUrl" class="cover-art" alt="Capa">
@@ -15,13 +15,18 @@
 
       <div class="hero-info">
         <h1 class="game-title-main">{{ data.title }}</h1>
-        
+
         <div class="hero-actions-row">
           <div class="community-rating-glass">
             <span class="label-tiny">Média Global</span>
             <div class="stars-neon">
               <span class="fa-solid fa-star text-warning"></span> {{ data.communityScore | number:'1.1-1' }}
             </div>
+          </div>
+
+          <div class="metacritic-badge" *ngIf="data.metacritic != null" [ngClass]="metacriticClass(data.metacritic)">
+            <span class="label-tiny">Metacritic</span>
+            <div class="meta-score">{{ data.metacritic }}</div>
           </div>
 
           <div class="user-status-glass" (click)="abrirModal()">
@@ -41,6 +46,38 @@
     </div>
   </div>
 
+  <div class="stores-strip" *ngIf="stores.length > 0">
+    <span class="stores-label">Disponível em</span>
+    <a class="store-pill" *ngFor="let store of stores" [href]="store.url" target="_blank" rel="noopener">
+      {{ store.storeName }}
+      <span class="fa-solid fa-arrow-up-right-from-square"></span>
+    </a>
+  </div>
+
+  <div class="media-section" *ngIf="screenshots.length > 0 || trailers.length > 0">
+    <div class="glass-card">
+      <span class="label">
+        <span class="fa-solid fa-photo-film icon-margin"></span> Galeria e Vídeos
+      </span>
+
+      <div class="screenshots-strip" *ngIf="screenshots.length > 0">
+        <div class="screenshot-thumb" *ngFor="let shot of screenshots; let i = index" (click)="openLightbox(i)">
+          <img [src]="shot.image" alt="Screenshot">
+        </div>
+      </div>
+
+      <div class="trailers-strip" *ngIf="trailers.length > 0">
+        <div class="trailer-thumb" *ngFor="let trailer of trailers" (click)="playTrailer(trailer)">
+          <img [src]="trailer.previewImage" alt="Trailer">
+          <div class="play-overlay">
+            <span class="fa-solid fa-play"></span>
+          </div>
+          <span class="trailer-name">{{ trailer.name }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="stats-grid-container">
     <div class="glass-card stat-item accent-community">
       <div class="stat-icon-badge"><span class="fa-solid fa-users"></span></div>
@@ -48,14 +85,14 @@
       <div class="stat-value">{{ data.totalPlayers }}</div>
       <span class="stat-desc">Jogadores</span>
     </div>
-    
+
     <div class="glass-card stat-item accent-playing">
       <div class="stat-icon-badge"><span class="fa-solid fa-fire"></span></div>
       <span class="label">Atividade</span>
       <div class="stat-value">{{ data.playingCount }}</div>
       <span class="stat-desc">Jogando Agora</span>
     </div>
-    
+
     <div class="glass-card stat-item accent-completed">
       <div class="stat-icon-badge"><span class="fa-solid fa-trophy"></span></div>
       <span class="label">Conquista</span>
@@ -76,7 +113,7 @@
       <span class="label">
         <span class="fa-solid fa-chart-line icon-margin"></span> Distribuição de Notas da Comunidade
       </span>
-      
+
       <div class="chart-main-area">
         <div class="chart-bar-vessel" *ngFor="let bar of chartData; trackBy: trackByScore">
           <div class="bar-outer">
@@ -90,12 +127,71 @@
     </div>
   </div>
 
+  <div class="universe-section" *ngIf="additions.length > 0 || series.length > 0">
+    <div class="section-header">
+      <h2>Mais Desse Universo</h2>
+      <div class="accent-line"></div>
+    </div>
+
+    <div class="related-block" *ngIf="additions.length > 0">
+      <span class="related-subheader">Edições e DLCs</span>
+      <div class="related-strip">
+        <div class="related-card" *ngFor="let item of additions">
+          <img [src]="item.backgroundImage" alt="{{ item.name }}">
+          <div class="related-info">
+            <span class="related-name">{{ item.name }}</span>
+            <span class="related-meta" *ngIf="item.metacritic">
+              <span class="fa-solid fa-star"></span> {{ item.metacritic }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="related-block" *ngIf="series.length > 0">
+      <span class="related-subheader">Jogos da Série</span>
+      <div class="related-strip">
+        <div class="related-card" *ngFor="let item of series">
+          <img [src]="item.backgroundImage" alt="{{ item.name }}">
+          <div class="related-info">
+            <span class="related-name">{{ item.name }}</span>
+            <span class="related-meta" *ngIf="item.metacritic">
+              <span class="fa-solid fa-star"></span> {{ item.metacritic }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="achievements-section" *ngIf="achievements.length > 0">
+    <div class="section-header">
+      <h2>Conquistas Mais Raras</h2>
+      <div class="accent-line"></div>
+    </div>
+
+    <div class="achievements-grid">
+      <div class="achievement-card" *ngFor="let ach of visibleAchievements" [ngClass]="rarityClass(ach.percent)">
+        <img [src]="ach.image" class="achievement-icon" alt="{{ ach.name }}">
+        <div class="achievement-info">
+          <span class="achievement-name">{{ ach.name }}</span>
+          <span class="achievement-desc">{{ ach.description }}</span>
+        </div>
+        <span class="achievement-percent">{{ ach.percent | number:'1.0-1' }}%</span>
+      </div>
+    </div>
+
+    <button type="button" class="btn-show-more-glass" *ngIf="achievements.length > 6" (click)="toggleShowAchievements()">
+      {{ showAllAchievements ? 'Ver menos' : 'Ver todas (' + achievements.length + ')' }}
+    </button>
+  </div>
+
   <div class="content-body-section">
     <div class="section-header">
       <h2>O que a galera está achando</h2>
       <div class="accent-line"></div>
     </div>
-      
+
     <div class="reviews-stack" *ngIf="data.latestReviews.length > 0">
       <div class="review-card-glass" *ngFor="let rev of data.latestReviews">
         <div class="rev-header">
@@ -113,7 +209,7 @@
             {{ rev.score }}/10
           </div>
         </div>
-        
+
         <div class="review-body-box">
           <div class="spoiler-warning-glass" *ngIf="rev.isSpoiler && !rev.showSpoilerText" (click)="toggleSpoiler(rev)">
             <span class="fa-solid fa-eye-slash spoiler-icon"></span>
@@ -122,7 +218,7 @@
 
           <div class="review-text-container" *ngIf="!rev.isSpoiler || rev.showSpoilerText">
             <p class="rev-text">"{{ rev.review }}"</p>
-            
+
             <button type="button" class="btn-hide-spoiler-glass" *ngIf="rev.isSpoiler" (click)="toggleSpoiler(rev)">
               <span class="fa-solid fa-eye"></span>
               <span>Ocultar spoiler</span>
@@ -139,9 +235,9 @@
               <span class="fa-solid fa-thumbs-down"></span> {{ rev.dislikesCount }}
             </button>
           </div>
-          
-          <span class="karma-tag" 
-                [class.positive]="rev.voteScore > 0" 
+
+          <span class="karma-tag"
+                [class.positive]="rev.voteScore > 0"
                 [class.negative]="rev.voteScore < 0"
                 [class.neutral]="rev.voteScore === 0">
             {{ rev.voteScore > 0 ? '+' : '' }}{{ rev.voteScore }} pts
@@ -153,6 +249,31 @@
     <div class="glass-card empty-state" *ngIf="!data.latestReviews.length">
       <p>Nenhuma review ainda. Seja o primeiro!</p>
     </div>
+  </div>
+</div>
+
+<div class="modal-blur lightbox-blur" *ngIf="lightboxIndex !== null" (click)="closeLightbox()">
+  <button type="button" class="lightbox-nav lightbox-prev" (click)="prevScreenshot($event)">
+    <span class="fa-solid fa-chevron-left"></span>
+  </button>
+
+  <img [src]="screenshots[lightboxIndex].image" class="lightbox-image" (click)="$event.stopPropagation()" alt="Screenshot ampliada">
+
+  <button type="button" class="lightbox-nav lightbox-next" (click)="nextScreenshot($event)">
+    <span class="fa-solid fa-chevron-right"></span>
+  </button>
+
+  <button type="button" class="lightbox-close" (click)="closeLightbox()">
+    <span class="fa-solid fa-xmark"></span>
+  </button>
+</div>
+
+<div class="modal-blur" *ngIf="activeTrailer" (click)="closeTrailer()">
+  <div class="trailer-modal-card" (click)="$event.stopPropagation()">
+    <video [src]="activeTrailer.videoUrl" controls autoplay class="trailer-video"></video>
+    <button type="button" class="lightbox-close" (click)="closeTrailer()">
+      <span class="fa-solid fa-xmark"></span>
+    </button>
   </div>
 </div>
 

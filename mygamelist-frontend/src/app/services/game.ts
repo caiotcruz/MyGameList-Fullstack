@@ -23,6 +23,7 @@ export interface GameHubData {
   externalId: number;
   title: string;
   coverUrl: string;
+  metacritic: number | null;
   totalPlayers: number;
   playingCount: number;
   completedCount: number;
@@ -43,6 +44,40 @@ export interface TrendingGame {
   interactionsThisMonth: number;
 }
 
+export interface RelatedGame {
+  rawgId: number;
+  name: string;
+  backgroundImage: string;
+  released: string;
+  metacritic: number | null;
+}
+
+export interface GameScreenshot {
+  id: number;
+  image: string;
+}
+
+export interface GameStore {
+  storeId: number;
+  storeName: string;
+  url: string;
+}
+
+export interface GameAchievement {
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+  percent: number;
+}
+
+export interface GameTrailer {
+  id: number;
+  name: string;
+  previewImage: string;
+  videoUrl: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -53,13 +88,9 @@ export class GameService {
 
   private getHeaders() {
     const token = localStorage.getItem('token');
-    
     if (!token) return {};
-
     return {
-      headers: new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-      })
+      headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` })
     };
   }
 
@@ -89,5 +120,29 @@ export class GameService {
 
   getTrendingGames(limit: number = 10) {
     return this.http.get<TrendingGame[]>(`${this.apiUrl}/games/trending?limit=${limit}`, this.getHeaders());
+  }
+
+  getAdditions(rawgId: string) {
+    return this.http.get<RelatedGame[]>(`${this.apiUrl}/games/${rawgId}/additions`, this.getHeaders());
+  }
+
+  getGameSeries(rawgId: string) {
+    return this.http.get<RelatedGame[]>(`${this.apiUrl}/games/${rawgId}/series`, this.getHeaders());
+  }
+
+  getStores(rawgId: string) {
+    return this.http.get<GameStore[]>(`${this.apiUrl}/games/${rawgId}/stores`, this.getHeaders());
+  }
+
+  getAchievements(rawgId: string) {
+    return this.http.get<GameAchievement[]>(`${this.apiUrl}/games/${rawgId}/achievements`, this.getHeaders());
+  }
+
+  getScreenshots(rawgId: string) {
+    return this.http.get<GameScreenshot[]>(`${this.apiUrl}/games/${rawgId}/screenshots`, this.getHeaders());
+  }
+
+  getTrailers(rawgId: string) {
+    return this.http.get<GameTrailer[]>(`${this.apiUrl}/games/${rawgId}/trailers`, this.getHeaders());
   }
 }
