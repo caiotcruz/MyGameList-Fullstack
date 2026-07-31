@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router'; 
 import { AuthService } from '../../services/auth';
 import { NotificationService } from '../../services/notification';
+import { MessageService } from '../../services/message';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -16,25 +17,30 @@ export class Navbar implements OnInit, OnDestroy {
   authService = inject(AuthService);
   router = inject(Router);
   notificationService = inject(NotificationService);
+  messageService = inject(MessageService);
 
   unreadCount = 0;
+  unreadMessages = 0;
   notifications: any[] = [];
   showDropdown = false;
-  
+
   private intervalId: any;
 
   ngOnInit() {
     this.checarNotificacoes();
+    this.checarMensagens();
 
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
       this.checarNotificacoes();
+      this.checarMensagens();
     });
 
     this.intervalId = setInterval(() => {
       this.checarNotificacoes();
-    }, 30000); 
+      this.checarMensagens();
+    }, 30000);
   }
 
   ngOnDestroy() {
@@ -52,6 +58,14 @@ export class Navbar implements OnInit, OnDestroy {
     }
   }
 
+  checarMensagens() {
+    if (this.shouldShowNavbar()) {
+      this.messageService.getUnreadCount().subscribe({
+        next: (count) => this.unreadMessages = count,
+        error: () => this.unreadMessages = 0
+      });
+    }
+  }
 
   get myId(): string | null {
     return localStorage.getItem('userId');
@@ -70,23 +84,23 @@ export class Navbar implements OnInit, OnDestroy {
   }
 
   toggleNotifications() {
-  this.showDropdown = !this.showDropdown;
+    this.showDropdown = !this.showDropdown;
 
-  if (this.showDropdown) {
-    this.notificationService.getNotifications().subscribe(data => {
-      this.notifications = data;
+    if (this.showDropdown) {
+      this.notificationService.getNotifications().subscribe(data => {
+        this.notifications = data;
 
-      const unread = this.notifications.filter(n => !n.read);
+        const unread = this.notifications.filter(n => !n.read);
 
-      if (unread.length > 0) {
-        unread.forEach(n => n.read = true);
-        this.unreadCount = 0;
+        if (unread.length > 0) {
+          unread.forEach(n => n.read = true);
+          this.unreadCount = 0;
 
-        this.notificationService.markAllAsRead().subscribe();
-      }
-    });
+          this.notificationService.markAllAsRead().subscribe();
+        }
+      });
+    }
   }
-}
 
   onNotificationClick(notif: any) {
     this.showDropdown = false;
@@ -104,10 +118,10 @@ export class Navbar implements OnInit, OnDestroy {
       default: return 'interagiu com você';
     }
   }
-  
+
   formatDate(dateStr: string): string {
-      const date = new Date(dateStr);
-      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    const date = new Date(dateStr);
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
   }
 
   resetNotifications() {

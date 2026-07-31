@@ -173,6 +173,25 @@
 .notif-content p { margin: 0; font-size: 0.85rem; color: #eee; }
 .notif-content small { color: #666; font-size: 0.7rem; }
 
+.nav-badge-count {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: #6200ea;
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 900;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid #121212;
+  box-shadow: 0 0 8px rgba(98, 0, 234, 0.6);
+}
+
 @media (max-width: 768px) {
   .sidebar-nav {
     left: 10px;

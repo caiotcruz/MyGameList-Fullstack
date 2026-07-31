@@ -1,0 +1,109 @@
+<div class="messages-page">
+  <aside class="conversations-panel">
+    <div class="panel-header">
+      <h2>Mensagens</h2>
+    </div>
+
+    <div class="conversations-list" *ngIf="conversations.length > 0">
+      <div class="conversation-item"
+           *ngFor="let c of conversations"
+           [class.active]="activeUserId === c.otherUser.id"
+           [class.unread]="c.unreadCount > 0"
+           (click)="abrirConversa(c.otherUser.id, c.otherUser.name, c.otherUser.profilePicture)">
+        <div class="avatar-mini">
+          <img *ngIf="c.otherUser.profilePicture" [src]="c.otherUser.profilePicture">
+          <span *ngIf="!c.otherUser.profilePicture">{{ c.otherUser.name.charAt(0) }}</span>
+        </div>
+        <div class="conversation-info">
+          <div class="conversation-top-row">
+            <span class="conversation-name">{{ c.otherUser.name }}</span>
+            <span class="conversation-time" *ngIf="c.lastMessageAt">{{ c.lastMessageAt | date:'dd/MM' }}</span>
+          </div>
+          <div class="conversation-bottom-row">
+            <span class="conversation-preview">
+              <span *ngIf="c.lastMessageFromMe">Você: </span>{{ c.lastMessagePreview || 'Diga oi!' }}
+            </span>
+            <span class="unread-badge" *ngIf="c.unreadCount > 0">{{ c.unreadCount }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-conversations" *ngIf="!isLoadingList && conversations.length === 0">
+      <span class="fa-solid fa-envelope-open-text empty-icon"></span>
+      <p>Você ainda não tem conversas.</p>
+      <span class="empty-sub">Comece falando com alguém abaixo.</span>
+    </div>
+
+    <div class="contacts-suggestions" *ngIf="contacts.length > 0">
+      <span class="contacts-label">
+        {{ conversations.length === 0 ? 'Comece uma conversa' : 'Outras pessoas' }}
+      </span>
+      <div class="contacts-grid">
+        <div class="contact-card" *ngFor="let contact of contacts" (click)="abrirConversa(contact.id, contact.name, contact.profilePicture)">
+          <div class="avatar-mini">
+            <img *ngIf="contact.profilePicture" [src]="contact.profilePicture">
+            <span *ngIf="!contact.profilePicture">{{ contact.name.charAt(0) }}</span>
+          </div>
+          <span class="contact-name">{{ contact.name }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="truly-empty" *ngIf="!isLoadingList && conversations.length === 0 && contacts.length === 0">
+      <p>Siga ou seja seguido por alguém para começar a trocar mensagens.</p>
+      <a routerLink="/community" class="btn-explore-glass">Explorar Comunidade</a>
+    </div>
+  </aside>
+
+  <main class="thread-panel">
+    <ng-container *ngIf="activeUserId; else noThreadSelected">
+      <div class="thread-header">
+        <div class="thread-user">
+          <div class="avatar-mini">
+            <img *ngIf="activeUserAvatar" [src]="activeUserAvatar">
+            <span *ngIf="!activeUserAvatar">{{ activeUserName.charAt(0) }}</span>
+          </div>
+          <span class="thread-user-name">{{ activeUserName }}</span>
+        </div>
+        <button class="btn-close-thread" (click)="fecharThread()">
+          <span class="fa-solid fa-xmark"></span>
+        </button>
+      </div>
+
+      <div class="thread-scroll" #threadScroll>
+        <div class="loading-thread" *ngIf="isLoadingThread">
+          <div class="spinner-neon-small"></div>
+        </div>
+
+        <div class="thread-empty" *ngIf="!isLoadingThread && thread.length === 0">
+          <p>Nenhuma mensagem ainda. Diga oi! 👋</p>
+        </div>
+
+        <div class="message-bubble" *ngFor="let msg of thread; trackBy: trackByMessageId" [class.mine]="msg.mine">
+          <p>{{ msg.content }}</p>
+          <span class="message-time">{{ msg.sentAt | date:'HH:mm' }}</span>
+        </div>
+      </div>
+
+      <div class="thread-input-row">
+        <input
+          type="text"
+          placeholder="Escreva uma mensagem..."
+          [(ngModel)]="draft"
+          (keyup.enter)="enviar()"
+          [disabled]="isSending">
+        <button (click)="enviar()" [disabled]="isSending || !draft.trim()">
+          <span class="fa-solid fa-paper-plane"></span>
+        </button>
+      </div>
+    </ng-container>
+
+    <ng-template #noThreadSelected>
+      <div class="no-thread-placeholder">
+        <span class="fa-solid fa-comments placeholder-icon"></span>
+        <p>Selecione uma conversa ou comece uma nova</p>
+      </div>
+    </ng-template>
+  </main>
+</div>
