@@ -10,6 +10,7 @@ import { Landing } from './pages/landing/landing';
 import { Verify } from './pages/verify/verify';
 import { ForgotPassword } from './pages/forgot-password/forgot-password';
 import { ResetPassword } from './pages/reset-password/reset-password';
+import { Messages } from './pages/messages/messages';
 
 
 export const routes: Routes = [
@@ -21,6 +22,8 @@ export const routes: Routes = [
     { path: 'register', component: Register},
     { path: 'home', component: Home },
     { path: 'game/:id', component: GameDetails },
+    { path: 'messages', component: Messages },
+    { path: 'messages/:userId', component: Messages },
     { path: 'landing', component: Landing },
     { path: 'verify', component: Verify },
     { path: 'forgot-password', component: ForgotPassword },
