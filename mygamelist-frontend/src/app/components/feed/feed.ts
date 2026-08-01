@@ -93,6 +93,19 @@ export class Feed implements OnInit {
     return item.types?.includes(type);
   }
 
+  getRatingValue(item: any): number | null {
+    const score = item.ratingValue ?? item.score ?? item.ratingScore;
+    
+    if (score !== undefined && score !== null && Number(score) > 0) {
+      return Number(score);
+    }
+    return null;
+  }
+
+  temNota(item: any): boolean {
+    return this.getRatingValue(item) !== null;
+  }
+
   getActionText(type: string): string {
     switch(type) {
       case 'ADDED_TO_LIST': return 'adicionou à biblioteca';

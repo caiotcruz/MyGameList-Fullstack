@@ -4,8 +4,8 @@
     <div class="game-cover-wrapper">
       <img [src]="item.game.coverUrl" class="game-cover" [routerLink]="['/game', item.game.rawgId]">
       
-      <div class="rating-badge" *ngIf="item.ratingForBadge || item.type === 'RATED'">
-        {{ item.ratingValue }}
+      <div class="rating-badge" *ngIf="temNota(item)">
+        {{ getRatingValue(item) || item.ratingValue }}
       </div>
     </div>
 
