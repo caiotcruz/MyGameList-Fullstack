@@ -67,7 +67,9 @@
   </section>
 
   <div class="profile-dashboard-grid">
-    <div class="glass-card fav-highlight" *ngIf="favoriteGame?.game">
+    <div class="glass-card fav-highlight clickable-card" 
+         *ngIf="favoriteGame?.game"
+         [routerLink]="['/game', favoriteGame.game.rawgId || favoriteGame.game.id]">
       <span class="label">
         <span class="fa-solid fa-trophy icon-margin"></span> Destaque
       </span>

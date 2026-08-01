@@ -372,6 +372,36 @@
 .fav-info h3 { margin: 0 0 5px; font-size: 1.2rem; font-weight: 800; color: #fff; }
 .score-neon { color: #00ff88; font-weight: 900; font-size: 1.5rem; display: flex; align-items: center; gap: 6px; }
 
+.fav-highlight {
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.fav-highlight:hover {
+  border-color: #6200ea;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(98, 0, 234, 0.25);
+  background: rgba(98, 0, 234, 0.06);
+}
+
+.fav-highlight:hover .fav-poster {
+  transform: scale(1.05);
+}
+
+.fav-highlight:hover h3 {
+  color: #a29bfe;
+}
+
+.fav-poster {
+  transition: transform 0.3s ease;
+}
+
+.fav-info h3 {
+  transition: color 0.3s ease;
+}
+
 .chart-main-area { display: flex; align-items: flex-end; height: 140px; gap: 12px; margin-top: 10px; width: 100%; }
 .chart-bar-vessel { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; position: relative; }
 .bar-outer { background: rgba(255,255,255,0.03); width: 100%; flex: 1; border-radius: 8px; position: relative; }
