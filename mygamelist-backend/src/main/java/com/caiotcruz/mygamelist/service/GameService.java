@@ -140,28 +140,47 @@ public class GameService {
     }
 
     public List<RelatedGameDTO> getAdditions(Long rawgId) {
-        return rawgClient.getAdditions(apiKey, rawgId).results().stream()
-                .map(g -> new RelatedGameDTO(g.id(), g.name(), g.backgroundImage(), g.released(), g.metacritic()))
-                .toList();
+        try {
+            return rawgClient.getAdditions(apiKey, rawgId).results().stream()
+                    .map(g -> new RelatedGameDTO(g.id(), g.name(), g.backgroundImage(), g.released(), g.metacritic()))
+                    .toList();
+        } catch (Exception e) {
+            log.warn("Falha ao buscar additions da RAWG para o jogo {}: {}", rawgId, e.getMessage());
+            return List.of();
+        }
     }
 
-   
     public List<RelatedGameDTO> getGameSeries(Long rawgId) {
-        return rawgClient.getGameSeries(apiKey, rawgId).results().stream()
-                .map(g -> new RelatedGameDTO(g.id(), g.name(), g.backgroundImage(), g.released(), g.metacritic()))
-                .toList();
+        try {
+            return rawgClient.getGameSeries(apiKey, rawgId).results().stream()
+                    .map(g -> new RelatedGameDTO(g.id(), g.name(), g.backgroundImage(), g.released(), g.metacritic()))
+                    .toList();
+        } catch (Exception e) {
+            log.warn("Falha ao buscar game-series da RAWG para o jogo {}: {}", rawgId, e.getMessage());
+            return List.of();
+        }
     }
 
     public List<GameScreenshotDTO> getScreenshots(Long rawgId) {
-        return rawgClient.getScreenshots(apiKey, rawgId).results().stream()
-                .map(s -> new GameScreenshotDTO(s.id(), s.image()))
-                .toList();
+        try {
+            return rawgClient.getScreenshots(apiKey, rawgId).results().stream()
+                    .map(s -> new GameScreenshotDTO(s.id(), s.image()))
+                    .toList();
+        } catch (Exception e) {
+            log.warn("Falha ao buscar screenshots da RAWG para o jogo {}: {}", rawgId, e.getMessage());
+            return List.of();
+        }
     }
 
     public List<GameStoreDTO> getStores(Long rawgId) {
-        return rawgClient.getStores(apiKey, rawgId).results().stream()
-                .map(s -> new GameStoreDTO(s.storeId(), RawgStoreCatalog.nameFor(s.storeId()), s.url()))
-                .toList();
+        try {
+            return rawgClient.getStores(apiKey, rawgId).results().stream()
+                    .map(s -> new GameStoreDTO(s.storeId(), RawgStoreCatalog.nameFor(s.storeId()), s.url()))
+                    .toList();
+        } catch (Exception e) {
+            log.warn("Falha ao buscar stores da RAWG para o jogo {}: {}", rawgId, e.getMessage());
+            return List.of();
+        }
     }
 
     public List<GameAchievementDTO> getAchievements(Long rawgId) {
@@ -170,32 +189,41 @@ public class GameService {
         int pageSize = 40;
         int maxPages = 10;
 
-        while (page <= maxPages) {
-            RawgAchievementsResponse response = rawgClient.getAchievements(apiKey, rawgId, page, pageSize);
-            List<RawgAchievementDTO> results = response.results();
+        try {
+            while (page <= maxPages) {
+                RawgAchievementsResponse response = rawgClient.getAchievements(apiKey, rawgId, page, pageSize);
+                List<RawgAchievementDTO> results = response.results();
 
-            all.addAll(results.stream()
-                    .map(a -> new GameAchievementDTO(a.id(), a.name(), a.description(), a.image(), a.percent()))
-                    .toList());
+                all.addAll(results.stream()
+                        .map(a -> new GameAchievementDTO(a.id(), a.name(), a.description(), a.image(), a.percent()))
+                        .toList());
 
-            boolean isLastPage = response.next() == null || results.isEmpty();
-            if (isLastPage) break;
+                boolean isLastPage = response.next() == null || results.isEmpty();
+                if (isLastPage) break;
 
-            page++;
+                page++;
+            }
+        } catch (Exception e) {
+            log.warn("Falha ao buscar achievements da RAWG para o jogo {}: {}", rawgId, e.getMessage());
         }
 
         return all;
     }
 
     public List<GameTrailerDTO> getTrailers(Long rawgId) {
-        return rawgClient.getMovies(apiKey, rawgId).results().stream()
-                .map(m -> new GameTrailerDTO(
-                        m.id(),
-                        m.name(),
-                        m.preview(),
-                        m.data().max() != null ? m.data().max() : m.data().p480()
-                ))
-                .toList();
+        try {
+            return rawgClient.getMovies(apiKey, rawgId).results().stream()
+                    .map(m -> new GameTrailerDTO(
+                            m.id(),
+                            m.name(),
+                            m.preview(),
+                            m.data().max() != null ? m.data().max() : m.data().p480()
+                    ))
+                    .toList();
+        } catch (Exception e) {
+            log.warn("Falha ao buscar trailers da RAWG para o jogo {}: {}", rawgId, e.getMessage());
+            return List.of();
+        }
     }
 
     private GameStats loadStatistics(Long internalId) {

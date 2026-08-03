@@ -33,6 +33,7 @@ public class Activity {
     @Enumerated(EnumType.STRING)
     private ActivityType type;
 
+    @Column(columnDefinition = "TEXT")
     private String detail; 
 
     private LocalDateTime timestamp = LocalDateTime.now();
