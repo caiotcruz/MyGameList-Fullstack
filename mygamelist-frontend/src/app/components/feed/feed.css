@@ -10,7 +10,7 @@
   transition: border-color 0.3s ease;
 }
 
-.activity-card-glass:hover { border-color: rgba(98, 0, 234, 0.3); }
+.activity-card-glass:hover { border-color: rgba(46, 184, 164, 0.3); }
 
 .game-cover-wrapper { position: relative; margin-right: 20px; }
 
@@ -27,7 +27,7 @@
   position: absolute;
   top: -10px;
   right: -10px;
-  background: #6200ea;
+  background: var(--mgl-accent-strong);
   color: white;
   width: 30px;
   height: 30px;
@@ -44,9 +44,9 @@
 
 .activity-text { font-size: 1rem; color: #ccc; margin: 0 0 5px; line-height: 1.4; }
 .user-link { color: #fff; font-weight: 700; cursor: pointer; }
-.user-link:hover { color: #6200ea; }
+.user-link:hover { color: var(--mgl-accent); }
 .action-tag { color: #888; margin: 0 5px; }
-.game-link { color: #6200ea; font-weight: 600; cursor: pointer; }
+.game-link { color: var(--mgl-accent); font-weight: 600; cursor: pointer; }
 
 .activity-actions { display: flex; gap: 15px; margin-top: 15px; }
 
@@ -95,7 +95,7 @@
 }
 
 .comment-bubble strong { 
-  color: #6200ea; 
+  color: var(--mgl-accent); 
   margin-right: 5px; 
 }
 
@@ -133,7 +133,7 @@
 }
 
 .comment-input-box button {
-  background: #6200ea;
+  background: var(--mgl-accent-strong);
   border: none;
   border-radius: 12px;
   width: 45px;
@@ -147,8 +147,8 @@
   text-transform: uppercase;
   padding: 3px 10px;
   border-radius: 6px;
-  background: rgba(98, 0, 234, 0.1);
-  border: 1px solid rgba(98, 0, 234, 0.2);
+  background: rgba(46, 184, 164, 0.1);
+  border: 1px solid rgba(46, 184, 164, 0.2);
   color: #b388ff;
   letter-spacing: 0.5px;
 }
@@ -171,7 +171,7 @@
 .post-review-content {
   margin: 12px 0;
   padding-left: 15px;
-  border-left: 2px solid rgba(98, 0, 234, 0.4);
+  border-left: 2px solid rgba(46, 184, 164, 0.4);
 }
 
 .review-text-bubble {
@@ -265,7 +265,7 @@
   transform: translateY(-1px);
 }
 
-.comment-input-box button:hover { background: #7c4dff; transform: scale(1.05); }
+.comment-input-box button:hover { background: var(--mgl-accent); transform: scale(1.05); }
 
 .empty-state-glass { text-align: center; padding: 40px; color: #444; border: 2px dashed rgba(255,255,255,0.05); border-radius: 20px; }
 
@@ -291,7 +291,7 @@
     position: absolute;
     top: -10px;
     right: -10px;
-    background: #6200ea;
+    background: var(--mgl-accent-strong);
     color: white;
     width: 32px;
     height: 32px;
@@ -302,7 +302,7 @@
     font-size: 0.75rem;
     font-weight: 900;
     border: 2px solid #0a0a0a;
-    box-shadow: 0 4px 10px rgba(98, 0, 234, 0.5);
+    box-shadow: 0 4px 10px rgba(46, 184, 164, 0.5);
     z-index: 5; 
   }
 
@@ -350,3 +350,8 @@
     font-size: 0.9rem;
   }
 }
+.feed-pagination{text-align:center;padding:24px;color:#cec4da}
+.feed-pagination button{border:1px solid #9e73d2;background:#302044;color:#fff;border-radius:12px;padding:11px 20px;cursor:pointer}
+.feed-pagination button:disabled{opacity:.6;cursor:wait}
+
+.activity-actions{align-items:center;flex-wrap:wrap;}.activity-actions>app-safety-actions{margin-left:auto;}.activity-body{min-width:0;}

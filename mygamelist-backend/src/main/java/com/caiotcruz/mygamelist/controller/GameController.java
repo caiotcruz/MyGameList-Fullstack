@@ -2,6 +2,7 @@ package com.caiotcruz.mygamelist.controller;
 
 import com.caiotcruz.mygamelist.dto.GameAchievementDTO;
 import com.caiotcruz.mygamelist.dto.GameHubDTO;
+import com.caiotcruz.mygamelist.dto.ActivityGameDTO;
 import com.caiotcruz.mygamelist.dto.GameResultDTO;
 import com.caiotcruz.mygamelist.dto.GameScreenshotDTO;
 import com.caiotcruz.mygamelist.dto.GameStoreDTO;
@@ -39,8 +40,8 @@ public class GameController {
     }
 
     @GetMapping("/{id}")
-    public Game getGameDetails(@PathVariable Long id) {
-        return gameService.getGameContent(id);
+    public ActivityGameDTO getGameDetails(@PathVariable Long id) {
+        return ActivityGameDTO.from(gameService.getGameContent(id));
     }
 
     @GetMapping("/{id}/hub")

@@ -20,8 +20,9 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
-                    .withIssuer("submanager-api") 
-                    .withSubject(user.getEmail()) 
+                    .withIssuer("mygamelist") 
+                    .withSubject(user.getEmail())
+                    .withClaim("version", user.getTokenVersion()) 
                     .withExpiresAt(genExpirationDate()) 
                     .sign(algorithm); 
         } catch (JWTCreationException exception) {
@@ -33,13 +34,23 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.require(algorithm)
-                    .withIssuer("submanager-api")
+                    .withIssuer("mygamelist")
                     .build()
                     .verify(token)
                     .getSubject();
         } catch (JWTVerificationException exception) {
             System.out.println("Token inválido: " + exception.getMessage());
             return "";
+        }
+    }
+
+    public boolean matchesVersion(String token, User user) {
+        try {
+            Integer version = JWT.require(Algorithm.HMAC256(secret))
+                    .withIssuer("mygamelist").build().verify(token).getClaim("version").asInt();
+            return version != null && version == user.getTokenVersion();
+        } catch (JWTVerificationException ex) {
+            return false;
         }
     }
 

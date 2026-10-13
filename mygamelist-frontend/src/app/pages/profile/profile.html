@@ -1,6 +1,7 @@
 <div class="profile-page-wrapper">
   
-  <section class="profile-hero">
+  <p class="form-error" role="alert" *ngIf="profileError">{{profileError}} <a routerLink="/privacy">Gerenciar bloqueios</a></p>
+  <section class="profile-hero" *ngIf="!profileError">
     <div class="hero-backdrop"
       [style.backgroundImage]="favoriteGame ? 'url(' + (favoriteGame.game?.background_image || favoriteGame.game?.coverUrl) + ')' : 'none'"
       [class.has-image]="favoriteGame">
@@ -30,6 +31,7 @@
           </div>
           
           <div class="actions-column" *ngIf="isMyProfile">
+            <a class="safety-link" routerLink="/privacy">Privacidade</a>
             <button class="btn-edit-profile-action" (click)="abrirEdicao()" title="Editar perfil">
               <span class="fa-solid fa-pen"></span>
               <span class="edit-tooltip">Editar perfil</span>
@@ -37,6 +39,10 @@
           </div>
         </div>
 
+        <div class="profile-safety" *ngIf="!isMyProfile">
+          <a class="safety-link" [routerLink]="['/messages',userId]">Enviar mensagem</a>
+          <app-safety-actions targetType="USER" [targetId]="userId" [ownerId]="userId" [allowBlock]="true" (blocked)="onBlocked()" />
+        </div>
         <div class="bio-container">
           <p class="user-bio-text" *ngIf="userBio; else bioPlaceholder">{{ userBio }}</p>
           <ng-template #bioPlaceholder>
@@ -66,7 +72,7 @@
     </div>
   </section>
 
-  <div class="profile-dashboard-grid">
+  <div class="profile-dashboard-grid" *ngIf="!profileError">
     <div class="glass-card fav-highlight clickable-card" 
          *ngIf="favoriteGame?.game"
          [routerLink]="['/game', favoriteGame.game.rawgId || favoriteGame.game.id]">
@@ -78,12 +84,13 @@
         <div class="fav-info">
           <h3>{{ favoriteGame.game.title }}</h3>
           <div class="score-neon">
-            <span class="fa-solid fa-star text-warning"></span> {{ favoriteGame.score || '10' }}<span>/10</span>
+            <span class="fa-solid fa-star text-warning"></span> {{ favoriteGame.score || '—' }}<span>/10</span>
           </div>
         </div>
       </div>
     </div>
 
+    <div class="glass-card fav-highlight" *ngIf="!favoriteGame?.game"><span class="label">Jogo em destaque</span><p class="achievement-empty">Uma coleção começa com o primeiro jogo.</p><a routerLink="/search" class="safety-link">Explorar jogos</a></div>
     <div class="glass-card career-stats">
       <span class="label">
         <span class="fa-solid fa-chart-simple icon-margin"></span> Carreira
@@ -112,23 +119,22 @@
       </div>
     </div>
 
-    <div class="glass-card achievements-card" *ngIf="badges.length > 0">
-      <span class="label">
-        <span class="fa-solid fa-medal icon-margin"></span> Conquistas
-      </span>
-      <div class="badges-flex">
-        <div class="badge-vessel" *ngFor="let badge of badges; trackBy: trackByBadge">
-          <span class="b-icon">
-            <span [className]="getBadgeIconClass(badge.icon || badge.description)"></span>
-          </span>
-          <div class="b-glow" [style.background]="badge.color"></div>
-          <div class="custom-tooltip">
-            <strong>{{ badge.label }}</strong>
-            <p>{{ badge.description }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <section class="glass-card achievements-card" aria-labelledby="achievement-heading">
+      <span class="label" id="achievement-heading"><span class="fa-solid fa-medal icon-margin" aria-hidden="true"></span> Conquistas</span>
+      <ul class="achievement-list" *ngIf="achievements.length; else noAchievements">
+        <li class="achievement-item" *ngFor="let achievement of visibleAchievements" [attr.data-tier]="achievement.tier" tabindex="0" [attr.title]="achievement.description" [attr.aria-label]="achievement.title + (achievement.description ? ': ' + achievement.description : '')">
+          <span class="achievement-symbol" aria-hidden="true"><span class="fa-solid" [ngClass]="achievement.icon"></span></span>
+          <span>{{achievement.title}}</span>
+        </li>
+      </ul>
+      <ng-template #noAchievements><p class="achievement-empty">Sua jornada ainda guarda surpresas.</p></ng-template>
+      <button type="button" class="achievement-more" *ngIf="achievements.length > achievementPreviewLimit" (click)="achievementsDialog.showModal()">Exibir mais <span aria-hidden="true">↗</span></button>
+      <dialog #achievementsDialog class="safety-dialog" aria-labelledby="all-achievements-heading">
+        <h2 id="all-achievements-heading">Conquistas reveladas</h2>
+        <ul class="achievement-list"><li class="achievement-item" *ngFor="let achievement of achievements" [attr.data-tier]="achievement.tier" tabindex="0" [attr.title]="achievement.description" [attr.aria-label]="achievement.title + (achievement.description ? ': ' + achievement.description : '')"><span class="achievement-symbol" aria-hidden="true"><span class="fa-solid" [ngClass]="achievement.icon"></span></span><span>{{achievement.title}}</span></li></ul>
+        <button type="button" class="achievement-more" (click)="achievementsDialog.close()">Fechar</button>
+      </dialog>
+    </section>
 
     <div class="glass-card distribution-chart full-width" *ngIf="stats.avgScore > 0">
       <span class="label">
@@ -147,7 +153,7 @@
     </div>
   </div>
 
-  <section class="collection-area">
+  <section class="collection-area" *ngIf="!profileError">
     <div class="area-header">
       <h2>Coleção Completa <span class="count">({{ stats.total }})</span></h2>
       <div class="accent-line"></div>

@@ -19,7 +19,7 @@
 
   <section class="trending-carousel-section" *ngIf="!query.trim() && games.length === 0 && displayTrendingGames.length > 0">
     <div class="section-title-box">
-      <span class="pill-tag-neon"><span class="fa-solid fa-fire text-orange"></span> Em Alta no Mês</span>
+      <span class="pill-tag-neon"><span class="fa-solid fa-fire text-orange"></span> Em alta · últimos 30 dias</span>
       <h2>Principais Escolhas da Comunidade</h2>
     </div>
 
@@ -30,7 +30,7 @@
              [routerLink]="['/game', item.rawgId]">
           
           <div class="card-visual-carousel">
-            <img [src]="item.coverUrl || 'assets/no-image.jpg'" alt="Capa" />
+            <img [src]="item.coverUrl || 'no-image.svg'" alt="Capa" />
             <div class="rank-badge">#{{ (i % 10) + 1 }}</div>
             <div class="carousel-overlay"></div>
           </div>
@@ -38,7 +38,7 @@
           <div class="carousel-card-info">
             <h4 class="carousel-game-title">{{ item.title }}</h4>
             <span class="interactions-count" *ngIf="item.interactionsThisMonth">
-              <span class="fa-solid fa-users text-cyan"></span> {{ item.interactionsThisMonth }} interações
+              <span class="fa-solid fa-users text-cyan"></span> {{ item.interactionsThisMonth }} pontos
             </span>
 
             <button 
@@ -57,7 +57,7 @@
   <main class="results-grid" *ngIf="games.length > 0">
     <div class="game-card-bento" *ngFor="let game of games">
       <div class="card-visual" [routerLink]="['/game', game.id]">
-        <img [src]="game.background_image || game.image || 'assets/no-image.jpg'" 
+        <img [src]="game.background_image || game.image || 'no-image.svg'" 
              class="game-poster" 
              alt="Capa do jogo">
         <div class="card-overlay">
@@ -114,7 +114,7 @@
         <div class="field-box small-field">
           <label>Status</label>
           <div class="select-container">
-            <select [(ngModel)]="editingGame.status" (change)="verificarStatus()">
+            <select [(ngModel)]="editingGame.status" (ngModelChange)="preserveDraft()" (change)="verificarStatus()">
               <option value="PLAN_TO_PLAY">Planejo Jogar</option>
               <option value="PLAYING">Jogando</option>
               <option value="COMPLETED">Zerado</option>
@@ -126,23 +126,26 @@
 
         <div class="field-box tiny-field" *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
           <label>Nota</label>
-          <input type="number" [(ngModel)]="editingGame.score" (change)="validarScore()" min="0" max="10">
+          <input type="number" [(ngModel)]="editingGame.score" (ngModelChange)="preserveDraft()" (change)="validarScore()" min="0" max="10">
         </div>
       </div>
 
       <div class="field-box" *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
         <label>Review Rápido</label>
-        <textarea rows="4" [(ngModel)]="editingGame.review" placeholder="O que achou desse título?"></textarea>
+        <textarea rows="4" [(ngModel)]="editingGame.review" (ngModelChange)="preserveDraft()" maxlength="5000" placeholder="O que achou desse título?"></textarea>
       </div>
 
       <div class="field-box-checkbox" *ngIf="editingGame.status !== 'PLAN_TO_PLAY' && editingGame.review?.trim()">
         <label class="custom-checkbox-container">
-          <input type="checkbox" [(ngModel)]="editingGame.isSpoiler">
+          <input type="checkbox" [(ngModel)]="editingGame.isSpoiler" (ngModelChange)="preserveDraft()">
           <span class="checkmark"></span>
           <span class="checkbox-label"><span class="fa-solid fa-triangle-exclamation text-danger"></span> Esta review contém spoilers</span>
         </label>
       </div>
 
+      <p class="draft-note">{{draftRestored?'Rascunho recuperado nesta aba.':'Seu rascunho é preservado nesta aba por até 24 horas.'}}</p>
+      <p class="form-error" role="alert" *ngIf="saveError">{{saveError}}</p>
+      <button type="button" class="safety-link" [disabled]="isSaving" (click)="discardDraft()">Descartar rascunho</button>
       <div class="modal-footer-btns">
         <button class="btn-cancel-glass" (click)="fecharModal()">Cancelar</button>
         <button class="btn-save-neon" (click)="salvar()" [disabled]="isSaving">

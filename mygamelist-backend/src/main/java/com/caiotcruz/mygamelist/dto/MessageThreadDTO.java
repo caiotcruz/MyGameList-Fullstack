@@ -4,5 +4,5 @@ import java.util.List;
 
 public record MessageThreadDTO(
         ActivityUserDTO partner,
-        List<MessageDTO> messages
+        List<MessageDTO> messages, boolean canSend
 ) {}

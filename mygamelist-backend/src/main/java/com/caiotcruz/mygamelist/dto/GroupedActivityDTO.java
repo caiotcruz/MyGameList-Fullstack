@@ -21,7 +21,7 @@ public record GroupedActivityDTO(
         List<CommentDTO> comments
 ) {
     public static GroupedActivityDTO from(List<Activity> group, Long currentUserId) {
-        Activity primary = group.get(0);
+        Activity primary = group.stream().max(java.util.Comparator.comparing(Activity::getId)).orElseThrow();
 
         List<ActivityType> types = group.stream().map(Activity::getType).toList();
 

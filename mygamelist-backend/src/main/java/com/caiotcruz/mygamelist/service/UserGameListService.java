@@ -11,31 +11,40 @@ import com.caiotcruz.mygamelist.model.enums.GameStatus;
 import com.caiotcruz.mygamelist.repository.ActivityRepository;
 import com.caiotcruz.mygamelist.repository.UserGameListRepository;
 import com.caiotcruz.mygamelist.repository.UserRepository;
+import com.caiotcruz.mygamelist.repository.ReviewVoteRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class UserGameListService {
+    private final UserLocks locks;
+
 
     private final UserGameListRepository listRepository;
     private final GameService gameService;
     private final UserRepository userRepository;
     private final ActivityRepository activityRepository;
     private final LevelService levelService;
+    private final ReviewVoteRepository reviewVoteRepository;
 
-    public UserGameListService(UserGameListRepository listRepository, GameService gameService, UserRepository userRepository, ActivityRepository activityRepository, LevelService levelService) {
+    public UserGameListService(UserGameListRepository listRepository, GameService gameService, UserRepository userRepository, ActivityRepository activityRepository, LevelService levelService, ReviewVoteRepository reviewVoteRepository, UserLocks locks) {
+        this.locks = locks;
         this.listRepository = listRepository;
         this.gameService = gameService;
         this.userRepository = userRepository;
         this.activityRepository = activityRepository;
         this.levelService = levelService;
+        this.reviewVoteRepository = reviewVoteRepository;
     }
     
+    @Transactional
     public UserGameList addGameToList(AddGameDTO dto) {
         User user = getAuthenticatedUser();
+        locks.lock(user.getId());
         Game game = gameService.getGameContent(dto.rawgId());
 
         UserGameList item = listRepository.findByUserAndGame(user, game)
@@ -50,6 +59,7 @@ public class UserGameListService {
         if (isNew) {
             item.setUser(user);
             item.setGame(game);
+            item.setStatus(GameStatus.PLAN_TO_PLAY);
         }
 
         handleFavoriteConstraint(user, item, dto.isFavorite());
@@ -69,18 +79,21 @@ public class UserGameListService {
         return listRepository.findByUser(user);
     }
 
+    @Transactional
     public void removeItem(Long listId) {
         User user = getAuthenticatedUser();
+        locks.lock(user.getId());
 
         UserGameList item = listRepository.findById(listId)
-                .orElseThrow(() -> new RuntimeException("Item não encontrado"));
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND,"Item não encontrado"));
 
         if (!item.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Você não tem permissão para deletar este item.");
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN,"Você não tem permissão para deletar este item.");
         }
 
         applyExperienceChanges(user, item.getStatus(), null, item.getReview(), null);
 
+        reviewVoteRepository.deleteByReview(item);
         listRepository.delete(item);
     }
 
@@ -139,7 +152,7 @@ public class UserGameListService {
             listRepository.findByUserAndIsFavoriteTrue(user).ifPresent(existingFav -> {
                 if (!existingFav.getId().equals(item.getId())) {
                     existingFav.setFavorite(false);
-                    listRepository.save(existingFav);
+                    listRepository.saveAndFlush(existingFav);
                 }
             });
         }

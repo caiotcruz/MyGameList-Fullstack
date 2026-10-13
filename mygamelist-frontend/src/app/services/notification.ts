@@ -5,8 +5,8 @@ import { environment } from '../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
   http = inject(HttpClient);
-  private apiUrl = "https://mygamelist-api-65ts.onrender.com";
-  //private apiUrl = environment.apiUrl;
+  //private apiUrl = "https://mygamelist-api-65ts.onrender.com";
+  private apiUrl = environment.apiUrl;
 
   getNotifications() {
     return this.http.get<any[]>(`${this.apiUrl}/notifications`);

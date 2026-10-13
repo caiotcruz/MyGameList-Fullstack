@@ -1,6 +1,8 @@
 package com.caiotcruz.mygamelist.controller;
 
 import com.caiotcruz.mygamelist.dto.UserProfileDTO;
+import com.caiotcruz.mygamelist.dto.PublicUserDTO;
+import jakarta.validation.Valid;
 import com.caiotcruz.mygamelist.model.User;
 import com.caiotcruz.mygamelist.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
@@ -12,25 +14,34 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+    private final com.caiotcruz.mygamelist.service.UserLocks locks;
+
+    private final com.caiotcruz.mygamelist.service.CommunitySafety safety;
+
 
     private final UserRepository userRepository;
 
-    public UserController(UserRepository userRepository) {
+    public UserController(UserRepository userRepository, com.caiotcruz.mygamelist.service.CommunitySafety safety, com.caiotcruz.mygamelist.service.UserLocks locks) {
+        this.locks = locks;
+        this.safety = safety;
         this.userRepository = userRepository;
     }
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<PublicUserDTO> getUserById(@PathVariable Long id) {
+        safety.requireProfile(id);
         Optional<User> user = userRepository.findById(id);
         
-        return user.map(ResponseEntity::ok)
+        return user.map(PublicUserDTO::from).map(ResponseEntity::ok)
                    .orElse(ResponseEntity.notFound().build());
     }
 
+    @org.springframework.transaction.annotation.Transactional
     @PutMapping("/me")
-    public ResponseEntity<User> updateMyProfile(@RequestBody UserProfileDTO dto) {
+    public ResponseEntity<PublicUserDTO> updateMyProfile(@Valid @RequestBody UserProfileDTO dto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         
         User user = (User) userRepository.findByEmail(email);
+        locks.lock(user.getId());
 
 
         if (dto.name() != null && !dto.name().isBlank()) {
@@ -46,11 +57,16 @@ public class UserController {
         }
 
         if (dto.profilePicture() != null) {
-            user.setProfilePicture(dto.profilePicture());
+            String picture = dto.profilePicture().trim();
+            if (!picture.isEmpty() && !(picture.startsWith("https://") || picture.startsWith("data:image/png;base64,")
+                    || picture.startsWith("data:image/jpeg;base64,") || picture.startsWith("data:image/webp;base64,"))) {
+                throw new IllegalArgumentException("URL de avatar inválida");
+            }
+            user.setProfilePicture(picture);
         }
 
         User updatedUser = userRepository.save(user);
 
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.ok(PublicUserDTO.from(updatedUser));
     }
 }

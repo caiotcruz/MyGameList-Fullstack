@@ -52,7 +52,8 @@ public class SecurityFilter extends OncePerRequestFilter {
                 if (login != null && !login.isBlank()) {
                     UserDetails user = authorizationService.loadUserByUsername(login);
 
-                    if (user != null) {
+                    if (user instanceof com.caiotcruz.mygamelist.model.User account
+                            && account.isEnabled() && tokenService.matchesVersion(token, account)) {
                         UsernamePasswordAuthenticationToken authentication =
                                 new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                         

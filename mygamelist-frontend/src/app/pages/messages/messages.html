@@ -1,7 +1,7 @@
 <div class="messages-page">
   <aside class="conversations-panel">
     <div class="panel-header">
-      <h2>Mensagens</h2>
+      <h2>Mensagens</h2><a class="safety-link" routerLink="/privacy">Privacidade</a>
     </div>
 
     <div class="conversations-list" *ngIf="conversations.length > 0">
@@ -51,7 +51,7 @@
     </div>
 
     <div class="truly-empty" *ngIf="!isLoadingList && conversations.length === 0 && contacts.length === 0">
-      <p>Siga ou seja seguido por alguém para começar a trocar mensagens.</p>
+      <p>Os contatos disponíveis dependem das preferências de privacidade de cada pessoa.</p>
       <a routerLink="/community" class="btn-explore-glass">Explorar Comunidade</a>
     </div>
   </aside>
@@ -71,6 +71,9 @@
         </button>
       </div>
 
+      <app-safety-actions *ngIf="!threadError" targetType="USER" [targetId]="activeUserId" [ownerId]="activeUserId" [allowBlock]="true" (blocked)="onBlocked()" />
+      <p class="form-error" role="alert" *ngIf="threadError">{{threadError}}</p>
+      <p class="draft-note" *ngIf="!canSend && !isLoadingThread && !threadError">Esta pessoa não está recebendo mensagens suas no momento.</p>
       <div class="thread-scroll" #threadScroll>
         <div class="loading-thread" *ngIf="isLoadingThread">
           <div class="spinner-neon-small"></div>
@@ -82,6 +85,7 @@
 
         <div class="message-bubble" *ngFor="let msg of thread; trackBy: trackByMessageId" [class.mine]="msg.mine">
           <p>{{ msg.content }}</p>
+          <app-safety-actions *ngIf="!msg.mine" targetType="MESSAGE" [targetId]="msg.id" [ownerId]="msg.senderId" />
           <span class="message-time">{{ msg.sentAt | date:'HH:mm' }}</span>
         </div>
       </div>
@@ -92,8 +96,8 @@
           placeholder="Escreva uma mensagem..."
           [(ngModel)]="draft"
           (keyup.enter)="enviar()"
-          [disabled]="isSending">
-        <button (click)="enviar()" [disabled]="isSending || !draft.trim()">
+          maxlength="2000" aria-label="Mensagem" [disabled]="isSending || !canSend">
+        <button (click)="enviar()" aria-label="Enviar mensagem" [disabled]="isSending || !canSend || !draft.trim()">
           <span class="fa-solid fa-paper-plane"></span>
         </button>
       </div>

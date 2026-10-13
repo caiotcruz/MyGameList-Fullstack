@@ -10,5 +10,6 @@ import java.util.Optional;
 public interface ReviewVoteRepository extends JpaRepository<ReviewVote, Long> {
     Optional<ReviewVote> findByUserAndReview(User user, UserGameList review);
     
+    void deleteByReview(UserGameList review);
     long countByReviewAndType(UserGameList review, VoteType type);
 }

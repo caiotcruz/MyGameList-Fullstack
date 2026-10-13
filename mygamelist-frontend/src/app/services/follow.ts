@@ -8,8 +8,8 @@ import { environment } from '../../environments/environment';
 export class FollowService {
   private http = inject(HttpClient);
 
-  private apiUrl = "https://mygamelist-api-65ts.onrender.com/users";
-  //private apiUrl = 'http://localhost:8080/users'; 
+  //private apiUrl = "https://mygamelist-api-65ts.onrender.com/users";
+  private apiUrl = environment.apiUrl + '/users'; 
 
   private getHeaders() {
     const token = localStorage.getItem('token');

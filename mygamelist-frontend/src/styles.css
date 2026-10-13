@@ -1,1 +1,46 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root{color-scheme:dark;--mgl-ink:#0c0912;--mgl-surface:#17121f;--mgl-accent:#79ddcc;--mgl-accent-strong:#157970;--mgl-gold:#f1c372;--mgl-text:#f7f3fc;--mgl-muted:#c5bcd0}
+:focus-visible{outline:3px solid var(--mgl-accent);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+/* Community safety and persistent form feedback */
+.feedback-toast {position:fixed;left:50%;bottom:24px;transform:translateX(-50%);width:min(520px,calc(100vw - 32px));box-sizing:border-box;z-index:20000;display:flex;align-items:center;gap:12px;background:#30233f;color:#fff;border:1px solid #ab81d8;padding:16px 20px;border-radius:14px;box-shadow:0 10px 40px #0008;}
+.feedback-toast button {margin-left:auto;background:transparent;border:0;color:#fff;font-size:24px;cursor:pointer;min-width:40px;min-height:40px;}
+.form-error {background:#43232e;color:#ffd6df;border:1px solid #b36379;padding:12px 16px;border-radius:10px;font-size:.9rem;line-height:1.5;overflow-wrap:anywhere;}
+.draft-note {color:#c5b5d6;font-size:.8rem;line-height:1.5;}
+.safety-actions {display:inline-flex;gap:8px;flex-wrap:wrap;}
+.safety-link {display:inline-flex;align-items:center;justify-content:center;min-height:36px;background:transparent;color:#cbb5e0;border:0;font:inherit;font-size:.8rem;padding:6px 8px;cursor:pointer;text-decoration:none;border-radius:8px;}
+.safety-link:hover {background:#ffffff0b;color:#fff;}
+.safety-dialog {box-sizing:border-box;width:min(480px,calc(100vw - 32px));max-height:85dvh;overflow-y:auto;background:#19141f;color:#eee8f5;border:1px solid #74518e;border-radius:22px;padding:26px;box-shadow:0 24px 90px #0009;}
+.safety-dialog::backdrop {background:#07050ac9;backdrop-filter:blur(5px);}
+.safety-dialog h2 {font-size:1.35rem;margin:0 0 16px;}
+.safety-dialog p {line-height:1.6;color:#c7bdcf;font-size:.9rem;}
+.safety-dialog label,.privacy-page label {display:grid;gap:8px;margin:16px 0;color:#d9cde4;}
+.safety-dialog select,.safety-dialog textarea,.privacy-page select,.privacy-page textarea {box-sizing:border-box;width:100%;border:1px solid #674b7e;border-radius:10px;background:#100d15;color:#f3edf8;padding:12px;font:inherit;}
+.safety-dialog-actions {display:flex;gap:12px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap;}
+.safety-dialog-actions button,.privacy-page button {border:1px solid #8f65ae;border-radius:10px;background:#382547;color:#fff;min-height:44px;padding:10px 16px;font:inherit;cursor:pointer;}
+button:disabled {opacity:.55;cursor:wait;}
+.privacy-page {max-width:860px;margin:100px auto 40px;padding:0 20px;color:#eee8f5;}
+.privacy-page a {color:#d7b7f1;}.privacy-page h1{font-size:clamp(1.7rem,4vw,2.4rem);}.privacy-page p{color:#c0b5cb;line-height:1.6;}
+.privacy-card {margin:24px 0;padding:24px;border:1px solid #45344f;border-radius:22px;background:#19151f;}
+.privacy-card h2 {font-size:1.2rem;}.blocked-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;}.blocked-row span{overflow-wrap:anywhere;min-width:0;}
+.moderation-report {border-top:1px solid #493551;padding:20px 0;}.moderation-report blockquote{margin:12px 0;padding:12px;background:#ffffff08;white-space:pre-wrap;overflow-wrap:anywhere;}
+@media(max-width:600px){.privacy-card{padding:18px;}.safety-dialog{padding:20px;}.modal-glass-card{box-sizing:border-box;max-width:calc(100vw - 24px);max-height:90dvh;overflow-y:auto;}.feedback-toast{bottom:12px;}}
+
+/* Shared neutral surfaces and explicit link colors; visited links retain their styling. */
+html,body{margin:0;min-height:100%;background:#090e12;font-family:Inter,system-ui,sans-serif;}
+a{color:var(--mgl-accent);}
+.safety-actions{position:relative;display:inline-block;margin:4px 0 4px 10px;}
+.safety-more{list-style:none;display:grid;place-items:center;min-width:40px;min-height:40px;padding:0 4px;border-radius:10px;color:#9dadb4;cursor:pointer;font-size:23px;line-height:1;letter-spacing:2px;}
+.safety-more::-webkit-details-marker{display:none;}
+.safety-more:hover,.safety-actions[open] .safety-more{background:#ffffff0c;color:#eff7f7;}
+.safety-actions-menu{display:flex;flex-direction:column;align-items:stretch;gap:4px;padding:8px;min-width:150px;border:1px solid #3d5158;border-radius:12px;background:#172229;box-shadow:0 8px 24px #0004;}
+.safety-actions-menu .safety-link{justify-content:flex-start;padding:10px 12px;color:#d1dfe1;min-height:40px;}
+.safety-actions-menu .safety-link:hover{background:#ffffff0d;}
+.safety-dialog{background:#141d24;border-color:#3d5960;color:#edf5f5;}
+.safety-dialog select,.safety-dialog textarea{background:#0e171e;border-color:#3d5960;color:#edf5f5;}
+.safety-dialog label,.privacy-page label{color:#cbdcde;}
+.safety-dialog-actions button{background:#165c59;border-color:#3c8c81;}
+.feedback-toast{background:#173932;border-color:#4b9789;}
+.safety-link,.achievement-more{color:#9fe6d8;}

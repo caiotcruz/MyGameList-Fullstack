@@ -1,3 +1,6 @@
+import { ReviewDrafts } from '../../services/review-drafts';
+import { SafetyActions } from '../../components/safety-actions/safety-actions';
+import { Feedback, errorMessage } from '../../services/feedback';
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -17,11 +20,19 @@ interface ChartBar {
 @Component({
   selector: 'app-game-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [SafetyActions, CommonModule, RouterModule, FormsModule],
   templateUrl: './game-details.html',
   styleUrl: './game-details.css'
 })
 export class GameDetails implements OnInit {
+  drafts=inject(ReviewDrafts);
+  saveError='';
+  draftRestored=false;
+  preserveDraft(){this.drafts.save(this.editingGame);}
+  discardDraft(){this.drafts.clear(this.editingGame.rawgId);this.isModalOpen=false;this.saveError='';}
+
+  feedback=inject(Feedback);
+
   route = inject(ActivatedRoute);
   gameService = inject(GameService);
   cdr = inject(ChangeDetectorRef);
@@ -206,33 +217,27 @@ export class GameDetails implements OnInit {
   abrirModal() {
     if (!this.data) return;
 
-    const userId = localStorage.getItem('userId');
-    let myExistingReview = '';
-    let myExistingIsSpoiler = false;
-
-    if (userId && this.data.latestReviews) {
-      const userReview = this.data.latestReviews.find((r: any) => r.myVote !== undefined);
-      if (userReview) {
-        myExistingReview = userReview.review;
-        myExistingIsSpoiler = userReview.isSpoiler || false;
-      }
-    }
-
     this.editingGame = {
       rawgId: this.data.externalId,
       title: this.data.title,
       coverUrl: this.data.coverUrl,
       status: this.data.userStatus || 'PLAN_TO_PLAY',
       score: this.data.userScore || 0,
-      review: myExistingReview,
-      isSpoiler: myExistingIsSpoiler
+      review: this.data.myReview || '',
+      isSpoiler: this.data.myReviewSpoiler
     };
 
+    const recovered=this.drafts.restore(this.editingGame.rawgId);
+    this.draftRestored=!!recovered;
+    if(recovered)this.editingGame={...this.editingGame,...recovered};
+    this.saveError='';
     this.isModalOpen = true;
     this.cdr.detectChanges();
   }
 
-  fecharModal() {
+  fecharModal(saved=false) {
+    if(this.isSaving)return;
+    if(!saved)this.preserveDraft();
     this.isModalOpen = false;
   }
 
@@ -251,16 +256,19 @@ export class GameDetails implements OnInit {
   salvar() {
     if (this.isSaving) return;
     this.validarScore();
+    if(this.isSaving)return;
+    this.saveError="";this.preserveDraft();
     this.isSaving = true;
 
     this.gameService.addGameToList(this.editingGame).subscribe({
       next: () => {
         this.isSaving = false;
-        this.fecharModal();
+        this.drafts.clear(this.editingGame.rawgId);
+        this.fecharModal(true);
         if (this.data) this.carregarHub(this.data.externalId.toString());
       },
       error: (err) => {
-        alert('Erro ao salvar. Verifique se você está logado.');
+        this.saveError=errorMessage(err);
         this.isSaving = false;
         this.cdr.detectChanges();
       }
@@ -286,6 +294,8 @@ export class GameDetails implements OnInit {
   }
 
   votar(rev: any, type: 'LIKE' | 'DISLIKE') {
+    if(rev.voteBusy)return;
+    const previous={myVote:rev.myVote,likesCount:rev.likesCount,dislikesCount:rev.dislikesCount,voteScore:rev.voteScore};
     const reviewId = rev.reviewId || rev.id;
 
     if (!reviewId) {
@@ -293,6 +303,7 @@ export class GameDetails implements OnInit {
       return;
     }
 
+    rev.voteBusy=true;
     if (rev.myVote === type) {
       rev.myVote = null;
       if (type === 'LIKE') rev.likesCount--;
@@ -309,8 +320,9 @@ export class GameDetails implements OnInit {
     rev.voteScore = (rev.likesCount * 2) - rev.dislikesCount;
 
     this.gameService.voteReview(reviewId, type).subscribe({
+      next:()=>{rev.voteBusy=false;this.cdr.detectChanges();},
       error: (err) => {
-        console.error('Erro no voto:', err);
+        Object.assign(rev,previous);rev.voteBusy=false;this.feedback.error(err);this.cdr.detectChanges();
       }
     });
   }

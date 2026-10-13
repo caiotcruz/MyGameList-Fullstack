@@ -5,20 +5,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailService.class);
-    private final JavaMailSender mailSender;
+    private final com.caiotcruz.mygamelist.infra.messaging.MailOutbox outbox;
+    @Value("${app.frontend-url}")
+    private String frontendUrl;
 
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
+    public EmailService(com.caiotcruz.mygamelist.infra.messaging.MailOutbox outbox) {
+        this.outbox = outbox;
     }
 
-    @Async
     public void enviarEmailVerificacao(String to, String code) {
         String htmlContent = """
             <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #ffffff; padding: 40px; text-align: center; border-radius: 15px;">
@@ -33,12 +34,12 @@ public class EmailService {
             </div>
             """.formatted(code);
 
-        sendHtmlEmail(to, "Verifique sua conta no MyGameList 🎮", htmlContent);
+        sendHtmlEmail(to, "Verifique sua conta no MyGameList 🎮", htmlContent, 15);
     }
 
-    @Async
     public void enviarEmailRecuperacao(String to, String token) {
-        String link = "http://localhost:4200/reset-password?token=" + token + "&email=" + to;
+        String link = frontendUrl + "/reset-password?token=" + token + "&email="
+                + java.net.URLEncoder.encode(to, java.nio.charset.StandardCharsets.UTF_8);
 
         String htmlContent = """
             <div style="font-family: sans-serif; background-color: #121212; color: #ffffff; padding: 40px; text-align: center;">
@@ -51,21 +52,10 @@ public class EmailService {
             </div>
             """.formatted(link);
 
-        sendHtmlEmail(to, "Recuperação de Senha - MyGameList 🔑", htmlContent);
+        sendHtmlEmail(to, "Recuperação de Senha - MyGameList 🔑", htmlContent, 60);
     }
 
-    private void sendHtmlEmail(String to, String subject, String html) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(html, true);
-
-            mailSender.send(message);
-        } catch (Exception e) {
-            log.error("Falha ao enviar e-mail HTML para {}: {}", to, e.getMessage(), e);
-        }
+    private void sendHtmlEmail(String to, String subject, String html, int minutes) {
+        outbox.enqueue(to, subject, html, minutes);
     }
 }

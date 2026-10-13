@@ -53,14 +53,14 @@
 
         <div class="card-body-content">
           <div class="header-tag-row">
-            <span class="pill-tag-neon"><span class="fa-solid fa-chart-line"></span> #1 Em Alta no Mês</span>
+            <span class="pill-tag-neon"><span class="fa-solid fa-chart-line"></span> #1 Em alta · últimos 30 dias</span>
           </div>
 
           <h3 class="game-title-now">{{ trendingGame.title }}</h3>
 
           <div class="trending-stats-pills">
             <span class="stat-pill-mini" *ngIf="trendingGame.interactionsThisMonth">
-              <span class="fa-solid fa-fire text-orange"></span> {{ trendingGame.interactionsThisMonth }} interações
+              <span class="fa-solid fa-fire text-orange"></span> {{ trendingGame.interactionsThisMonth }} pontos
             </span>
           </div>
         </div>

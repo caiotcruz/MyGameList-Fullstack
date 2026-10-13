@@ -14,6 +14,7 @@ import java.util.List;
 
 @Data
 @Entity
+@org.hibernate.annotations.DynamicUpdate
 @Table(name = "tb_users")
 public class User implements UserDetails {
 
@@ -43,6 +44,13 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private int experience = 0;
 
+    @Column(nullable = false)
+    private int tokenVersion = 0;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false, columnDefinition="varchar(32) default 'PEOPLE_I_FOLLOW'")
+    private com.caiotcruz.mygamelist.model.enums.MessagePolicy messagePolicy = com.caiotcruz.mygamelist.model.enums.MessagePolicy.PEOPLE_I_FOLLOW;
+
     private boolean rotatingAvatar = false;
 
     @Override
@@ -62,6 +70,10 @@ public class User implements UserDetails {
     
     @JsonIgnore
     private String verificationCode;
+    @JsonIgnore
+    private String resetTokenHash;
+    @JsonIgnore
+    private LocalDateTime resetTokenExpiry;
 
     @JsonIgnore
     private LocalDateTime verificationExpiry;

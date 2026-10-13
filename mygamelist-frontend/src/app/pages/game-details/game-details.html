@@ -137,7 +137,7 @@
       <span class="related-subheader">Edições e DLCs</span>
       <div class="related-strip">
         <div class="related-card" *ngFor="let item of additions" [routerLink]="['/game', item.rawgId]">
-          <img [src]="item.backgroundImage || 'assets/no-image.jpg'" [alt]="item.name">
+          <img [src]="item.backgroundImage || 'no-image.svg'" [alt]="item.name">
           <div class="related-info">
             <span class="related-name">{{ item.name }}</span>
             <span class="related-meta" *ngIf="item.metacritic">
@@ -152,7 +152,7 @@
       <span class="related-subheader">Jogos da Série</span>
       <div class="related-strip">
         <div class="related-card" *ngFor="let item of series" [routerLink]="['/game', item.rawgId]">
-          <img [src]="item.backgroundImage || 'assets/no-image.jpg'" [alt]="item.name">
+          <img [src]="item.backgroundImage || 'no-image.svg'" [alt]="item.name">
           <div class="related-info">
             <span class="related-name">{{ item.name }}</span>
             <span class="related-meta" *ngIf="item.metacritic">
@@ -227,6 +227,7 @@
         </div>
 
         <div class="rev-footer">
+          <app-safety-actions targetType="REVIEW" [targetId]="rev.reviewId" [ownerId]="rev.userId" />
           <div class="vote-group">
             <button class="vote-btn" [class.active-like]="rev.myVote === 'LIKE'" (click)="votar(rev, 'LIKE')">
               <span class="fa-solid fa-thumbs-up"></span> {{ rev.likesCount }}
@@ -287,7 +288,7 @@
         <label>Status</label>
 
         <div class="select-container">
-          <select [(ngModel)]="editingGame.status" (change)="verificarStatus()">
+          <select [(ngModel)]="editingGame.status" (ngModelChange)="preserveDraft()" (change)="verificarStatus()">
             <option value="PLAN_TO_PLAY">Planejo Jogar</option>
             <option value="PLAYING">Jogando</option>
             <option value="COMPLETED">Zerado</option>
@@ -299,24 +300,27 @@
 
       <div class="field-box tiny-field" *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
         <label>Nota</label>
-        <input type="number" min="0" max="10" [(ngModel)]="editingGame.score" (change)="validarScore()">
+        <input type="number" min="0" max="10" [(ngModel)]="editingGame.score" (ngModelChange)="preserveDraft()" (change)="validarScore()">
       </div>
     </div>
 
     <div class="field-box" *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
       <label>Review Rápido</label>
-      <textarea rows="4" [(ngModel)]="editingGame.review" placeholder="O que achou desse título?"></textarea>
+      <textarea rows="4" [(ngModel)]="editingGame.review" (ngModelChange)="preserveDraft()" maxlength="5000" placeholder="O que achou desse título?"></textarea>
     </div>
 
     <div class="field-box-checkbox" *ngIf="editingGame.status !== 'PLAN_TO_PLAY' && editingGame.review?.trim()">
       <label class="custom-checkbox-container">
-        <input type="checkbox" [(ngModel)]="editingGame.isSpoiler">
+        <input type="checkbox" [(ngModel)]="editingGame.isSpoiler" (ngModelChange)="preserveDraft()">
         <span class="checkmark"></span>
         <span class="checkbox-label"><span class="fa-solid fa-triangle-exclamation text-danger"></span> Esta review contém spoilers</span>
       </label>
     </div>
 
-    <div class="modal-footer-btns">
+    <p class="draft-note">{{draftRestored?'Rascunho recuperado nesta aba.':'Seu rascunho é preservado nesta aba por até 24 horas.'}}</p>
+      <p class="form-error" role="alert" *ngIf="saveError">{{saveError}}</p>
+      <button type="button" class="safety-link" [disabled]="isSaving" (click)="discardDraft()">Descartar rascunho</button>
+      <div class="modal-footer-btns">
       <button class="btn-cancel-glass" (click)="fecharModal()">Cancelar</button>
       <button class="btn-save-neon" (click)="salvar()" [disabled]="isSaving">
         {{ isSaving ? 'Salvando...' : 'Salvar' }}

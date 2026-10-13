@@ -32,6 +32,8 @@ export interface GameHubData {
   userStatus: string | null;
   userScore: number;
   isFavorite: boolean;
+  myReview: string | null;
+  myReviewSpoiler: boolean;
   latestReviews: GameReview[];
   scoreDistribution?: { [key: string]: number };
 }
@@ -83,8 +85,8 @@ export interface GameTrailer {
 })
 export class GameService {
   private http = inject(HttpClient);
-  //private apiUrl = environment.apiUrl;
-  private apiUrl = "https://mygamelist-api-65ts.onrender.com";
+  private apiUrl = environment.apiUrl;
+  //private apiUrl = "https://mygamelist-api-65ts.onrender.com";
 
   private getHeaders() {
     const token = localStorage.getItem('token');
@@ -95,7 +97,7 @@ export class GameService {
   }
 
   searchGames(query: string, page: number = 1) { 
-    return this.http.get<any[]>(`${this.apiUrl}/games/search?query=${query}&page=${page}`);
+    return this.http.get<any[]>(`${this.apiUrl}/games/search?query=${encodeURIComponent(query)}&page=${page}`);
   }
 
   getGameHub(rawgId: string) {

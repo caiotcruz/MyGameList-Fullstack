@@ -44,18 +44,18 @@ input[type="number"] {
 }
 
 .header-col.sortable:hover {
-  color: #6200ea;
+  color: var(--mgl-accent);
 }
 
 .sort-icon {
-  color: #6200ea;
+  color: var(--mgl-accent);
   font-size: 0.6rem;
 }
 
 .btn-reset-sort {
-  background: rgba(98, 0, 234, 0.05);
-  border: 1px solid rgba(98, 0, 234, 0.2);
-  color: #6200ea;
+  background: rgba(46, 184, 164, 0.05);
+  border: 1px solid rgba(46, 184, 164, 0.2);
+  color: var(--mgl-accent);
   padding: 4px 12px;
   border-radius: 6px;
   font-size: 0.65rem;
@@ -66,7 +66,7 @@ input[type="number"] {
 }
 
 .btn-reset-sort:hover {
-  background: #6200ea;
+  background: var(--mgl-accent-strong);
   color: #fff;
 }
 
@@ -96,12 +96,12 @@ input[type="number"] {
 .game-stack-card:hover {
   background: rgba(255, 255, 255, 0.04);
   transform: translateX(8px);
-  border-color: rgba(98, 0, 234, 0.3);
+  border-color: rgba(46, 184, 164, 0.3);
 }
 
 .game-stack-card.is-favorite {
-  background: linear-gradient(90deg, rgba(98, 0, 234, 0.08) 0%, transparent 100%);
-  border-left: 4px solid #6200ea;
+  background: linear-gradient(90deg, rgba(46, 184, 164, 0.08) 0%, transparent 100%);
+  border-left: 4px solid var(--mgl-accent-strong);
 }
 
 .card-left {
@@ -178,9 +178,9 @@ input[type="number"] {
 }
 
 .review-pill-btn {
-  background: rgba(98, 0, 234, 0.1);
-  border: 1px solid rgba(98, 0, 234, 0.3);
-  color: #a29bfe;
+  background: rgba(46, 184, 164, 0.1);
+  border: 1px solid rgba(46, 184, 164, 0.3);
+  color: #7aaba5;
   font-size: 0.7rem;
   font-weight: 700;
   padding: 4px 12px;
@@ -193,7 +193,7 @@ input[type="number"] {
 }
 
 .review-pill-btn:hover {
-  background: #6200ea;
+  background: var(--mgl-accent-strong);
   color: white;
 }
 
@@ -222,8 +222,8 @@ input[type="number"] {
 
 .action-trigger:hover {
   color: #fff;
-  border-color: #6200ea;
-  background: rgba(98, 0, 234, 0.2);
+  border-color: var(--mgl-accent-strong);
+  background: rgba(46, 184, 164, 0.2);
 }
 
 .action-trigger.active {
@@ -322,7 +322,7 @@ input[type="number"] {
 }
 
 .field-box select:hover {
-  border-color: #6200ea;
+  border-color: var(--mgl-accent-strong);
 }
 
 .field-box select:focus {
@@ -332,7 +332,7 @@ input[type="number"] {
 .field-box input:focus,
 .field-box textarea:focus,
 .field-box select:focus {
-  border-color: #6200ea;
+  border-color: var(--mgl-accent-strong);
   background: #0a0a0a;
 }
 
@@ -344,7 +344,7 @@ input[type="number"] {
 }
 
 .btn-save-glow {
-  background: #6200ea;
+  background: var(--mgl-accent-strong);
   color: white;
   border: none;
   padding: 12px 25px;
@@ -352,13 +352,13 @@ input[type="number"] {
   font-weight: 800;
   cursor: pointer;
   transition: 0.3s;
-  box-shadow: 0 0 15px rgba(98, 0, 234, 0.3);
+  box-shadow: 0 0 15px rgba(46, 184, 164, 0.3);
 }
 
 .btn-save-glow:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(98, 0, 234, 0.5);
-  background: #7c4dff;
+  box-shadow: 0 5px 20px rgba(46, 184, 164, 0.5);
+  background: var(--mgl-accent);
 }
 
 .btn-cancel {
@@ -499,13 +499,13 @@ input[type="number"] {
 }
 
 .custom-checkbox-container:hover input ~ .checkmark {
-  border-color: #6200ea;
+  border-color: var(--mgl-accent-strong);
 }
 
 .custom-checkbox-container input:checked ~ .checkmark {
-  background-color: #6200ea;
-  border-color: #6200ea;
-  box-shadow: 0 0 10px rgba(98, 0, 234, 0.4);
+  background-color: var(--mgl-accent-strong);
+  border-color: var(--mgl-accent-strong);
+  box-shadow: 0 0 10px rgba(46, 184, 164, 0.4);
 }
 
 .checkmark:after {
@@ -643,8 +643,8 @@ input[type="number"] {
   }
 
   .sort-options button.active {
-    background: rgba(98, 0, 234, 0.15);
-    border-color: #6200ea;
+    background: rgba(46, 184, 164, 0.15);
+    border-color: var(--mgl-accent-strong);
     color: #b388ff;
   }
 

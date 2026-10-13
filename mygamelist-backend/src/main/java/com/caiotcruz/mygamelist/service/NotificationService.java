@@ -9,15 +9,18 @@ import java.util.List;
 
 @Service
 public class NotificationService {
+    private final CommunitySafety safety;
+
 
     private final NotificationRepository notificationRepository;
 
-    public NotificationService(NotificationRepository notificationRepository) {
+    public NotificationService(NotificationRepository notificationRepository, CommunitySafety safety) {
+        this.safety = safety;
         this.notificationRepository = notificationRepository;
     }
 
     public void send(User recipient, User actor, NotificationType type, Activity activity) {
-        if (recipient.getId().equals(actor.getId())) {
+        if (recipient.getId().equals(actor.getId()) || safety.blocked(recipient.getId(),actor.getId())) {
             return;
         }
 
@@ -26,15 +29,16 @@ public class NotificationService {
     }
 
     public List<Notification> getUserNotifications(User user) {
-        return notificationRepository.findByUserOrderByCreatedAtDesc(user);
+        var hidden=safety.hiddenIds(user.getId());
+        return notificationRepository.findByUserOrderByCreatedAtDesc(user).stream().filter(n -> n.getActor()==null || !hidden.contains(n.getActor().getId())).toList();
     }
 
     public long countUnread(User user) {
-        return notificationRepository.countByUserAndIsReadFalse(user);
+        return getUserNotifications(user).stream().filter(n -> !n.isRead()).count();
     }
 
-    public void markAsRead(Long notificationId) {
-        notificationRepository.findById(notificationId).ifPresent(n -> {
+    public void markAsRead(Long notificationId, User user) {
+        notificationRepository.findByIdAndUser(notificationId, user).ifPresent(n -> {
             n.setRead(true);
             notificationRepository.save(n);
         });

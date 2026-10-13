@@ -1,17 +1,37 @@
-# Ignorar compilação do Java
-**/target/
-**/*.class
+# Local configuration and secrets (keep only templates)
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.key
+*.p12
+*.pfx
 
-# Ignorar dependências do Node.js (Isso é GIGANTE, nunca suba)
-**/node_modules/
-**/dist/
-**/.angular/
+# Build output, dependencies and caches
+node_modules/
+target/
+dist/
+build/
+out-tsc/
+.angular/
+coverage/
+*.class
 
-# Ignorar configurações de IDE
-**/.idea/
-**/.vscode/
-**/*.iml
-
-# Ignorar logs e sistema
-*.log
+# Editor and operating-system files
+.idea/
+.vscode/
+*.iml
 .DS_Store
+Thumbs.db
+
+# Local logs, database backups and delivery archives
+*.log
+*.dump
+*.backup
+*.zip
+*.rar
+/backups/
+
+# Instructions and temporary commit message for this publication
+/_git-helper/
+

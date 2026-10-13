@@ -1,20 +1,15 @@
+import { SafetyActions } from '../../components/safety-actions/safety-actions';
+import { Feedback, errorMessage } from '../../services/feedback';
 import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, Subject, takeUntil } from 'rxjs';
 
-import { CommunityService } from '../../services/community';
+import { CommunityService, Achievement } from '../../services/community';
 import { FollowService } from '../../services/follow';
 import { GameList } from '../../components/game-list/game-list'; 
 import { UserService } from '../../services/user'; 
-
-interface Badge {
-  icon: string;
-  label: string;
-  color: string;
-  description: string;
-}
 
 interface ChartBar {
   score: number;
@@ -25,11 +20,13 @@ interface ChartBar {
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, GameList, FormsModule, RouterModule], 
+  imports: [SafetyActions, CommonModule, GameList, FormsModule, RouterModule], 
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
 export class Profile implements OnInit, OnDestroy {
+  feedback=inject(Feedback);
+
   private route = inject(ActivatedRoute);
   private communityService = inject(CommunityService);
   private followService = inject(FollowService);
@@ -64,7 +61,12 @@ export class Profile implements OnInit, OnDestroy {
   myFollowingIds: Set<number> = new Set();
 
   stats = { total: 0, completed: 0, playing: 0, platinum: 0, avgScore: 0 };
-  badges: Badge[] = [];
+  achievements: Achievement[] = [];
+  showAllAchievements = false;
+  readonly achievementPreviewLimit=3;
+  get visibleAchievements():Achievement[]{return this.achievements.slice(0,this.achievementPreviewLimit);}
+  profileError='';
+  onBlocked(){this.router.navigate(['/privacy']);}
   chartData: ChartBar[] = [];
   favoriteGame: any = null; 
 
@@ -93,20 +95,24 @@ export class Profile implements OnInit, OnDestroy {
   }
 
   carregarPerfil() {
+    this.profileError="";
     const requests: any = {
       user: this.userService.getById(this.userId),
       games: this.communityService.getUserList(this.userId),
-      stats: this.communityService.getUserStats(this.userId)
+      stats: this.communityService.getUserStats(this.userId),
+      achievements: this.communityService.getAchievements(this.userId)
     };
 
     if (!this.isMyProfile && this.myId > 0) {
       requests.myStats = this.communityService.getUserStats(this.myId);
     }
 
+    const requestedUserId=this.userId;
     forkJoin(requests)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res: any) => {
+          if(requestedUserId!==this.userId)return;
           this.userName = res.user.name;
           this.userBio = res.user.bio;
           this.userAvatar = res.user.profilePicture;
@@ -115,6 +121,8 @@ export class Profile implements OnInit, OnDestroy {
           this.userExperience = res.user.experience ?? 0;
           this.userGames = res.games;
           this.statsData = res.stats;
+          this.achievements = res.achievements;
+          this.showAllAchievements = false;
 
           if (this.isMyProfile) {
             this.myFollowingIds = new Set(res.stats.following?.map((u: any) => u.id) || []);
@@ -126,8 +134,11 @@ export class Profile implements OnInit, OnDestroy {
           this.cdr.detectChanges();
         },
         error: (err) => {
-          console.error('Erro ao carregar perfil completo:', err);
-          this.userName = 'Usuário não encontrado';
+          if(requestedUserId!==this.userId)return;
+          this.profileError=errorMessage(err);
+          this.userName='Perfil indisponível';
+          this.userGames=[];this.achievements=[];this.favoriteGame=null;
+          this.cdr.detectChanges();
         }
       });
   }
@@ -150,41 +161,26 @@ export class Profile implements OnInit, OnDestroy {
     return this.myFollowingIds.has(targetUserId);
   }
 
+  pendingFollowIds = new Set<number>();
+
   toggleFollowUser(targetUser: any, event: Event) {
     event.stopPropagation();
-    const isFollowing = this.euSigo(targetUser.id);
-
-    if (isFollowing) {
-      this.myFollowingIds.delete(targetUser.id);
-      if (this.isMyProfile) {
-        this.statsData.followingCount--;
-        this.statsData.following = this.statsData.following.filter(u => u.id !== targetUser.id);
+    if (this.pendingFollowIds.has(targetUser.id)) return;
+    this.pendingFollowIds.add(targetUser.id);
+    const request = this.euSigo(targetUser.id)
+      ? this.followService.unfollow(targetUser.id)
+      : this.followService.follow(targetUser.id);
+    request.pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+        this.pendingFollowIds.delete(targetUser.id);
+        this.carregarPerfil();
+      },
+      error: (err) => {
+        this.pendingFollowIds.delete(targetUser.id);
+        this.feedback.error(err);
+        this.cdr.detectChanges();
       }
-      this.cdr.detectChanges();
-
-      this.followService.unfollow(targetUser.id).subscribe({
-        error: () => {
-          this.myFollowingIds.add(targetUser.id);
-          this.cdr.detectChanges();
-          alert('Erro ao deixar de seguir.');
-        }
-      });
-    } else {
-      this.myFollowingIds.add(targetUser.id);
-      if (this.isMyProfile) {
-        this.statsData.followingCount++;
-        this.statsData.following.push(targetUser);
-      }
-      this.cdr.detectChanges();
-
-      this.followService.follow(targetUser.id).subscribe({
-        error: () => {
-          this.myFollowingIds.delete(targetUser.id);
-          this.cdr.detectChanges();
-          alert('Erro ao seguir.');
-        }
-      });
-    }
+    });
   }
 
   navegarParaPerfil(targetUserId: number) {
@@ -212,26 +208,23 @@ export class Profile implements OnInit, OnDestroy {
         this.isEditingProfile = false;
         this.cdr.detectChanges(); 
       },
-      error: (err) => alert('Erro ao salvar perfil.')
+      error: (err) => this.feedback.error(err)
     });
   }
 
   onListUpdated() {
-    this.communityService.getUserList(this.userId).subscribe(dados => {
-      this.userGames = dados;
-      this.calcularHallDaFama();
-      this.cdr.detectChanges();
-    });
+    this.carregarPerfil();
   }
 
   calcularHallDaFama() {
     if (!this.userGames || this.userGames.length === 0) {
       this.favoriteGame = null;
+      this.stats={total:0,completed:0,playing:0,platinum:0,avgScore:0};this.chartData=[];
       return;
     }
 
     const total = this.userGames.length;
-    const completed = this.userGames.filter(g => g.status === 'COMPLETED').length;
+    const completed = this.userGames.filter(g => g.status === 'COMPLETED' || g.status === 'PLATINUM').length;
     const platinum = this.userGames.filter(g => g.status === 'PLATINUM').length;
     const playing = this.userGames.filter(g => g.status === 'PLAYING').length;
     
@@ -261,32 +254,8 @@ export class Profile implements OnInit, OnDestroy {
     this.favoriteGame = manualFavorite || 
                        (ratedGames.length > 0 ? [...ratedGames].sort((a, b) => b.score - a.score)[0] : this.userGames[0]);
 
-    this.definirBadges(ratedGames);
-  }
 
-  private definirBadges(ratedGames: any[]) {
-    const b: Badge[] = [];
-    if (this.stats.total >= 1) b.push({ icon: 'dice', label: 'Iniciante', color: '#cd7f32', description: 'Iniciou a coleção.' });
-    if (this.stats.total >= 10) b.push({ icon: 'book', label: 'Bibliotecário', color: 'silver', description: '+10 jogos na conta.' });
-    if (this.stats.completed >= 5) b.push({ icon: 'trophy', label: 'Zerador', color: '#4caf50', description: 'Completou 5 desafios.' });
-    if (this.stats.avgScore >= 9 && ratedGames.length >= 3) b.push({ icon: 'star', label: 'Sommelier', color: '#ffbf00', description: 'Média de notas excelente.' });
-    if (this.stats.platinum >= 1) {
-        b.push({ icon: 'gem', label: 'Perfeccionista', color: '#b400ff', description: 'Platinou seu primeiro jogo.' });
-    }
-    this.badges = b;
-  }
-
-  getBadgeIconClass(iconKey: string): string {
-    const map: { [key: string]: string } = {
-      'dice': 'fa-solid fa-dice',
-      'book': 'fa-solid fa-book',
-      'trophy': 'fa-solid fa-trophy',
-      'star': 'fa-solid fa-star',
-      'gem': 'fa-solid fa-gem'
-    };
-    return map[iconKey] || 'fa-solid fa-medal';
   }
 
   trackByScore(index: number, item: ChartBar) { return item.score; }
-  trackByBadge(index: number, item: Badge) { return item.label; }
 }

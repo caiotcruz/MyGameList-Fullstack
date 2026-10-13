@@ -9,7 +9,7 @@ public record AddGameDTO(
     @NotNull Long rawgId, 
     GameStatus status,    
     @Min(0) @Max(10) Integer score, 
-    String review,
+    @jakarta.validation.constraints.Size(max = 10000) String review,
     Boolean isFavorite,
     Boolean isSpoiler
 ) {}

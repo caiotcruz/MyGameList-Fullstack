@@ -41,14 +41,16 @@ public class AuthController {
     private final TokenService tokenService;
     private final UserFollowRepository followRepository;
     private final EmailService emailService;
+    private final com.caiotcruz.mygamelist.service.UserLocks locks;
 
-    public AuthController( AuthenticationManager authenticationManager, UserRepository userRepository, TokenService tokenService, UserFollowRepository followRepository, EmailService emailService) {
+    public AuthController( AuthenticationManager authenticationManager, UserRepository userRepository, TokenService tokenService, UserFollowRepository followRepository, EmailService emailService, com.caiotcruz.mygamelist.service.UserLocks locks) {
 
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.tokenService = tokenService;
         this.followRepository = followRepository;
         this.emailService = emailService;
+        this.locks = locks;
     }
 
     @PostMapping("/login")
@@ -67,6 +69,7 @@ public class AuthController {
         ));
     }
 
+    @org.springframework.transaction.annotation.Transactional
     @PostMapping("/register")
     public ResponseEntity<ApiResponseDTO<Void>> register(@RequestBody @Valid RegisterDTO data) {
         if (userRepository.existsByEmail(data.email())) {
@@ -84,7 +87,7 @@ public class AuthController {
         }
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
-        String code = String.valueOf((int) ((Math.random() * 900000) + 100000));
+        String code = String.format("%06d", new java.security.SecureRandom().nextInt(1_000_000));
 
         User newUser = new User();
         newUser.setEmail(data.email());
@@ -96,18 +99,30 @@ public class AuthController {
 
         userRepository.save(newUser);
         
-        try {
-            emailService.enviarEmailVerificacao(data.email(), code);
-        } catch (Exception e) {
-            System.out.println("ERRO AO ENVIAR EMAIL: " + e.getMessage());
-        }
+        emailService.enviarEmailVerificacao(data.email(), code);
 
         return ResponseEntity.ok(new ApiResponseDTO<>(
-            "Código de verificação enviado ao e-mail.",
+            "Código de verificação agendado para envio ao e-mail.",
             null
         ));
     }
 
+    @org.springframework.transaction.annotation.Transactional
+    @PostMapping("/resend-verification")
+    public ResponseEntity<ApiResponseDTO<Void>> resendVerification(@RequestBody @Valid ForgotPasswordRequestDTO data) {
+        User user = (User) userRepository.findByEmail(data.email());
+        if (user != null) locks.lock(user.getId());
+        if (user != null && !user.isEnabled()) {
+            String code = String.format("%06d", new java.security.SecureRandom().nextInt(1_000_000));
+            user.setVerificationCode(code);
+            user.setVerificationExpiry(LocalDateTime.now().plusMinutes(15));
+            userRepository.save(user);
+            emailService.enviarEmailVerificacao(user.getEmail(), code);
+        }
+        return ResponseEntity.ok(new ApiResponseDTO<>("Se houver uma conta pendente, um novo código será enviado.", null));
+    }
+
+    @org.springframework.transaction.annotation.Transactional
     @PostMapping("/verify")
     public ResponseEntity<ApiResponseDTO<Void>> verify(@RequestBody @Valid VerificacaoDTO data) {
         UserDetails userDetails = userRepository.findByEmail(data.email());
@@ -119,7 +134,8 @@ public class AuthController {
             ));
         }
 
-        User user = (User) userDetails; 
+        User user = (User) userDetails;
+        locks.lock(user.getId()); 
 
         if (user.isEnabled()) {
             return ResponseEntity.badRequest().body(new ApiResponseDTO<>(
@@ -148,38 +164,41 @@ public class AuthController {
         ));
     }
 
+    @org.springframework.transaction.annotation.Transactional
     @PostMapping("/forgot-password")
     public ResponseEntity<ApiResponseDTO<Void>> forgotPassword(@RequestBody @Valid ForgotPasswordRequestDTO data) {
         User user = (User) userRepository.findByEmail(data.email());
+        if (user != null) locks.lock(user.getId());
         
         if (user != null) {
             String token = java.util.UUID.randomUUID().toString();
             
-            user.setVerificationCode(token); 
-            user.setVerificationExpiry(LocalDateTime.now().plusHours(1)); 
+            user.setResetTokenHash(hashToken(token));
+            user.setResetTokenExpiry(LocalDateTime.now().plusHours(1)); 
             userRepository.save(user);
             
-            try {
-                emailService.enviarEmailRecuperacao(user.getEmail(), token);
-            } catch (Exception e) {
-                System.out.println("Erro e-mail: " + e.getMessage());
-            }
+            emailService.enviarEmailRecuperacao(user.getEmail(), token);
         }
 
         return ResponseEntity.ok(new ApiResponseDTO<>("Se o e-mail existir, as instruções foram enviadas.", null));
     }
 
+    @org.springframework.transaction.annotation.Transactional
     @PostMapping("/reset-password")
     public ResponseEntity<ApiResponseDTO<Void>> resetPassword(@RequestBody @Valid ResetPasswordDTO data) {
         User user = (User) userRepository.findByEmail(data.email());
+        if (user != null) locks.lock(user.getId());
 
-        if (user != null && user.getVerificationCode() != null &&
-            user.getVerificationCode().equals(data.codigo()) &&
-            user.getVerificationExpiry().isAfter(LocalDateTime.now())) {
+        if (user != null && user.getResetTokenHash() != null &&
+            user.getResetTokenHash().equals(hashToken(data.codigo())) &&
+            user.getResetTokenExpiry() != null &&
+            user.getResetTokenExpiry().isAfter(LocalDateTime.now())) {
             
             String encryptedPassword = new BCryptPasswordEncoder().encode(data.newPassword());
             user.setPassword(encryptedPassword);
-            user.setVerificationCode(null);
+            user.setTokenVersion(user.getTokenVersion() + 1);
+            user.setResetTokenHash(null);
+            user.setResetTokenExpiry(null);
             userRepository.save(user);
 
             return ResponseEntity.ok(new ApiResponseDTO<>("Senha alterada com sucesso!", null));
@@ -188,22 +207,14 @@ public class AuthController {
         return ResponseEntity.badRequest().body(new ApiResponseDTO<>("Código inválido ou expirado.", null));
     }
 
-    @GetMapping
-    public ResponseEntity<ApiResponseDTO<List<UserSummaryDTO>>> getAllUsers() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User currentUser = (User) userRepository.findByEmail(email);
-
-        List<UserSummaryDTO> users = userRepository.findAll().stream()
-            .filter(u -> !u.getId().equals(currentUser.getId()))
-            .map(u -> {
-                boolean isFollowing = followRepository
-                    .findByFollowerAndFollowed(currentUser, u)
-                    .isPresent();
-
-                return new UserSummaryDTO(u.getId(), u.getName(), isFollowing, u.getProfilePicture(), u.isRotatingAvatar());
-            })
-            .collect(Collectors.toList());
-
-        return ResponseEntity.ok(new ApiResponseDTO<>("Usuários carregados com sucesso", users));
+    private String hashToken(String token) {
+        try {
+            byte[] digest = java.security.MessageDigest.getInstance("SHA-256")
+                    .digest(token.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            return java.util.HexFormat.of().formatHex(digest);
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
     }
+
 }

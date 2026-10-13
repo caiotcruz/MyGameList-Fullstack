@@ -1,3 +1,3 @@
 package com.caiotcruz.mygamelist.dto;
 
-public record CreateCommentDTO(String text) {}
+public record CreateCommentDTO(@jakarta.validation.constraints.NotBlank @jakarta.validation.constraints.Size(max = 2000) String text) {}

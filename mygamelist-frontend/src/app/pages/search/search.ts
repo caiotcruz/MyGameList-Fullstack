@@ -1,10 +1,12 @@
+import { Feedback, errorMessage } from '../../services/feedback';
+import { ReviewDrafts } from '../../services/review-drafts';
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core'; 
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { GameService } from '../../services/game';
 import { CommunityService } from '../../services/community';
 import { UserService } from '../../services/user';
-import { of, Subject } from 'rxjs';
+import { catchError, of, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { RouterModule, Router } from '@angular/router';
 
@@ -16,6 +18,13 @@ import { RouterModule, Router } from '@angular/router';
   styleUrl: './search.css'
 })
 export class Search implements OnInit {
+  feedback=inject(Feedback);
+  drafts=inject(ReviewDrafts);
+  saveError='';
+  draftRestored=false;
+  preserveDraft(){this.drafts.save(this.editingGame);}
+  discardDraft(){this.drafts.clear(this.editingGame.rawgId);this.isModalOpen=false;this.saveError='';}
+
   gameService = inject(GameService);
   communityService = inject(CommunityService);
   userService = inject(UserService);
@@ -49,7 +58,10 @@ export class Search implements OnInit {
           }
 
           this.isLoading = true;
-          return this.gameService.searchGames(termo, 1);
+          return this.gameService.searchGames(termo, 1).pipe(catchError(() => {
+            this.isLoading = false;
+            return of([]);
+          }));
         })
     ).subscribe(resultados => {
         this.games = resultados;
@@ -120,10 +132,16 @@ export class Search implements OnInit {
       review: '',
       isSpoiler: false
     };
+    const recovered=this.drafts.restore(this.editingGame.rawgId);
+    this.draftRestored=!!recovered;
+    if(recovered)this.editingGame={...this.editingGame,...recovered};
+    this.saveError='';
     this.isModalOpen = true;
   }
 
-  fecharModal() {
+  fecharModal(saved=false) {
+    if(this.isSaving)return;
+    if(!saved)this.preserveDraft();
     this.isModalOpen = false;
   }
 
@@ -142,17 +160,21 @@ export class Search implements OnInit {
   salvar() {
     if (this.isSaving) return;
     this.validarScore();
+    if(this.isSaving)return;
+    this.saveError="";this.preserveDraft();
     this.isSaving = true; 
 
     this.gameService.addGameToList(this.editingGame).subscribe({
       next: () => {
         this.userGameIds.add(this.editingGame.rawgId);
-        this.fecharModal();
+        this.isSaving=false;
+        this.drafts.clear(this.editingGame.rawgId);
+        this.fecharModal(true);
         this.isSaving = false; 
         this.cdr.detectChanges(); 
       },
-      error: () => {
-        alert('Erro ao adicionar.');
+      error: (err) => {
+        this.saveError=errorMessage(err);
         this.isSaving = false; 
         this.cdr.detectChanges(); 
       }

@@ -1,31 +1,22 @@
+import { authGuard } from './guards/auth.guard';
 import { Routes } from '@angular/router';
-import { Login } from './pages/login/login';
-import { Search } from './pages/search/search';
-import { Community } from './pages/community/community';
-import { Profile } from './pages/profile/profile';
-import { Register } from './pages/register/register';
-import { Home } from './pages/home/home';
-import { GameDetails } from './pages/game-details/game-details';
-import { Landing } from './pages/landing/landing';
-import { Verify } from './pages/verify/verify';
-import { ForgotPassword } from './pages/forgot-password/forgot-password';
-import { ResetPassword } from './pages/reset-password/reset-password';
-import { Messages } from './pages/messages/messages';
 
 
 export const routes: Routes = [
+    { path: 'privacy', canActivate: [authGuard], loadComponent: () => import('./pages/privacy/privacy').then(m => m.Privacy) },
     { path: '', redirectTo: 'landing', pathMatch: 'full' },
-    { path: 'login', component: Login },
-    { path: 'search', component: Search },
-    { path: 'community', component: Community },
-    { path: 'profile/:id', component: Profile },
-    { path: 'register', component: Register},
-    { path: 'home', component: Home },
-    { path: 'game/:id', component: GameDetails },
-    { path: 'messages', component: Messages },
-    { path: 'messages/:userId', component: Messages },
-    { path: 'landing', component: Landing },
-    { path: 'verify', component: Verify },
-    { path: 'forgot-password', component: ForgotPassword },
-    { path: 'reset-password', component: ResetPassword }
+    { path: 'login', loadComponent: () => import('./pages/login/login').then(m => m.Login) },
+    { path: 'search', canActivate: [authGuard], loadComponent: () => import('./pages/search/search').then(m => m.Search) },
+    { path: 'community', canActivate: [authGuard], loadComponent: () => import('./pages/community/community').then(m => m.Community) },
+    { path: 'profile/:id', canActivate: [authGuard], loadComponent: () => import('./pages/profile/profile').then(m => m.Profile) },
+    { path: 'register', loadComponent: () => import('./pages/register/register').then(m => m.Register)},
+    { path: 'home', canActivate: [authGuard], loadComponent: () => import('./pages/home/home').then(m => m.Home) },
+    { path: 'game/:id', canActivate: [authGuard], loadComponent: () => import('./pages/game-details/game-details').then(m => m.GameDetails) },
+    { path: 'messages', canActivate: [authGuard], loadComponent: () => import('./pages/messages/messages').then(m => m.Messages) },
+    { path: 'messages/:userId', canActivate: [authGuard], loadComponent: () => import('./pages/messages/messages').then(m => m.Messages) },
+    { path: 'landing', loadComponent: () => import('./pages/landing/landing').then(m => m.Landing) },
+    { path: 'verify', loadComponent: () => import('./pages/verify/verify').then(m => m.Verify) },
+    { path: 'forgot-password', loadComponent: () => import('./pages/forgot-password/forgot-password').then(m => m.ForgotPassword) },
+    { path: 'reset-password', loadComponent: () => import('./pages/reset-password/reset-password').then(m => m.ResetPassword) },
+    { path: '**', redirectTo: 'landing' }
 ];

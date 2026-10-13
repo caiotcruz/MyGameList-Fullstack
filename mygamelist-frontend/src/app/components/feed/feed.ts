@@ -1,3 +1,5 @@
+import { SafetyActions } from '../../components/safety-actions/safety-actions';
+import { Feedback, errorMessage } from '../../services/feedback';
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; 
@@ -8,11 +10,13 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [CommonModule, DatePipe, FormsModule, RouterModule], 
+  imports: [SafetyActions, CommonModule, DatePipe, FormsModule, RouterModule], 
   templateUrl: './feed.html',
   styleUrl: './feed.css'
 })
 export class Feed implements OnInit {
+  feedback=inject(Feedback);
+
   activityService = inject(ActivityService);
   communityService = inject(CommunityService);
   cdr = inject(ChangeDetectorRef); 
@@ -20,17 +24,32 @@ export class Feed implements OnInit {
   activities: any[] = []; 
   myId: number = 0;
 
+  nextCursor: number | null = null;
+  hasMore = true;
+  loading = false;
+  feedError = false;
+
   ngOnInit() {
     this.myId = Number(localStorage.getItem('userId'));
-    this.activityService.getFeed().subscribe({
-      next: (data) => {
-        this.activities = data.map((a: any) => ({ 
-          ...a, 
-          showComments: false,
-          showSpoilerText: false
-        }));
-        this.cdr.detectChanges(); 
-      }
+    this.loadMore();
+  }
+
+  loadMore() {
+    if (this.loading || !this.hasMore) return;
+    this.loading = true;
+    this.feedError = false;
+    this.activityService.getFeed(this.nextCursor).subscribe({
+      next: data => {
+        const seen = new Set(this.activities.map(a => a.id));
+        this.activities.push(...data.items.filter(a => !seen.has(a.id)).map(a => ({
+          ...a, showComments: false, showSpoilerText: false
+        })));
+        this.hasMore = data.hasMore;
+        this.nextCursor = data.nextCursor;
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => { this.loading = false; this.feedError = true; this.cdr.detectChanges(); }
     });
   }
 
@@ -47,7 +66,7 @@ export class Feed implements OnInit {
       error: () => {
         item.likedByMe = !item.likedByMe;
         item.likesCount += item.likedByMe ? 1 : -1;
-        alert('Erro ao curtir');
+        this.feedback.show('Erro ao curtir');
       }
     });
   }
@@ -66,7 +85,7 @@ export class Feed implements OnInit {
         inputHtml.value = ''; 
         this.cdr.detectChanges();
       },
-      error: () => alert('Erro ao comentar')
+      error: () => this.feedback.show('Erro ao comentar')
     });
   }
 
@@ -84,7 +103,7 @@ export class Feed implements OnInit {
       error: () => {
         item.comments = backupComments;
         this.cdr.detectChanges();
-        alert('Erro ao deletar comentário.');
+        this.feedback.show('Erro ao deletar comentário.');
       }
     });
   }

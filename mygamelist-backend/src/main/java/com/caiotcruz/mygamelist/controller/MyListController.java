@@ -1,6 +1,8 @@
 package com.caiotcruz.mygamelist.controller;
 
 import com.caiotcruz.mygamelist.dto.AddGameDTO;
+import com.caiotcruz.mygamelist.dto.UserGameDTO;
+import jakarta.validation.Valid;
 import com.caiotcruz.mygamelist.model.UserGameList;
 import com.caiotcruz.mygamelist.service.UserGameListService;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +20,13 @@ public class MyListController {
     }
 
     @PostMapping
-    public UserGameList addGame(@RequestBody AddGameDTO dto) {
-        return listService.addGameToList(dto);
+    public UserGameDTO addGame(@Valid @RequestBody AddGameDTO dto) {
+        return UserGameDTO.from(listService.addGameToList(dto));
     }
 
     @GetMapping
-    public List<UserGameList> getMyList() {
-        return listService.getMyList();
+    public List<UserGameDTO> getMyList() {
+        return listService.getMyList().stream().map(UserGameDTO::from).toList();
     }
 
     @DeleteMapping("/{id}")

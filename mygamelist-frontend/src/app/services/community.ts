@@ -1,3 +1,4 @@
+export interface Achievement { title: string; description?: string; icon: string; tier: 'bronze'|'silver'|'gold'; }
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { environment } from '../../environments/environment'; 
@@ -7,8 +8,8 @@ import { environment } from '../../environments/environment';
 })
 export class CommunityService {
   private http = inject(HttpClient);
- private apiUrl = "https://mygamelist-api-65ts.onrender.com/community";
- //private apiUrl = environment.apiUrl + '/community';
+ //private apiUrl = "https://mygamelist-api-65ts.onrender.com/community";
+ private apiUrl = environment.apiUrl + '/community';
 
   private getHeaders() {
     const token = localStorage.getItem('token');
@@ -32,7 +33,7 @@ export class CommunityService {
   }
 
   getUserListByName(userName: string) {
-    return this.http.get<any[]>(`${this.apiUrl}/users/search?name=${userName}`, this.getHeaders());
+    return this.http.get<any[]>(`${this.apiUrl}/users/search?name=${encodeURIComponent(userName)}`, this.getHeaders());
   }
 
   toggleLike(activityId: number) {
@@ -41,6 +42,10 @@ export class CommunityService {
 
   postComment(activityId: number, text: string) {
     return this.http.post<any>(`${this.apiUrl}/activities/${activityId}/comments`, { text });
+  }
+
+  getAchievements(userId: number) {
+    return this.http.get<Achievement[]>(`${this.apiUrl}/users/${userId}/achievements`);
   }
 
   getUserStats(userId: number){

@@ -1,19 +1,20 @@
-<nav class="sidebar-nav" *ngIf="shouldShowNavbar()">
+<nav class="sidebar-nav" *ngIf="shouldShowNavbar()" aria-label="Navegação principal">
+  <a routerLink="/home" class="sidebar-brand" aria-label="MyGameList, início"><img src="brand-mark.svg" alt="" /></a>
 
   <div class="nav-links">
-    <a routerLink="/home" routerLinkActive="active" class="nav-item" title="Home">
+    <a routerLink="/home" routerLinkActive="active" class="nav-item" title="Início" aria-label="Início">
       <span class="icon fa-solid fa-house"></span>
       <span class="label">Home</span>
     </a>
-    <a routerLink="/search" routerLinkActive="active" class="nav-item" title="Buscar">
+    <a routerLink="/search" routerLinkActive="active" class="nav-item" title="Buscar" aria-label="Buscar">
       <span class="icon fa-solid fa-magnifying-glass"></span>
       <span class="label">Buscar</span>
     </a>
-    <a routerLink="/community" routerLinkActive="active" class="nav-item" title="Comunidade">
+    <a routerLink="/community" routerLinkActive="active" class="nav-item" title="Comunidade" aria-label="Comunidade">
       <span class="icon fa-solid fa-users"></span>
       <span class="label">Comunidade</span>
     </a>
-    <a routerLink="/messages" routerLinkActive="active" class="nav-item" title="Mensagens">
+    <a routerLink="/messages" routerLinkActive="active" class="nav-item" title="Mensagens" aria-label="Mensagens">
       <span class="icon fa-solid fa-envelope"></span>
       <span class="nav-badge-count" *ngIf="unreadMessages > 0">{{ unreadMessages > 9 ? '9+' : unreadMessages }}</span>
       <span class="label">Mensagens</span>
@@ -22,15 +23,17 @@
 
   <div class="nav-bottom">
     <div class="notification-container">
-      <button class="btn-sidebar-action" [class.open]="showDropdown" (click)="toggleNotifications()" aria-label="Notificações">
+      <button class="btn-sidebar-action" [class.open]="showDropdown" (click)="toggleNotifications()" aria-label="Notificações" [attr.aria-expanded]="showDropdown">
         <span class="icon fa-solid fa-bell"></span>
         <span class="badge-dot" *ngIf="unreadCount > 0"></span>
       </button>
 
       <div class="dropdown-menu-glass" *ngIf="showDropdown">
         <div class="dropdown-header">Notificações</div>
-        <div class="dropdown-list">
-          <div class="notif-item"
+        <div class="dropdown-list" [attr.aria-busy]="notificationsLoading">
+          <p class="empty-notif" role="status" *ngIf="notificationsLoading">Carregando notificações…</p>
+          <div class="empty-notif" role="alert" *ngIf="notificationsError">{{notificationsError}} <button type="button" (click)="loadNotifications()">Tentar novamente</button></div>
+          <button type="button" class="notif-item"
                *ngFor="let n of notifications"
                [class.unread]="!n.read"
                (click)="onNotificationClick(n)">
@@ -43,20 +46,20 @@
               <p><strong>{{ n.actor.name }}</strong> {{ getNotificationText(n.type) }}</p>
               <small>{{ formatDate(n.createdAt) }}</small>
             </div>
-          </div>
-          <div class="empty-notif" *ngIf="notifications.length === 0">
+          </button>
+          <div class="empty-notif" *ngIf="!notificationsLoading && !notificationsError && notifications.length === 0">
             Silêncio no lobby...
           </div>
         </div>
       </div>
     </div>
 
-    <a [routerLink]="['/profile', myId]" class="user-avatar-link" title="Meu Perfil">
+    <a [routerLink]="['/profile', myId]" class="user-avatar-link" title="Meu Perfil" aria-label="Meu perfil">
       <div class="profile-glow"></div>
       <span class="icon fa-solid fa-user"></span>
     </a>
 
-    <button class="btn-logout" (click)="sair()" title="Sair">
+    <button class="btn-logout" (click)="sair()" title="Sair" aria-label="Sair">
       <span class="icon fa-solid fa-right-from-bracket"></span>
     </button>
   </div>

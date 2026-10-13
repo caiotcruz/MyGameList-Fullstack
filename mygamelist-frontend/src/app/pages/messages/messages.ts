@@ -1,3 +1,6 @@
+import { Subject, takeUntil } from 'rxjs';
+import { SafetyActions } from '../../components/safety-actions/safety-actions';
+import { Feedback, errorMessage } from '../../services/feedback';
 import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,11 +10,13 @@ import { MessageService, ConversationSummary, Message, MessageableContact } from
 @Component({
   selector: 'app-messages',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [SafetyActions, CommonModule, FormsModule, RouterModule],
   templateUrl: './messages.html',
   styleUrl: './messages.css'
 })
 export class Messages implements OnInit, OnDestroy {
+  feedback=inject(Feedback);
+
   messageService = inject(MessageService);
   route = inject(ActivatedRoute);
   router = inject(Router);
@@ -33,11 +38,15 @@ export class Messages implements OnInit, OnDestroy {
   isSending = false;
 
   private pollInterval: any;
+  private destroy$=new Subject<void>();
+  canSend=false;threadError="";
+  private drafts=new Map<number,string>();
+  onBlocked(){this.thread=[];this.fecharThread();this.carregarLista();}
 
   ngOnInit() {
     this.carregarLista();
 
-    this.route.paramMap.subscribe(params => {
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const userIdParam = params.get('userId');
       if (userIdParam) {
         const targetId = Number(userIdParam);
@@ -59,6 +68,7 @@ export class Messages implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.destroy$.next();this.destroy$.complete();
     if (this.pollInterval) clearInterval(this.pollInterval);
   }
 
@@ -89,6 +99,9 @@ export class Messages implements OnInit, OnDestroy {
   }
 
   abrirConversa(userId: number, name: string | null, avatar: string | null) {
+    if(this.activeUserId)this.drafts.set(this.activeUserId,this.draft);
+    this.draft=this.drafts.get(userId)||"";
+    this.thread=[];this.threadError="";this.canSend=false;
     this.activeUserId = userId;
     this.activeUserName = name || this.findNameFallback(userId) || 'Carregando...';
     this.activeUserAvatar = avatar ?? this.findAvatarFallback(userId);
@@ -98,8 +111,10 @@ export class Messages implements OnInit, OnDestroy {
       this.router.navigate(['/messages', userId]);
     }
 
-    this.messageService.getThread(userId).subscribe({
+    this.messageService.getThread(userId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
+        if(userId!==this.activeUserId)return;
+        this.canSend=res.canSend;
         if (res.partner) {
           this.activeUserName = res.partner.name;
           this.activeUserAvatar = res.partner.profilePicture;
@@ -111,7 +126,9 @@ export class Messages implements OnInit, OnDestroy {
         this.carregarLista(true);
         this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
+        if(userId!==this.activeUserId)return;
+        this.threadError=errorMessage(err);this.thread=[];this.canSend=false;
         this.isLoadingThread = false;
         this.cdr.detectChanges();
       }
@@ -119,8 +136,10 @@ export class Messages implements OnInit, OnDestroy {
   }
 
   atualizarThreadSilencioso(userId: number) {
-    this.messageService.getThread(userId).subscribe({
+    this.messageService.getThread(userId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
+        if(userId!==this.activeUserId)return;
+        this.canSend=res.canSend;
         if (res.messages.length !== this.thread.length) {
           const foiNoFinal = this.isScrolledToBottom();
           this.thread = res.messages;
@@ -129,7 +148,8 @@ export class Messages implements OnInit, OnDestroy {
           }
           this.cdr.detectChanges();
         }
-      }
+      },
+      error:err=>{if(userId!==this.activeUserId)return;this.canSend=false;if(err.status===403){this.thread=[];this.threadError=errorMessage(err);}this.cdr.detectChanges();}
     });
   }
 
@@ -148,13 +168,17 @@ export class Messages implements OnInit, OnDestroy {
   }
 
   enviar() {
+    if(!this.canSend)return;
     if (!this.draft.trim() || !this.activeUserId || this.isSending) return;
 
     const content = this.draft.trim();
+    const recipient=this.activeUserId;
     this.isSending = true;
 
     this.messageService.sendMessage(this.activeUserId, content).subscribe({
       next: (msg) => {
+        this.drafts.delete(recipient);
+        if(recipient!==this.activeUserId){this.isSending=false;return;}
         this.thread = [...this.thread, msg];
         this.draft = '';
         this.isSending = false;
@@ -162,15 +186,17 @@ export class Messages implements OnInit, OnDestroy {
         this.carregarLista(true);
         this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
         this.isSending = false;
-        alert('Erro ao enviar mensagem.');
+        this.feedback.error(err);
         this.cdr.detectChanges();
       }
     });
   }
 
   fecharThread() {
+    if(this.activeUserId)this.drafts.set(this.activeUserId,this.draft);
+    this.draft="";this.canSend=false;this.threadError="";
     this.activeUserId = null;
     this.thread = [];
     this.router.navigate(['/messages']);

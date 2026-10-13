@@ -6,14 +6,18 @@ import com.caiotcruz.mygamelist.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
+@org.springframework.transaction.annotation.Transactional
 public class LevelService {
+    private final UserLocks locks;
+
 
     private static final int EXP_PER_LEVEL = 1000;
     private static final int MIN_LEVEL = 1;
 
     private final UserRepository userRepository;
 
-    public LevelService(UserRepository userRepository) {
+    public LevelService(UserRepository userRepository, UserLocks locks) {
+        this.locks = locks;
         this.userRepository = userRepository;
     }
 
@@ -25,8 +29,11 @@ public class LevelService {
         applyDelta(user, -source.getAmount());
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public void applyDelta(User user, int amount) {
         if (amount == 0) return;
+        locks.lock(user.getId());
+        user = userRepository.findById(user.getId()).orElseThrow();
 
         int totalExp = user.getExperience() + amount;
         int level = user.getLevel();
@@ -48,6 +55,6 @@ public class LevelService {
 
         user.setExperience(totalExp);
         user.setLevel(level);
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
     }
 }

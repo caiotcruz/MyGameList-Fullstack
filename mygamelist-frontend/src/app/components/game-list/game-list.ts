@@ -1,3 +1,5 @@
+import { Feedback, errorMessage } from '../../services/feedback';
+import { ReviewDrafts } from '../../services/review-drafts';
 import { Component, Input, Output, EventEmitter, inject, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,6 +14,13 @@ import { RouterModule, Router } from '@angular/router';
   styleUrl: './game-list.css'
 })
 export class GameList implements OnChanges {
+  feedback=inject(Feedback);
+  drafts=inject(ReviewDrafts);
+  saveError='';
+  draftRestored=false;
+  preserveDraft(){this.drafts.save(this.editingGame);}
+  discardDraft(){this.drafts.clear(this.editingGame.rawgId);this.isModalOpen=false;this.saveError='';}
+
   gameService = inject(GameService);
   cdr = inject(ChangeDetectorRef);
   router = inject(Router);
@@ -24,6 +33,7 @@ export class GameList implements OnChanges {
   isModalOpen = false;
   editingGame: any = {};
   isSaving = false;
+  favoriteBusy=false;
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
   reviewSelecionada: any = null;
@@ -82,20 +92,13 @@ export class GameList implements OnChanges {
   toggleFavorite(item: any, event: Event) {
     event.stopPropagation();
     event.preventDefault();
-    const novoStatus = !item.favorite;
-    
-    if (novoStatus) {
-      this.games.forEach(g => g.favorite = false);
-    }
-    item.favorite = novoStatus;
-    
-    this.aplicarOrdenacaoPadrao();
-    this.cdr.detectChanges(); 
-
-    this.gameService.addGameToList({
-      rawgId: item.game.rawgId,
-      isFavorite: novoStatus
-    }).subscribe(() => this.listUpdated.emit());
+    if(this.favoriteBusy)return;
+    this.favoriteBusy=true;
+    const novoStatus=!item.favorite;
+    this.gameService.addGameToList({rawgId:item.game.rawgId,isFavorite:novoStatus}).subscribe({
+      next:()=>{this.favoriteBusy=false;this.listUpdated.emit();this.cdr.detectChanges();},
+      error:err=>{this.favoriteBusy=false;this.feedback.error(err);this.cdr.detectChanges();}
+    });
   }
 
   navegarParaJogo(item: any) { 
@@ -125,10 +128,16 @@ export class GameList implements OnChanges {
       review: item.review,
       isSpoiler: temSpoiler
     };
+    const recovered=this.drafts.restore(this.editingGame.rawgId);
+    this.draftRestored=!!recovered;
+    if(recovered)this.editingGame={...this.editingGame,...recovered};
+    this.saveError='';
     this.isModalOpen = true;
   }
 
-  fecharModal() { 
+  fecharModal(saved=false) {
+    if(this.isSaving)return;
+    if(!saved)this.preserveDraft(); 
     this.isModalOpen = false; 
   }
 
@@ -137,14 +146,17 @@ export class GameList implements OnChanges {
   }
 
   salvarAlteracoes() {
+    if(this.isSaving)return;
+    this.saveError="";this.preserveDraft();
     this.isSaving = true;
     this.gameService.addGameToList(this.editingGame).subscribe({
       next: () => {
         this.isSaving = false;
-        this.fecharModal();
+        this.drafts.clear(this.editingGame.rawgId);
+        this.fecharModal(true);
         this.listUpdated.emit();
       },
-      error: () => this.isSaving = false
+      error: (err) => {this.isSaving=false;this.saveError=errorMessage(err);this.cdr.detectChanges();}
     });
   }
 
@@ -162,7 +174,7 @@ export class GameList implements OnChanges {
         this.gameParaRemover = null;
       },
       error: () => {
-        alert('Erro ao remover jogo.');
+        this.feedback.show('Erro ao remover jogo.');
         this.gameParaRemover = null;
       }
     });

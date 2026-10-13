@@ -20,6 +20,8 @@ public record GameHubDTO(
     String userStatus,    
     Integer userScore,     
     boolean isFavorite,
+    String myReview,
+    boolean myReviewSpoiler,
 
     List<GameReviewDTO> latestReviews
 ) {}

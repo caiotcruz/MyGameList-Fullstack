@@ -56,7 +56,7 @@ html {
 .nav-link:hover { color: white; }
 
 .register-btn {
-  background: #6200ea;
+  background: var(--mgl-accent-strong);
   padding: 10px 20px;
   border-radius: 14px;
   font-size: 0.85rem;
@@ -67,9 +67,9 @@ html {
 }
 
 .register-btn:hover {
-  background: #7c4dff;
+  background: var(--mgl-accent);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(98, 0, 234, 0.4);
+  box-shadow: 0 5px 15px rgba(46, 184, 164, 0.4);
 }
 
 .hero {
@@ -111,7 +111,7 @@ html {
 .cta-group { display: flex; gap: 16px; }
 
 .btn-primary {
-  background: #6200ea;
+  background: var(--mgl-accent-strong);
   padding: 16px 32px;
   border-radius: 16px;
   text-decoration: none;
@@ -120,7 +120,7 @@ html {
   transition: 0.3s;
 }
 
-.btn-primary:hover { transform: translateY(-3px); background: #7c4dff; }
+.btn-primary:hover { transform: translateY(-3px); background: var(--mgl-accent); }
 
 .btn-secondary {
   border: 1px solid #222;
@@ -148,7 +148,7 @@ html {
 
 .mini-profile-vessel:hover {
   transform: translateY(-15px) rotate(1deg);
-  border-color: #6200ea;
+  border-color: var(--mgl-accent-strong);
 }
 
 .mini-hero-backdrop {
@@ -175,7 +175,7 @@ html {
 
 .mini-avatar-glow {
   width: 110px; height: 110px; border-radius: 50%; padding: 3px;
-  background: conic-gradient(from 180deg, #6200ea, #00e5ff, #9c27b0, #6200ea);
+  background: conic-gradient(from 180deg, var(--mgl-accent-strong), #00e5ff, #338ba0, var(--mgl-accent-strong));
   animation: rotateGlow 5s linear infinite;
   display: flex; align-items: center; justify-content: center;
 }
@@ -187,7 +187,7 @@ html {
 
 .mini-lvl-tag {
   position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
-  background: #6200ea; padding: 3px 12px; border-radius: 20px;
+  background: var(--mgl-accent-strong); padding: 3px 12px; border-radius: 20px;
   font-size: 0.65rem; font-weight: 900; border: 2px solid #0a0a0a;
 }
 
@@ -209,7 +209,7 @@ html {
 }
 
 .mini-label {
-  font-size: 0.6rem; font-weight: 900; color: #6200ea;
+  font-size: 0.6rem; font-weight: 900; color: var(--mgl-accent);
   text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; display: block;
 }
 
@@ -217,7 +217,7 @@ html {
 .mini-s-item { text-align: center; }
 .mini-s-item .v { font-size: 1.5rem; font-weight: 900; color: #fff; display: block; }
 .mini-s-item .d { font-size: 0.6rem; color: #444; font-weight: 800; text-transform: uppercase; margin-top: 4px; }
-.mini-s-item.accent .v { color: #6200ea; }
+.mini-s-item.accent .v { color: var(--mgl-accent); }
 .mini-s-item.gold .v { color: #ffbf00; }
 
 @keyframes rotateGlow { to { transform: rotate(360deg); } }
@@ -237,7 +237,7 @@ html {
   transition: 0.3s;
 }
 
-.feature-card:hover { transform: translateY(-10px); border-color: #6200ea; background: rgba(98, 0, 234, 0.05); }
+.feature-card:hover { transform: translateY(-10px); border-color: var(--mgl-accent-strong); background: rgba(46, 184, 164, 0.05); }
 .icon { font-size: 2.5rem; margin-bottom: 20px; display: block; }
 .feature-card h3 { font-size: 1.3rem; margin-bottom: 10px; }
 .feature-card p { color: #666; font-size: 0.95rem; line-height: 1.5; }
@@ -378,3 +378,4 @@ footer {
     padding: 14px;
   }
 }
+.brand-mark{width:32px;height:32px;vertical-align:middle;margin-right:9px;border-radius:9px}

@@ -1,98 +1,164 @@
 # MyGameList
 
-Uma plataforma social para catalogar, avaliar e discutir jogos — uma mistura de lista de jogos pessoal com rede social, no espírito de sites como MyAnimeList ou Letterboxd, mas voltada para games.
+Plataforma social para catalogar, avaliar e descobrir jogos. Cada usuário organiza sua biblioteca, escreve reviews, acompanha atividades da comunidade e desenvolve seu perfil com níveis, XP e conquistas.
 
-Full-stack: backend em **Spring Boot (Java)** com **PostgreSQL/JPA**, frontend em **Angular**, e integração com a **RAWG API** para dados de jogos (capas, descrições, DLCs, conquistas, screenshots, trailers, lojas).
-
----
-
-## Visão geral
-
-O MyGameList permite que cada usuário monte sua própria biblioteca de jogos, marcando status (planeja jogar, jogando, zerado, platinado, largado), dando notas e escrevendo reviews. Em cima disso, existe uma camada social: seguir outros usuários, ver um feed de atividades de quem você segue, curtir e comentar, e trocar mensagens diretas com pessoas que você segue ou que te seguem.
-
-O projeto também tem um sistema de progressão (level/XP) que recompensa engajamento real com a plataforma — jogar, avaliar, interagir — e um design deliberado para resistir a formas óbvias de exploit desse sistema.
-
----
-
-## Stack técnica
-
-**Backend**
-- Spring Boot (Java)
-- Spring Data JPA / Hibernate
-- Spring Security (autenticação via token)
-- Feign Client para integração com a RAWG API
-- PostgreSQL (via JPA)
-
-**Frontend**
-- Angular (standalone components)
-- Font Awesome para iconografia
-- Identidade visual própria: fundo escuro (`#050505`), acento roxo (`#6200ea`), cards em glass-morphism, tipografia Inter
-
-**API externa**
-- [RAWG Video Games Database API](https://rawg.io/apidocs) — dados de jogos, DLCs, jogos da mesma série, screenshots, trailers, lojas e conquistas
-
----
+Projeto full-stack de **Caio Teixeira da Cruz**, desenvolvido com Java, Spring Boot, Angular e PostgreSQL. Esta versão prioriza **execução local**, consistência transacional, privacidade e processamento assíncrono de e-mails.
 
 ## Funcionalidades
 
-### Biblioteca de jogos
-Cada usuário mantém sua própria lista, com status (`PLAN_TO_PLAY`, `PLAYING`, `COMPLETED`, `PLATINUM`, `DROPPED`), nota (0–10), review em texto livre, e marcação de jogo favorito. Jogos são armazenados localmente após a primeira busca na RAWG (cache local), evitando chamadas repetidas à API externa para o mesmo jogo.
+- **Biblioteca pessoal:** status de jogo, notas de 0 a 10, reviews, spoilers e um favorito por usuário.
+- **Catálogo RAWG:** busca, detalhes, imagens, trailers, lojas e conteúdos relacionados.
+- **Comunidade:** seguir usuários, feed de atividades agrupadas, curtidas, comentários e reviews com votos.
+- **Em alta:** ranking calculado sobre atividades dos últimos **30 dias**, sem reiniciar na virada do mês.
+- **Perfil:** carreira, jogo em destaque, XP, níveis e conquistas desbloqueadas. Exibição compacta com “Exibir mais” e descrição ao passar o mouse; conquistas ainda bloqueadas permanecem ocultas.
+- **Mensagens:** conversas e contagem de não lidas, respeitando a preferência do destinatário: todos, pessoas que ele segue ou ninguém. O padrão é pessoas que o destinatário segue.
+- **Proteção da comunidade:** bloqueio bidirecional e denúncias de perfis, atividades, comentários, reviews e mensagens. Controles contextuais em “Mais opções”.
+- **Moderação:** triagem de denúncias com evidência, estado e nota de análise. Acesso autorizado no servidor por `MODERATOR_IDS`.
+- **Experiência:** tema escuro com destaque verde-água, layout responsivo, mensagens de erro consistentes, atualização de notificações na primeira abertura e rascunhos de reviews preservados após falha de envio.
 
-### Página de detalhes do jogo (hub)
-Reúne, além dos dados básicos, estatísticas da comunidade (total de jogadores, quantos estão jogando/zeraram/platinaram), distribuição de notas em gráfico de barras, nota do Metacritic, e as reviews mais recentes com sistema de like/dislike (karma). Inclui também dados enriquecidos direto da RAWG: galeria de screenshots com lightbox navegável, trailers em player embutido, DLCs e edições especiais, jogos da mesma série, lojas onde comprar, e conquistas (ordenadas por raridade).
+## Tecnologias
 
-### Feed de atividades
-Mostra o que o usuário e as pessoas que ele segue estão fazendo: adicionar um jogo, mudar de status, avaliar, escrever review. Ações relacionadas de uma mesma sessão (por exemplo, adicionar um jogo já zerado com nota e review de uma vez) são agrupadas em um único card, via um `groupId` gerado no momento da criação — não por heurística de proximidade de tempo, evitando falsos agrupamentos ou fragmentação por atraso de rede.
+| Camada | Tecnologias |
+| --- | --- |
+| Backend | Java 17, Spring Boot 4.0.1, Spring Security, Spring Data JPA, OpenFeign |
+| Frontend | Angular 21, TypeScript, componentes standalone, RxJS |
+| Banco de dados | PostgreSQL 15 |
+| Cache e limites de autenticação | Redis 7.4 |
+| Mensageria | RabbitMQ 4.1 e Spring AMQP |
+| Observabilidade | Spring Boot Actuator, Micrometer e endpoint Prometheus |
+| Testes | JUnit 5, Mockito, testes HTTP/PostgreSQL, Vitest e Angular TestBed |
+| Ambiente local | Docker Compose, Maven Wrapper e scripts PowerShell |
 
-Cada card de atividade permite curtir e comentar.
+## Decisões de arquitetura
 
-### Sistema de spoiler
-Reviews podem ser marcadas como contendo spoiler. O texto some por trás de um aviso, revelado só com um clique — tanto no feed quanto na página do jogo.
+**Consistência de XP e favorito.** Alterações usam transações e bloqueios por usuário, com ordenação de IDs nas operações entre duas pessoas. XP é calculado pelo delta entre estados. Um índice único parcial no PostgreSQL reforça a regra de no máximo um favorito por usuário.
 
-### Sistema de level e experiência (XP)
-Usuários ganham experiência por ações de engajamento real: completar/platinar jogos, escrever reviews, curtir e comentar atividades de outras pessoas, seguir e ser seguido. A conversão de XP para nível é constante (mesma quantidade de XP para qualquer transição de nível), e cada ação tem um valor fixo e simétrico — ganhar uma ação concede X de XP, desfazer essa mesma ação revoga exatamente X, nunca mais nem menos. Isso vale inclusive para mudanças de status "compostas" (por exemplo, pular direto de "jogando" para "platinado" concede de uma vez o XP equivalente a todas as etapas puladas).
+**Cache compartilhado.** Respostas públicas do catálogo RAWG são armazenadas no Redis, com expiração por tipo de consulta. As chaves usam hash; dados privados e decisões de autorização não entram nesse cache. Uma falha no cache permite consultar a RAWG diretamente, com limites de concorrência e timeouts.
 
-O sistema tem proteções explícitas contra exploit:
-- XP de like/comentário não é concedido em interações com a própria atividade
-- Curtir/descurtir e postar/apagar sempre revertem exatamente o que concederam
-- Recompensas de ações sociais (seguir, ser seguido) são calibradas propositalmente mais baixas que ações de conteúdo (jogar, revisar), para que "farmar" rede social nunca seja mais eficiente que engajar de verdade com jogos
+**E-mails fora da requisição principal.** A operação de autenticação e o pedido de e-mail são registrados na mesma transação PostgreSQL. Um relay publica o identificador da outbox no RabbitMQ; o consumidor processa o envio com retentativas, expiração e controle de estado. O conteúdo da outbox usa AES-256-GCM. O fluxo não promete entrega exatamente uma vez: uma falha entre envio SMTP e confirmação no banco pode gerar duplicidade.
 
-### Rede social
-Seguir/deixar de seguir outros usuários (relação não necessariamente mútua). Perfil de cada usuário mostra estatísticas de carreira (total de jogos, zerados, platinas, média de notas), contagem de seguidores/seguindo com listas navegáveis, e a coleção completa de jogos.
+**Segurança.** Autenticação JWT, senhas com BCrypt, validações de propriedade, configuração por variáveis de ambiente, CORS configurável e limites de autenticação no Redis. O interceptor do frontend restringe o envio do token ao destino da API. Se o Redis de autenticação estiver indisponível, as rotas protegidas pelo limitador retornam indisponibilidade em vez de ignorar a proteção.
 
-### Mensagens diretas ("correio")
-Sistema de mensagens assíncronas (não é chat em tempo real) entre usuários que têm uma relação de "seguir" em qualquer direção. A tela de mensagens combina conversas existentes com sugestões de pessoas para iniciar uma conversa (extraídas da lista de seguidores/seguindo), evitando uma tela vazia para quem ainda não trocou nenhuma mensagem.
+**Privacidade.** Bloqueios são verificados no backend e removem os follows entre o par. Denúncias de mensagens exigem participação na conversa. Marcar uma denúncia como resolvida registra uma decisão; não remove conteúdo nem aplica banimento automaticamente.
 
-### Jogos em destaque (trending)
-Ranking de jogos baseado em atividade real da própria plataforma no mês corrente (adições à lista + reviews escritas), não em métricas externas da RAWG — reflete o que a comunidade do site está jogando agora.
+**Rascunhos.** Reviews são guardadas em `sessionStorage`, por conta e jogo, por até 24 horas. Salvamento confirmado ou descarte remove o rascunho. Fechar a aba pode eliminá-lo; não há sincronização entre dispositivos.
 
----
+## Estrutura
 
-## Decisões de arquitetura e lições aprendidas
+- `mygamelist-backend/`: API, regras de negócio, persistência, integrações, infraestrutura Docker e scripts locais.
+- `mygamelist-frontend/`: aplicação Angular, componentes, páginas, serviços e testes.
+- `mygamelist-backend/MIGRATION.md`: atualização de banco existente e configuração de moderadores.
+- `mygamelist-backend/scripts/`: inicialização, carregamento de ambiente, testes críticos e SQL auxiliar.
 
-Alguns padrões e decisões que guiaram o desenvolvimento e vale documentar para manutenção futura:
+## Executar localmente
 
-**Disciplina de DTOs.** Nenhum endpoint serializa entities JPA diretamente. Isso começou como correção de um vazamento de dados sensíveis (senha e outros campos de `User` sendo expostos em respostas que sequer precisavam desses dados) e virou padrão em todo o projeto — cada endpoint expõe exatamente os campos que o consumidor precisa, nunca a entity crua.
+### Pré-requisitos
 
-**Espelhamento de ações reversíveis.** Sempre que uma ação concede algo (XP, uma atividade, um contador), a ação inversa precisa desfazer exatamente o que foi concedido — nunca uma lógica separada e potencialmente dessincronizada para "desfazer".
+- JDK 17 ou 21, com `java` disponível no terminal.
+- Node.js 24 e npm.
+- Docker Desktop iniciado, com containers Linux e Docker Compose com suporte a `--wait`.
+- Chave da RAWG e credenciais SMTP para os fluxos de verificação e recuperação de conta.
 
-**Matemática de delta em vez de eventos isolados.** Para valores que dependem de estado (como XP por status de jogo), o cálculo compara o estado antes/depois e aplica a diferença, em vez de reagir a cada clique isoladamente — isso evita exploits óbvios como clicar "salvar" repetidamente sem mudar nada.
+Os comandos abaixo usam PowerShell no Windows. O Maven é fornecido pelo wrapper do projeto. A primeira execução precisa de internet para baixar dependências e imagens.
 
-**Guarda de autointeração.** Ações que geram recompensa (XP, notificação) verificam explicitamente se o ator não é o mesmo usuário-alvo, evitando ganhos artificiais via interação consigo mesmo.
+### 1. Obter o projeto
 
-**Cuidado com dados legados.** Mudanças de schema que adicionam significado a dados já existentes (como o `groupId` de atividades ou o `metacritic` de jogos já cadastrados) não retroagem automaticamente — dados antigos exigem backfill explícito, tratado como uma decisão separada e deliberada, não como efeito colateral silencioso.
-
----
-
-## Estrutura de pacotes (backend)
-
+```powershell
+git clone https://github.com/caiotcruz/MyGameList-Fullstack.git
+cd MyGameList-Fullstack
 ```
-model/           entities JPA
-model/enums/     enums de domínio (status de jogo, tipo de atividade, fonte de XP...)
-dto/             DTOs de saída da API
-dto/rawg/        DTOs de desserialização das respostas da RAWG (isolados dos DTOs públicos)
-repository/      interfaces Spring Data JPA
-service/         regras de negócio
-controller/      endpoints REST
-client/          cliente Feign para a RAWG API
+
+### 2. Configurar o backend
+
+```powershell
+cd .\mygamelist-backend
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Initialize-Local.ps1
+notepad .env
 ```
+
+Preencha `DATABASE_PASSWORD`, `RAWG_API_KEY`, `SMTP_USERNAME` e `SMTP_PASSWORD`. O inicializador gera os segredos ausentes e preserva valores existentes. `.env.example` documenta a configuração; `.env` não deve ser versionado.
+
+Se o banco já existe, preserve sua senha e o volume Docker. Preserve também `OUTBOX_KEY`: ela é necessária para ler e-mails pendentes na outbox. Antes de atualizar uma base existente, faça backup e leia [MIGRATION.md](mygamelist-backend/MIGRATION.md). Não use `docker compose down -v` se quiser manter os dados.
+
+Para permitir triagem de denúncias, configure opcionalmente `MODERATOR_IDS` com IDs numéricos separados por vírgula e reinicie a API. Sem essa configuração, nenhuma conta recebe acesso à moderação.
+
+### 3. Iniciar o backend
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-Local.ps1
+```
+
+O script carrega `.env`, inicia PostgreSQL, Redis e RabbitMQ, aguarda os healthchecks, aplica o SQL idempotente da outbox e inicia o Spring Boot. No ambiente local padrão, o Hibernate atualiza o schema e o inicializador da comunidade cria os índices adicionais. Aguarde `Started MygamelistApplication`.
+
+### 4. Iniciar o frontend
+
+Em outro terminal, na raiz do repositório:
+
+```powershell
+cd .\mygamelist-frontend
+npm.cmd ci
+npm.cmd start
+```
+
+| Serviço | Endereço local |
+| --- | --- |
+| Aplicação Angular | http://localhost:4200 |
+| API | http://localhost:8080 |
+| PostgreSQL | localhost:5433 |
+| Redis | localhost:6379 |
+| RabbitMQ Management | http://localhost:15672 |
+| Saúde da API | http://127.0.0.1:9091/actuator/health |
+| Métricas Prometheus | http://127.0.0.1:9091/actuator/prometheus |
+
+Para acessar o RabbitMQ Management, use `RABBITMQ_USERNAME` e `RABBITMQ_PASSWORD` do `.env`. O Compose publica a infraestrutura em loopback. Não é necessário configurar Vercel, Render ou banco online para seguir este guia.
+
+### Parar e retomar
+
+Use `Ctrl+C` nos terminais da aplicação. Na pasta do backend, `docker compose --env-file .env stop` interrompe a infraestrutura preservando os volumes. Para retomar, execute novamente `Start-Local.ps1` e `npm.cmd start`.
+
+## Testes
+
+### Backend: testes unitários
+
+Na pasta `mygamelist-backend`:
+
+```powershell
+. .\scripts\Load-Env.ps1
+.\mvnw.cmd '-Dtest=OutboxCryptoTest,CachedRawgClientTest,MailWorkerTest,NotificationServiceTest,AchievementServiceTest,SocialServiceTest' test
+```
+
+### Backend: integração e concorrência
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Test-Critical.ps1
+```
+
+A suíte usa o banco **descartável** `mygamelist_critical_tests`, na porta 5433, com criação e remoção de tabelas. Não armazene dados permanentes nele. Os cenários cobrem XP sob operações simultâneas, favorito único, isolamento de lista/conversa/notificação, preferências de mensagens, bloqueios e denúncias. Sem a variável habilitada pelo script, essa classe é ignorada.
+
+### Frontend
+
+Na pasta `mygamelist-frontend`:
+
+```powershell
+npm.cmd test -- --watch=false
+npm.cmd run test:boundary
+npm.cmd run build
+```
+
+### Estado da validação
+
+Na revisão de outubro de 2026, foram registrados 11 testes unitários aprovados no backend e 32 testes aprovados no frontend, incluindo regressões de notificações e preservação de reviews. O build do frontend passou com avisos de tamanho de CSS em perfil e detalhes do jogo. A execução completa da suíte crítica após a correção do script PowerShell ainda precisa ser confirmada. Esses resultados não representam um teste de capacidade sob carga nem uma validação visual completa.
+
+## Próximos passos
+
+- Concluir a validação de integração e concorrência no ambiente local.
+- Revisar os fluxos com teclado e telas móveis.
+- Automatizar build e testes em integração contínua.
+- Adotar migrações versionadas e ampliar a observabilidade de falhas e backlog de e-mails.
+- Medir latência e consumo de recursos antes de definir metas de capacidade ou preparar implantação online.
+
+A infraestrutura atual é adequada a desenvolvimento e demonstração local. Cache e mensageria não tornam a composição automaticamente altamente disponível: os serviços do Compose usam instâncias únicas.
+
+## Autor
+
+[Caio Teixeira da Cruz](https://github.com/caiotcruz)

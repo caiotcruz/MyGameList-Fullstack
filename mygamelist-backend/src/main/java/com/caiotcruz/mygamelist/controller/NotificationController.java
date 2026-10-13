@@ -1,6 +1,6 @@
 package com.caiotcruz.mygamelist.controller;
 
-import com.caiotcruz.mygamelist.model.Notification;
+import com.caiotcruz.mygamelist.dto.NotificationDTO;
 import com.caiotcruz.mygamelist.model.User;
 import com.caiotcruz.mygamelist.repository.UserRepository;
 import com.caiotcruz.mygamelist.service.NotificationService;
@@ -27,8 +27,8 @@ public class NotificationController {
     }
 
     @GetMapping
-    public List<Notification> getMyNotifications() {
-        return notificationService.getUserNotifications(getCurrentUser());
+    public List<NotificationDTO> getMyNotifications() {
+        return notificationService.getUserNotifications(getCurrentUser()).stream().map(NotificationDTO::from).toList();
     }
 
     @GetMapping("/unread-count")
@@ -38,7 +38,7 @@ public class NotificationController {
 
     @PutMapping("/{id}/read")
     public void markAsRead(@PathVariable Long id) {
-        notificationService.markAsRead(id);
+        notificationService.markAsRead(id, getCurrentUser());
     }
     
     @PutMapping("/read-all")

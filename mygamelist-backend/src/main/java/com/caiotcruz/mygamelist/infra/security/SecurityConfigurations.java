@@ -22,10 +22,14 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class SecurityConfigurations {
 
+    @org.springframework.beans.factory.annotation.Value("${app.cors-origins:http://localhost:4200}")
+    private String allowedOrigins;
     private final SecurityFilter securityFilter;
+    private final AuthRateLimitFilter authRateLimitFilter;
 
-    public SecurityConfigurations(SecurityFilter securityFilter) {
+    public SecurityConfigurations(SecurityFilter securityFilter, AuthRateLimitFilter authRateLimitFilter) {
         this.securityFilter = securityFilter;
+        this.authRateLimitFilter = authRateLimitFilter;
     }
 
     @Bean
@@ -34,23 +38,23 @@ public class SecurityConfigurations {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(req -> {
-                    req.requestMatchers(HttpMethod.POST, "/auth/**").permitAll();
-                    req.requestMatchers(HttpMethod.GET, "/games/**").authenticated();
-                    req.requestMatchers(HttpMethod.GET, "/auth/users").authenticated();
-                    req.requestMatchers(HttpMethod.GET, "/activities").authenticated();
-                    req.requestMatchers(HttpMethod.GET, "/profile/**").authenticated();
-                    req.requestMatchers(HttpMethod.GET, "/community/**").authenticated();
-                    req.requestMatchers(HttpMethod.GET, "/community/activities/**").authenticated();
-                    req.requestMatchers(HttpMethod.POST, "/community/activities/**").authenticated();
-                    req.requestMatchers(HttpMethod.GET, "/users/**").authenticated();
-                    req.requestMatchers(HttpMethod.GET, "/games/**").authenticated();
-                    req.requestMatchers(HttpMethod.GET, "/reviews/**").authenticated();
-                    req.requestMatchers(HttpMethod.DELETE, "/community/activities/**").authenticated();
-                    req.requestMatchers(HttpMethod.GET, "/messages/**").authenticated();
-                    req.requestMatchers(HttpMethod.POST, "/messages/**").authenticated();
-                    req.anyRequest().authenticated();
-                })
+                .exceptionHandling(errors -> errors
+                    .authenticationEntryPoint((req, res, ex) -> {
+                        res.setStatus(401);
+                        res.setContentType("application/json;charset=UTF-8");
+                        res.getWriter().write("{\"message\":\"Sessão inválida ou expirada. Entre novamente.\"}");
+                    })
+                    .accessDeniedHandler((req, res, ex) -> {
+                        res.setStatus(403);
+                        res.setContentType("application/json;charset=UTF-8");
+                        res.getWriter().write("{\"message\":\"Você não tem permissão para esta ação.\"}");
+                    }))
+                .authorizeHttpRequests(req -> req
+                     .requestMatchers("/actuator/health/**", "/actuator/prometheus").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register", "/auth/verify",
+                            "/auth/forgot-password", "/auth/reset-password", "/auth/resend-verification").permitAll()
+                    .anyRequest().authenticated())
+                .addFilterBefore(authRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -59,11 +63,7 @@ public class SecurityConfigurations {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:4200", 
-                "https://my-game-list-fullstack.vercel.app",
-                "https://mygamelistbrasil.vercel.app"
-        ));
+        configuration.setAllowedOrigins(Arrays.stream(allowedOrigins.split(",")).map(String::trim).toList());
         
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
         

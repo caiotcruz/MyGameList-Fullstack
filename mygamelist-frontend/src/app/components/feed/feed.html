@@ -70,6 +70,7 @@
           </span>
           <span class="count">{{ item.comments?.length || 0 }}</span>
         </button>
+        <app-safety-actions targetType="ACTIVITY" [targetId]="item.id" [ownerId]="item.user.id" />
       </div>
 
       <div class="comments-container" *ngIf="item.showComments">
@@ -77,6 +78,7 @@
           <div class="comment-bubble" *ngFor="let c of item.comments">
             <div class="comment-main-content">
               <strong>{{ c.user.name }}</strong> {{ c.text }}
+              <app-safety-actions targetType="COMMENT" [targetId]="c.id" [ownerId]="c.user.id" />
             </div>
             
             <button 
@@ -98,4 +100,11 @@
       </div>
     </div>
   </div>
+</div>
+<div class="feed-pagination">
+  <p *ngIf="feedError" role="alert">Não foi possível carregar o feed. Tente novamente.</p>
+  <p *ngIf="!loading && !feedError && activities.length === 0">Ainda não há atividades. Adicione um jogo ou siga alguém para começar.</p>
+  <button type="button" *ngIf="hasMore" [disabled]="loading" (click)="loadMore()">
+    {{ loading ? 'Carregando…' : feedError ? 'Tentar novamente' : 'Ver mais atividades' }}
+  </button>
 </div>

@@ -27,6 +27,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class MessageService {
+    private final UserLocks locks;
+
+    private final CommunitySafety safety;
+
 
     private static final int PREVIEW_MAX_LENGTH = 60;
 
@@ -36,7 +40,9 @@ public class MessageService {
     private final UserFollowRepository followRepository;
 
     public MessageService(ConversationRepository conversationRepository, MessageRepository messageRepository,
-                           UserRepository userRepository, UserFollowRepository followRepository) {
+                           UserRepository userRepository, UserFollowRepository followRepository, CommunitySafety safety, UserLocks locks) {
+        this.locks = locks;
+        this.safety = safety;
         this.conversationRepository = conversationRepository;
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
@@ -45,7 +51,7 @@ public class MessageService {
 
     public List<ConversationSummaryDTO> getConversations() {
         User me = getCurrentUser();
-        List<Conversation> conversations = conversationRepository.findAllForUser(me);
+        List<Conversation> conversations = conversationRepository.findAllForUser(me).stream().filter(c -> !safety.blocked(me.getId(), partner(c,me).getId())).toList();
 
         Map<Long, Long> unreadByConversation = new HashMap<>();
         for (Object[] row : messageRepository.countUnreadByConversations(conversations, me)) {
@@ -61,11 +67,9 @@ public class MessageService {
     public MessageThreadDTO getThread(Long otherUserId) {
         User me = getCurrentUser();
         User other = userRepository.findById(otherUserId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND,"Usuário não encontrado"));
 
-        if (!canMessage(me, other)) {
-            throw new RuntimeException("Você só pode trocar mensagens com pessoas que você segue ou que te seguem.");
-        }
+        safety.requireVisible(me.getId(),other.getId());
 
         ActivityUserDTO partnerDto = ActivityUserDTO.from(other);
 
@@ -78,21 +82,23 @@ public class MessageService {
                 })
                 .orElse(List.of());
 
-        return new MessageThreadDTO(partnerDto, messages);
+        return new MessageThreadDTO(partnerDto, messages, safety.canSend(me,other));
     }
 
+    @Transactional
     public MessageDTO sendMessage(Long otherUserId, SendMessageDTO dto) {
         User me = getCurrentUser();
 
         if (me.getId().equals(otherUserId)) {
-            throw new RuntimeException("Você não pode enviar mensagens para si mesmo.");
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST,"Você não pode enviar mensagens para si mesmo.");
         }
 
         User other = userRepository.findById(otherUserId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND,"Usuário não encontrado"));
 
-        if (!canMessage(me, other)) {
-            throw new RuntimeException("Você só pode trocar mensagens com pessoas que você segue ou que te seguem.");
+        locks.lock(me.getId(),other.getId());
+        if (!safety.canSend(me, other)) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.FORBIDDEN,"As preferências de privacidade não permitem esta mensagem.");
         }
 
         Conversation conversation = conversationRepository.findBetween(me, other)
@@ -114,7 +120,7 @@ public class MessageService {
 
     public long getUnreadTotal() {
         User me = getCurrentUser();
-        List<Conversation> conversations = conversationRepository.findAllForUser(me);
+        List<Conversation> conversations = conversationRepository.findAllForUser(me).stream().filter(c -> !safety.blocked(me.getId(), partner(c,me).getId())).toList();
 
         long total = 0;
         for (Object[] row : messageRepository.countUnreadByConversations(conversations, me)) {
@@ -123,10 +129,7 @@ public class MessageService {
         return total;
     }
 
-    private boolean canMessage(User a, User b) {
-        return followRepository.findByFollowerAndFollowed(a, b).isPresent()
-                || followRepository.findByFollowerAndFollowed(b, a).isPresent();
-    }
+    private User partner(Conversation c,User me){return c.getUserA().getId().equals(me.getId())?c.getUserB():c.getUserA();}
 
     private Conversation createConversation(User a, User b) {
         Conversation conversation = new Conversation();
@@ -165,6 +168,8 @@ public class MessageService {
         );
     }
 
+    private boolean usersCanMessage(User me,Long id){return userRepository.findById(id).map(u->safety.canSend(me,u)).orElse(false);}
+
     private String truncate(String text) {
         if (text.length() <= PREVIEW_MAX_LENGTH) return text;
         return text.substring(0, PREVIEW_MAX_LENGTH) + "...";
@@ -191,6 +196,7 @@ public class MessageService {
 
         return distinct.values().stream()
                 .filter(u -> !conversationPartnerIds.contains(u.id()))
+                .filter(u -> usersCanMessage(me,u.id()))
                 .toList();
     }
 }

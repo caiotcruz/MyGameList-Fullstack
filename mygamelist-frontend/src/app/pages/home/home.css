@@ -34,7 +34,7 @@
 }
 
 .greeting {
-  color: #a29bfe;
+  color: #7aaba5;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1.5px;
@@ -65,8 +65,8 @@
 }
 
 .username-title span {
-  -webkit-text-fill-color: #6200ea;
-  text-shadow: 0 0 30px rgba(98, 0, 234, 0.4);
+  -webkit-text-fill-color: var(--mgl-accent-strong);
+  text-shadow: 0 0 30px rgba(46, 184, 164, 0.4);
 }
 
 .xp-hero-card {
@@ -82,13 +82,13 @@
 }
 
 .level-badge-pill {
-  background: #6200ea;
+  background: var(--mgl-accent-strong);
   padding: 10px 18px;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 8px 20px rgba(98, 0, 234, 0.4);
+  box-shadow: 0 8px 20px rgba(46, 184, 164, 0.4);
   flex-shrink: 0;
 }
 
@@ -152,7 +152,7 @@
 
 .xp-fill-bar {
   height: 100%;
-  background: linear-gradient(90deg, #6200ea, #00e5ff);
+  background: linear-gradient(90deg, var(--mgl-accent-strong), #00e5ff);
   border-radius: 10px;
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
@@ -185,7 +185,7 @@
 
 .playing-now-card:hover, .trending-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(98, 0, 234, 0.4);
+  border-color: rgba(46, 184, 164, 0.4);
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
 }
 
@@ -231,8 +231,8 @@
 
 .pill-tag-neon {
   align-self: flex-start;
-  background: rgba(98, 0, 234, 0.3);
-  border: 1px solid rgba(98, 0, 234, 0.6);
+  background: rgba(46, 184, 164, 0.3);
+  border: 1px solid rgba(46, 184, 164, 0.6);
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 0.7rem;
@@ -250,7 +250,7 @@
 
 .action-hint {
   font-size: 0.8rem;
-  color: #a29bfe;
+  color: #7aaba5;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -267,15 +267,15 @@
 }
 
 .empty-playing-card:hover {
-  background: rgba(98, 0, 234, 0.05);
-  border-color: #6200ea;
+  background: rgba(46, 184, 164, 0.05);
+  border-color: var(--mgl-accent-strong);
 }
 
 .empty-icon-box {
   width: 50px;
   height: 50px;
   border-radius: 18px;
-  background: rgba(98, 0, 234, 0.15);
+  background: rgba(46, 184, 164, 0.15);
   color: #b388ff;
   display: flex;
   align-items: center;
@@ -388,9 +388,9 @@
 .indicator {
   width: 12px;
   height: 12px;
-  background: #6200ea;
+  background: var(--mgl-accent-strong);
   border-radius: 50%;
-  box-shadow: 0 0 20px #6200ea;
+  box-shadow: 0 0 20px var(--mgl-accent-strong);
   animation: pulse 2s infinite;
 }
 

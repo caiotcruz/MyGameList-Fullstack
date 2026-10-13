@@ -2,7 +2,8 @@ package com.caiotcruz.mygamelist.controller;
 
 import com.caiotcruz.mygamelist.dto.CommentDTO;
 import com.caiotcruz.mygamelist.dto.CreateCommentDTO;
-import com.caiotcruz.mygamelist.dto.GroupedActivityDTO;
+import com.caiotcruz.mygamelist.dto.FeedPageDTO;
+import com.caiotcruz.mygamelist.service.FeedService;
 import com.caiotcruz.mygamelist.model.Activity;
 import com.caiotcruz.mygamelist.model.User;
 import com.caiotcruz.mygamelist.repository.ActivityRepository;
@@ -12,6 +13,8 @@ import com.caiotcruz.mygamelist.service.ActivityService;
 import com.caiotcruz.mygamelist.service.SocialService;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,24 +29,20 @@ import java.util.List;
 @RequestMapping("/community/activities")
 public class ActivityController {
 
-    private final ActivityRepository activityRepository;
     private final ActivityService activityService;
     private final SocialService socialService;
-    private final ActivityGroupingService groupingService;
+    private final FeedService feedService;
 
-    public ActivityController(ActivityRepository activityRepository, ActivityService activityService, UserRepository userRepository,
-                               SocialService socialService, ActivityGroupingService groupingService) {
-        this.activityRepository = activityRepository;
+    public ActivityController(ActivityService activityService, SocialService socialService, FeedService feedService) {
         this.activityService = activityService;
         this.socialService = socialService;
-        this.groupingService = groupingService;
+        this.feedService = feedService;
     }
 
     @GetMapping
-    public List<GroupedActivityDTO> getMyFeed() {
-        User currentUser = activityService.getAuthenticatedUser();
-        List<Activity> feed = activityRepository.findFeedByFollower(currentUser);
-        return groupingService.groupAndMap(feed, currentUser.getId());
+    public FeedPageDTO getMyFeed(
+            @org.springframework.web.bind.annotation.RequestParam(required = false) Long before) {
+        return feedService.page(activityService.getAuthenticatedUser(), before);
     }
 
     @PostMapping("/{id}/like")
@@ -52,13 +51,13 @@ public class ActivityController {
     }
 
     @PostMapping("/{id}/comments")
-    public ResponseEntity<CommentDTO> addComment(@PathVariable Long id, @RequestBody CreateCommentDTO dto) {
+    public ResponseEntity<CommentDTO> addComment(@PathVariable Long id, @Valid @RequestBody CreateCommentDTO dto) {
         return ResponseEntity.ok(socialService.addComment(id, dto));
     }
 
     @DeleteMapping("/{activityId}/comments/{commentId}")
     public ResponseEntity<Void> removeComment(@PathVariable Long activityId, @PathVariable Long commentId) {
-        socialService.removeComment(commentId);
+        socialService.removeComment(activityId, commentId);
         return ResponseEntity.noContent().build();
     }
 

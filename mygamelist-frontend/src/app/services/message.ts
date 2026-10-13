@@ -28,6 +28,7 @@ export interface MessageableContact {
 export interface MessageThread {
   partner: { id: number; name: string; profilePicture: string | null };
   messages: Message[];
+  canSend: boolean;
 }
 
 @Injectable({ providedIn: 'root' })

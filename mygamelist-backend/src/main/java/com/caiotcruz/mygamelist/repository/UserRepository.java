@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
     boolean existsByName(String name);
     
-    List<User> findByNameContainingIgnoreCase(String name);
+    List<User> findByNameContainingIgnoreCase(String name, org.springframework.data.domain.Pageable pageable);
 
    @Query("""
         SELECT DISTINCT u, COUNT(f2) as mutualCount 
