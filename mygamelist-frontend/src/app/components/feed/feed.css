@@ -10,7 +10,7 @@
   transition: border-color 0.3s ease;
 }
 
-.activity-card-glass:hover { border-color: rgba(46, 184, 164, 0.3); }
+.activity-card-glass:hover { border-color: rgba(var(--mgl-accent-rgb), 0.3); }
 
 .game-cover-wrapper { position: relative; margin-right: 20px; }
 
@@ -94,9 +94,9 @@
   flex: 1;
 }
 
-.comment-bubble strong { 
-  color: var(--mgl-accent); 
-  margin-right: 5px; 
+.comment-bubble strong {
+  color: var(--mgl-accent);
+  margin-right: 5px;
 }
 
 .comment-bubble:hover .btn-delete-comment {
@@ -122,7 +122,7 @@
 
 .comment-input-box { display: flex; gap: 10px; margin-top: 15px; }
 
-.comment-input-box input {
+.comment-input-box textarea {
   flex: 1;
   background: rgba(0,0,0,0.3);
   border: 1px solid rgba(255,255,255,0.1);
@@ -147,9 +147,9 @@
   text-transform: uppercase;
   padding: 3px 10px;
   border-radius: 6px;
-  background: rgba(46, 184, 164, 0.1);
-  border: 1px solid rgba(46, 184, 164, 0.2);
-  color: #b388ff;
+  background: rgba(var(--mgl-accent-rgb), 0.1);
+  border: 1px solid rgba(var(--mgl-accent-rgb), 0.2);
+  color: #88c3ff;
   letter-spacing: 0.5px;
 }
 
@@ -171,7 +171,7 @@
 .post-review-content {
   margin: 12px 0;
   padding-left: 15px;
-  border-left: 2px solid rgba(46, 184, 164, 0.4);
+  border-left: 2px solid rgba(var(--mgl-accent-rgb), 0.4);
 }
 
 .review-text-bubble {
@@ -271,7 +271,7 @@
 
 @media (max-width: 768px) {
   .activity-card-glass {
-    flex-direction: column; 
+    flex-direction: column;
     padding: 15px;
   }
 
@@ -302,8 +302,8 @@
     font-size: 0.75rem;
     font-weight: 900;
     border: 2px solid #0a0a0a;
-    box-shadow: 0 4px 10px rgba(46, 184, 164, 0.5);
-    z-index: 5; 
+    box-shadow: 0 4px 10px rgba(var(--mgl-accent-rgb), 0.5);
+    z-index: 5;
   }
 
   .activity-text {
@@ -344,14 +344,16 @@
   .comment-input-box {
     gap: 8px;
   }
-  
-  .comment-input-box input {
+
+  .comment-input-box textarea {
     padding: 8px 12px;
     font-size: 0.9rem;
   }
 }
-.feed-pagination{text-align:center;padding:24px;color:#cec4da}
-.feed-pagination button{border:1px solid #9e73d2;background:#302044;color:#fff;border-radius:12px;padding:11px 20px;cursor:pointer}
+.feed-pagination{text-align:center;padding:24px;color:#c4cfda}
+.feed-pagination button{border:1px solid var(--mgl-accent);background:#203244;color:#fff;border-radius:12px;padding:11px 20px;cursor:pointer}
 .feed-pagination button:disabled{opacity:.6;cursor:wait}
 
 .activity-actions{align-items:center;flex-wrap:wrap;}.activity-actions>app-safety-actions{margin-left:auto;}.activity-body{min-width:0;}
+
+.comment-input-box textarea{min-width:0;resize:vertical;max-height:260px;min-height:70px;font:inherit;line-height:1.5;box-sizing:border-box;}.comment-main-content{white-space:pre-wrap;overflow-wrap:anywhere;min-width:0;}

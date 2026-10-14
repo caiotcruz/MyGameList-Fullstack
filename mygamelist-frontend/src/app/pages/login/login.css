@@ -17,7 +17,7 @@
   border-radius: 20px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
   text-align: center;
-  position: relative; 
+  position: relative;
   box-sizing: border-box;
 }
 
@@ -32,23 +32,23 @@ input {
   border-radius: 10px; color: #1a1a1a; font-size: 1rem; transition: all 0.3s; box-sizing: border-box;
 }
 
-input:focus { outline: none; border-color: var(--mgl-accent-strong); background-color: #fff; box-shadow: 0 0 0 4px rgba(46, 184, 164, 0.1); }
+input:focus { outline: none; border-color: var(--mgl-accent-strong); background-color: #fff; box-shadow: 0 0 0 4px rgba(var(--mgl-accent-rgb), 0.1); }
 input:disabled { opacity: 0.6; cursor: not-allowed; }
 
-.msg-error { 
-  color: #ff4757; font-size: 0.85rem; font-weight: 700; 
-  margin-bottom: 20px; padding: 12px; background: #fff1f2; 
-  border-radius: 8px; animation: shake 0.4s; 
+.msg-error {
+  color: #ff4757; font-size: 0.85rem; font-weight: 700;
+  margin-bottom: 20px; padding: 12px; background: #fff1f2;
+  border-radius: 8px; animation: shake 0.4s;
 }
 
 .btn-submit {
   width: 100%; padding: 16px; background-color: var(--mgl-accent-strong); color: white; border: none;
   border-radius: 10px; font-size: 1rem; font-weight: 800; text-transform: uppercase;
   cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
-  transition: all 0.3s; box-shadow: 0 10px 20px rgba(46, 184, 164, 0.2);
+  transition: all 0.3s; box-shadow: 0 10px 20px rgba(var(--mgl-accent-rgb), 0.2);
 }
 
-.btn-submit:hover:not(:disabled) { background-color: #12675f; transform: translateY(-2px); }
+.btn-submit:hover:not(:disabled) { background-color: var(--mgl-accent-strong); transform: translateY(-2px); }
 .btn-submit:disabled { background-color: #7aaba5; cursor: not-allowed; }
 
 .spinner-mini {
@@ -81,7 +81,7 @@ a:hover { text-decoration: underline; }
   height: 36px;
   border-radius: 50%;
   border: none;
-  background-color: #f0f2f5; 
+  background-color: #f0f2f5;
   color: #666;
   display: flex;
   align-items: center;
@@ -89,7 +89,7 @@ a:hover { text-decoration: underline; }
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   padding: 0;
-  box-shadow: none; 
+  box-shadow: none;
 }
 
 .btn-close:hover {
@@ -148,4 +148,4 @@ a:hover { text-decoration: underline; }
     margin-top: 10px;
   }
 }
-:host{--mgl-accent:#146d64;}
+:host{--mgl-accent:#126e64;}

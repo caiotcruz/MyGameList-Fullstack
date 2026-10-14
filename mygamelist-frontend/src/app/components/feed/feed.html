@@ -1,9 +1,9 @@
 <div class="activities-wrapper">
   <div class="activity-card-glass" *ngFor="let item of activities">
-  
+
     <div class="game-cover-wrapper">
       <img [src]="item.game.coverUrl" class="game-cover" [routerLink]="['/game', item.game.rawgId]">
-      
+
       <div class="rating-badge" *ngIf="temNota(item)">
         {{ getRatingValue(item) || item.ratingValue }}
       </div>
@@ -13,7 +13,7 @@
       <div class="activity-info">
         <p class="activity-text">
           <span class="user-link" [routerLink]="['/profile', item.user.id]">{{ item.user.name }}</span>
-          
+
           <span class="action-tag">
             {{ hasAction(item, 'ADDED_TO_LIST') ? 'adicionou à biblioteca' : getActionText(item.type) }}
           </span>
@@ -25,7 +25,7 @@
           <span class="mini-tag status" *ngIf="hasAction(item, 'CHANGED_STATUS')">
             {{ formatStatus(item.statusDetail) }}
           </span>
-          
+
           <span class="mini-tag review" *ngIf="item.reviewText || hasAction(item, 'REVIEWED')">
             <span class="fa-solid fa-file-lines"></span> Review
           </span>
@@ -36,7 +36,7 @@
         </div>
 
         <div class="post-review-content" *ngIf="item.reviewText">
-  
+
           <div class="spoiler-warning-glass" *ngIf="item.reviewSpoiler && !item.showSpoilerText" (click)="toggleSpoiler(item)">
             <span class="fa-solid fa-eye-slash spoiler-icon"></span>
             <span class="spoiler-text">Contém spoilers • <strong>Clique para ver</strong></span>
@@ -44,7 +44,7 @@
 
           <div class="review-text-container" *ngIf="!item.reviewSpoiler || item.showSpoilerText">
             <p class="review-text-bubble">"{{ item.reviewText }}"</p>
-            
+
             <button type="button" class="btn-hide-spoiler-glass" *ngIf="item.reviewSpoiler" (click)="toggleSpoiler(item)">
               <span class="fa-solid fa-eye"></span>
               <span>Ocultar spoiler</span>
@@ -80,23 +80,24 @@
               <strong>{{ c.user.name }}</strong> {{ c.text }}
               <app-safety-actions targetType="COMMENT" [targetId]="c.id" [ownerId]="c.user.id" />
             </div>
-            
-            <button 
-              *ngIf="podeDeletarComentario(c, item.user)" 
-              class="btn-delete-comment" 
+
+            <button
+              *ngIf="podeDeletarComentario(c, item.user)"
+              class="btn-delete-comment"
               (click)="deletarComentario(item, c.id)"
               title="Apagar comentário">
               <span class="fa-solid fa-trash-can"></span>
             </button>
           </div>
         </div>
-        
+
         <div class="comment-input-box">
-          <input #ipt type="text" placeholder="Adicionar comentário..." (keyup.enter)="enviarComentario(item, ipt)">
-          <button (click)="enviarComentario(item, ipt)">
+          <textarea #ipt rows="2" [attr.maxlength]="limits.COMMENT" placeholder="Adicionar comentário..." aria-label="Comentário" (input)="0" (keydown.control.enter)="enviarComentario(item, ipt)"></textarea>
+          <button aria-label="Enviar comentário" (click)="enviarComentario(item, ipt)">
             <span class="fa-solid fa-paper-plane"></span>
           </button>
         </div>
+        <small class="text-counter">{{ipt.value.length}} / {{limits.COMMENT}} · Ctrl+Enter para enviar</small>
       </div>
     </div>
   </div>

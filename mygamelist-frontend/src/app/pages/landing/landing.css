@@ -19,7 +19,7 @@ html {
 }
 
 .main-header.scrolled {
-  background: rgba(5, 5, 5, 0.8); 
+  background: rgba(5, 5, 5, 0.8);
   backdrop-filter: blur(15px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
@@ -69,15 +69,15 @@ html {
 .register-btn:hover {
   background: var(--mgl-accent);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(46, 184, 164, 0.4);
+  box-shadow: 0 5px 15px rgba(var(--mgl-accent-rgb), 0.4);
 }
 
 .hero {
   min-height: 100vh;
   display: flex;
-  align-items: center; 
-  padding: 100px 20px; 
-  background: radial-gradient(circle at top right, #1a003e 0%, #050505 70%);
+  align-items: center;
+  padding: 100px 20px;
+  background: radial-gradient(circle at top right, #07332e 0%, #050505 70%);
 }
 
 .hero-inner {
@@ -90,8 +90,8 @@ html {
 }
 
 .hero-left h1 {
-  font-size: clamp(2.5rem, 5vw, 4.5rem); 
-  line-height: 1.1; 
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1.1;
   margin-bottom: 24px;
   font-weight: 950;
   letter-spacing: -3px;
@@ -104,7 +104,7 @@ html {
   font-size: 1.2rem;
   line-height: 1.6;
   color: #888;
-  max-width: 500px; 
+  max-width: 500px;
   margin-bottom: 40px;
 }
 
@@ -237,7 +237,7 @@ html {
   transition: 0.3s;
 }
 
-.feature-card:hover { transform: translateY(-10px); border-color: var(--mgl-accent-strong); background: rgba(46, 184, 164, 0.05); }
+.feature-card:hover { transform: translateY(-10px); border-color: var(--mgl-accent-strong); background: rgba(var(--mgl-accent-rgb), 0.05); }
 .icon { font-size: 2.5rem; margin-bottom: 20px; display: block; }
 .feature-card h3 { font-size: 1.3rem; margin-bottom: 10px; }
 .feature-card p { color: #666; font-size: 0.95rem; line-height: 1.5; }
@@ -275,7 +275,7 @@ footer {
   .header-inner {
     padding: 15px 20px;
   }
-  
+
   .nav-links .nav-link {
     display: none;
   }

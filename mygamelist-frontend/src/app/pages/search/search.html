@@ -1,5 +1,5 @@
 <div class="search-page-wrapper">
-  
+
   <header class="search-header">
     <div class="search-box">
       <div class="input-container">
@@ -25,10 +25,10 @@
 
     <div class="carousel-track-viewport">
       <div class="carousel-infinite-track">
-        <div class="carousel-card" 
+        <div class="carousel-card"
              *ngFor="let item of displayTrendingGames; let i = index"
              [routerLink]="['/game', item.rawgId]">
-          
+
           <div class="card-visual-carousel">
             <img [src]="item.coverUrl || 'no-image.svg'" alt="Capa" />
             <div class="rank-badge">#{{ (i % 10) + 1 }}</div>
@@ -41,7 +41,7 @@
               <span class="fa-solid fa-users text-cyan"></span> {{ item.interactionsThisMonth }} pontos
             </span>
 
-            <button 
+            <button
               class="btn-add-mini"
               [class.already-added]="estaNaLista(item.rawgId)"
               [disabled]="estaNaLista(item.rawgId)"
@@ -54,11 +54,51 @@
     </div>
   </section>
 
+  <section class="trending-carousel-section recommendations-section" aria-labelledby="recommendations-title"
+      *ngIf="!query.trim() && (recommendations || recommendationsLoading || recommendationsError)">
+    <div class="section-title-box">
+      <span class="pill-tag-neon"><span class="fa-solid fa-compass"></span> Para o seu próximo jogo</span>
+      <h2 id="recommendations-title">Escolhas para você</h2>
+      <p class="recommendation-description">Seus gêneros mais jogados e suas notas ajudam a escolher. Jogos da sua lista ficam de fora.</p>
+    </div>
+    <p class="recommendation-state" role="status" *ngIf="recommendationsLoading">Buscando jogos que combinam com você…</p>
+    <div class="recommendation-state" role="status" *ngIf="recommendationsError">
+      {{ recommendationsError }} <button type="button" (click)="carregarRecomendacoes()" [disabled]="recommendationsLoading">Tentar novamente</button>
+    </div>
+    <ng-container *ngIf="recommendations as rec">
+      <p class="recommendation-state" *ngIf="rec.state === 'EMPTY_HISTORY'">Marque os jogos que você já jogou e dê suas notas para começar a receber sugestões.</p>
+      <p class="recommendation-state" *ngIf="rec.state === 'NO_GENRES'">Ainda não há gêneros disponíveis para os jogos que você jogou.</p>
+      <p class="recommendation-state" *ngIf="rec.state === 'EXHAUSTED'">Você já conhece as opções encontradas nesta seleção. Continue explorando a busca.</p>
+      <p class="recommendation-state" *ngIf="rec.state === 'PREPARING'">Estamos completando os gêneros da sua coleção. As sugestões podem mudar quando esse processo terminar.
+        <button type="button" (click)="carregarRecomendacoes()" [disabled]="recommendationsLoading">Atualizar sugestões</button>
+      </p>
+      <div class="recommendation-navigation" *ngIf="rec.games.length">
+        <span>Inspirado em {{ recommendationReason(selectedGenreSlugs) }}</span>
+        <button type="button" aria-label="Recomendações anteriores" (click)="recommendationTrack.scrollBy({left:-300,behavior:'smooth'})">←</button>
+        <button type="button" aria-label="Próximas recomendações" (click)="recommendationTrack.scrollBy({left:300,behavior:'smooth'})">→</button>
+      </div>
+      <div #recommendationTrack class="recommendation-track" tabindex="0" aria-label="Carrossel de recomendações">
+        <article class="carousel-card" *ngFor="let item of rec.games">
+          <a class="card-visual-carousel recommendation-cover" [routerLink]="['/game', item.rawgId]" [attr.aria-label]="'Ver ' + item.title">
+            <img [src]="item.coverUrl || 'no-image.svg'" [alt]="item.title" loading="lazy" />
+            <div class="carousel-overlay"></div>
+          </a>
+          <div class="carousel-card-info">
+            <h4 class="carousel-game-title"><a [routerLink]="['/game', item.rawgId]">{{ item.title }}</a></h4>
+            <span class="recommendation-reason">{{ recommendationReason(item.matchedGenres) }}</span>
+            <button type="button" class="btn-add-mini" [attr.aria-label]="'Adicionar ' + item.title + ' à lista'"
+                [disabled]="estaNaLista(item.rawgId)" (click)="adicionar(item)"><span class="fa-solid fa-plus"></span></button>
+          </div>
+        </article>
+      </div>
+    </ng-container>
+  </section>
+
   <main class="results-grid" *ngIf="games.length > 0">
     <div class="game-card-bento" *ngFor="let game of games">
       <div class="card-visual" [routerLink]="['/game', game.id]">
-        <img [src]="game.background_image || game.image || 'no-image.svg'" 
-             class="game-poster" 
+        <img [src]="game.background_image || game.image || 'no-image.svg'"
+             class="game-poster"
              alt="Capa do jogo">
         <div class="card-overlay">
           <span class="year-badge">{{ game.released | date:'yyyy' }}</span>
@@ -67,13 +107,13 @@
 
       <div class="card-content">
         <h3 class="game-title" [routerLink]="['/game', game.id]">{{ game.name }}</h3>
-        
-        <button 
-          class="btn-add-list" 
+
+        <button
+          class="btn-add-list"
           [class.already-added]="estaNaLista(game.id)"
           [disabled]="estaNaLista(game.id)"
           (click)="adicionar(game)">
-          
+
           <ng-container *ngIf="!estaNaLista(game.id)">
             <span class="fa-solid fa-plus icon-margin"></span> Minha Lista
           </ng-container>
@@ -131,8 +171,9 @@
       </div>
 
       <div class="field-box" *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
-        <label>Review Rápido</label>
-        <textarea rows="4" [(ngModel)]="editingGame.review" (ngModelChange)="preserveDraft()" maxlength="5000" placeholder="O que achou desse título?"></textarea>
+        <label>Review</label>
+        <textarea rows="8" [(ngModel)]="editingGame.review" (ngModelChange)="preserveDraft()" [attr.maxlength]="limits.REVIEW" placeholder="O que achou desse título?"></textarea>
+        <small class="text-counter">{{ editingGame.review?.length || 0 }} / {{ limits.REVIEW }} caracteres</small>
       </div>
 
       <div class="field-box-checkbox" *ngIf="editingGame.status !== 'PLAN_TO_PLAY' && editingGame.review?.trim()">

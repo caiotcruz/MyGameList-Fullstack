@@ -69,7 +69,7 @@ input:focus {
   outline: none;
   border-color: var(--mgl-accent-strong);
   background-color: #fff;
-  box-shadow: 0 0 0 4px rgba(46, 184, 164, 0.1);
+  box-shadow: 0 0 0 4px rgba(var(--mgl-accent-rgb), 0.1);
 }
 
 input:disabled {
@@ -120,11 +120,11 @@ input:disabled {
   gap: 10px;
 
   transition: all 0.2s;
-  box-shadow: 0 4px 10px rgba(46, 184, 164, 0.2);
+  box-shadow: 0 4px 10px rgba(var(--mgl-accent-rgb), 0.2);
 }
 
 .btn-submit:hover:not(:disabled) {
-  background-color: #12675f;
+  background-color: var(--mgl-accent-strong);
   transform: translateY(-1px);
 }
 
@@ -185,7 +185,7 @@ a:hover {
   height: 36px;
   border-radius: 50%;
   border: none;
-  background-color: #f0f2f5; 
+  background-color: #f0f2f5;
   color: #666;
   display: flex;
   align-items: center;
@@ -193,13 +193,13 @@ a:hover {
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   padding: 0;
-  box-shadow: none; 
+  box-shadow: none;
 }
 
 .btn-close:hover {
   background-color: #e2e5e9;
-  color: #ff4757; 
-  transform: rotate(90deg); 
+  color: #ff4757;
+  transform: rotate(90deg);
 }
 
 .btn-close:active {
@@ -249,7 +249,7 @@ a:hover {
   input {
     padding: 16px;
     font-size: 1.2rem;
-    letter-spacing: 4px; 
+    letter-spacing: 4px;
   }
 
   .btn-submit {
@@ -257,4 +257,4 @@ a:hover {
     margin-top: 10px;
   }
 }
-:host{--mgl-accent:#146d64;}
+:host{--mgl-accent:#126e64;}

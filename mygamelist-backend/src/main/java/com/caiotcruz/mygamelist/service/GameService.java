@@ -51,11 +51,11 @@ public class GameService {
     private static final Logger log = LoggerFactory.getLogger(GameService.class);
 
     private final GameRepository gameRepository;
-    private final UserGameListRepository userGameListRepository; 
+    private final UserGameListRepository userGameListRepository;
     private final RawgClient rawgClient;
     private final ReviewVoteRepository reviewVoteRepository;
     private final UserRepository userRepository;
-    private final ActivityRepository activityRepository; 
+    private final ActivityRepository activityRepository;
 
     @Value("${api.rawg.key}")
     private String apiKey;
@@ -89,6 +89,7 @@ public class GameService {
                     newGame.setCoverUrl(externalGame.backgroundImage());
                     newGame.setReleaseDate(externalGame.released());
                     newGame.setMetacritic(externalGame.metacritic());
+                    if(externalGame.genres()!=null) newGame.setGenreSlugs(GenreMetadata.slugs(externalGame.genres()));
 
                     return gameRepository.save(newGame);
                 });
@@ -98,7 +99,7 @@ public class GameService {
     public void voteOnReview(Long reviewId, Long userId, String voteTypeStr) {
         var review = userGameListRepository.findById(reviewId)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND,"Review não encontrada"));
-        
+
         locks.lock(userId, review.getUser().getId());
         safety.requireVisible(userId, review.getUser().getId());
         var user = userRepository.findById(userId)
@@ -112,7 +113,7 @@ public class GameService {
         }
         if(voteTypeStr==null) throw new IllegalArgumentException("Informe o tipo de voto.");
         VoteType type = VoteType.valueOf(voteTypeStr.toUpperCase(java.util.Locale.ROOT));
-        
+
         Optional<ReviewVote> existingVote = reviewVoteRepository.findByUserAndReview(user, review);
 
         if (existingVote.isPresent()) {
@@ -147,6 +148,7 @@ public class GameService {
                 stats.playingCount(),
                 stats.completedCount(),
                 stats.platinumCount(),
+                stats.droppedCount(),
                 stats.avgScore(),
                 stats.scoreDistribution(),
                 myEntry.status(),
@@ -250,6 +252,7 @@ public class GameService {
         long playingCount = userGameListRepository.countByGameIdAndStatus(internalId, GameStatus.PLAYING);
         long completedCount = userGameListRepository.countByGameIdAndStatus(internalId, GameStatus.COMPLETED);
         long platinumCount = userGameListRepository.countByGameIdAndStatus(internalId, GameStatus.PLATINUM);
+        long droppedCount = userGameListRepository.countByGameIdAndStatus(internalId, GameStatus.DROPPED);
         Double avgScore = userGameListRepository.getAverageScoreByGameId(internalId);
 
         List<Object[]> rawDistribution = userGameListRepository.getScoreDistributionByGameId(internalId);
@@ -266,8 +269,8 @@ public class GameService {
                 scoreMap.put(score, count);
             }
         }
-        
-        return new GameStats(totalPlayers, playingCount, completedCount, platinumCount, avgScore != null ? avgScore : 0.0, scoreMap);
+
+        return new GameStats(totalPlayers, playingCount, completedCount, platinumCount, droppedCount, avgScore != null ? avgScore : 0.0, scoreMap);
     }
 
     private UserGameEntry loadMyEntry(Long internalId, Long currentUserId) {
@@ -288,7 +291,7 @@ public class GameService {
             long likes = reviewVoteRepository.countByReviewAndType(r, VoteType.LIKE);
             long dislikes = reviewVoteRepository.countByReviewAndType(r, VoteType.DISLIKE);
             int karmaScore = (int) ((likes * 2) - dislikes);
-            
+
             String myVote = loadUserVoteForReview(r, currentUserId);
 
             return new GameReviewDTO(
@@ -315,7 +318,7 @@ public class GameService {
         if (currentUserId == null) {
             return null;
         }
-        var userObj = new User(); 
+        var userObj = new User();
         userObj.setId(currentUserId);
         return reviewVoteRepository.findByUserAndReview(userObj, review)
                 .map(vote -> vote.getType().name())
@@ -340,17 +343,18 @@ public class GameService {
     }
 
     private record GameStats(
-        long totalPlayers, 
-        long playingCount, 
-        long completedCount, 
-        long platinumCount, 
+        long totalPlayers,
+        long playingCount,
+        long completedCount,
+        long platinumCount,
+        long droppedCount,
         double avgScore,
         Map<Integer, Long> scoreDistribution
     ) {}
 
     private record UserGameEntry(
-        String status, 
-        Integer score, 
+        String status,
+        Integer score,
         boolean favorite,
         String review,
         boolean spoiler

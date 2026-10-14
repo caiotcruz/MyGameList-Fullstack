@@ -53,8 +53,8 @@ input[type="number"] {
 }
 
 .btn-reset-sort {
-  background: rgba(46, 184, 164, 0.05);
-  border: 1px solid rgba(46, 184, 164, 0.2);
+  background: rgba(var(--mgl-accent-rgb), 0.05);
+  border: 1px solid rgba(var(--mgl-accent-rgb), 0.2);
   color: var(--mgl-accent);
   padding: 4px 12px;
   border-radius: 6px;
@@ -96,11 +96,11 @@ input[type="number"] {
 .game-stack-card:hover {
   background: rgba(255, 255, 255, 0.04);
   transform: translateX(8px);
-  border-color: rgba(46, 184, 164, 0.3);
+  border-color: rgba(var(--mgl-accent-rgb), 0.3);
 }
 
 .game-stack-card.is-favorite {
-  background: linear-gradient(90deg, rgba(46, 184, 164, 0.08) 0%, transparent 100%);
+  background: linear-gradient(90deg, rgba(var(--mgl-accent-rgb), 0.08) 0%, transparent 100%);
   border-left: 4px solid var(--mgl-accent-strong);
 }
 
@@ -178,8 +178,8 @@ input[type="number"] {
 }
 
 .review-pill-btn {
-  background: rgba(46, 184, 164, 0.1);
-  border: 1px solid rgba(46, 184, 164, 0.3);
+  background: rgba(var(--mgl-accent-rgb), 0.1);
+  border: 1px solid rgba(var(--mgl-accent-rgb), 0.3);
   color: #7aaba5;
   font-size: 0.7rem;
   font-weight: 700;
@@ -223,7 +223,7 @@ input[type="number"] {
 .action-trigger:hover {
   color: #fff;
   border-color: var(--mgl-accent-strong);
-  background: rgba(46, 184, 164, 0.2);
+  background: rgba(var(--mgl-accent-rgb), 0.2);
 }
 
 .action-trigger.active {
@@ -352,12 +352,12 @@ input[type="number"] {
   font-weight: 800;
   cursor: pointer;
   transition: 0.3s;
-  box-shadow: 0 0 15px rgba(46, 184, 164, 0.3);
+  box-shadow: 0 0 15px rgba(var(--mgl-accent-rgb), 0.3);
 }
 
 .btn-save-glow:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(46, 184, 164, 0.5);
+  box-shadow: 0 5px 20px rgba(var(--mgl-accent-rgb), 0.5);
   background: var(--mgl-accent);
 }
 
@@ -505,7 +505,7 @@ input[type="number"] {
 .custom-checkbox-container input:checked ~ .checkmark {
   background-color: var(--mgl-accent-strong);
   border-color: var(--mgl-accent-strong);
-  box-shadow: 0 0 10px rgba(46, 184, 164, 0.4);
+  box-shadow: 0 0 10px rgba(var(--mgl-accent-rgb), 0.4);
 }
 
 .checkmark:after {
@@ -643,9 +643,9 @@ input[type="number"] {
   }
 
   .sort-options button.active {
-    background: rgba(46, 184, 164, 0.15);
+    background: rgba(var(--mgl-accent-rgb), 0.15);
     border-color: var(--mgl-accent-strong);
-    color: #b388ff;
+    color: #88c3ff;
   }
 
   .sort-options button .sort-icon {
@@ -738,3 +738,15 @@ input[type="number"] {
     gap: 15px;
   }
 }
+.library-toolbar{display:flex;align-items:end;gap:14px;flex-wrap:wrap;padding:20px;background:rgba(22,22,22,.7);border:1px solid rgba(255,255,255,.08);border-radius:24px;margin-bottom:20px;}
+.library-toolbar label{display:flex;flex-direction:column;gap:8px;color:#bdd0de;font-size:.85rem;min-width:0;}
+.library-search{flex:1 1 250px;}.library-toolbar input[type=search],.library-toolbar select{width:100%;box-sizing:border-box;background:#090b0d;border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#edf6ff;padding:12px;font:inherit;min-height:44px;}
+.library-toolbar select{max-width:270px;}.library-toolbar .library-check{flex-direction:row;align-items:center;min-height:44px;}.library-check input{accent-color:var(--mgl-accent);}
+.library-toolbar button,.library-pagination button{min-height:44px;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:10px 14px;background:#171a1d;color:#e6ecef;cursor:pointer;}.library-count{color:#b2c7d7;font-size:.85rem;flex-basis:100%;}
+.library-pagination{display:flex;justify-content:center;align-items:center;gap:16px;padding:22px;flex-wrap:wrap;color:#c6dbea;}
+@media(max-width:600px){.library-toolbar{padding:16px;}.library-toolbar>label:not(.library-check){flex:1 1 100%;}.library-toolbar select{max-width:none;}}
+
+.library-toolbar{box-shadow:0 12px 28px rgba(0,0,0,.16);}
+.library-toolbar input:focus-visible,.library-toolbar select:focus-visible{border-color:var(--mgl-accent);outline:2px solid rgba(var(--mgl-accent-rgb),.3);outline-offset:2px;}
+.library-toolbar button:hover,.library-pagination button:hover:not(:disabled){border-color:var(--mgl-accent);color:var(--mgl-accent);}
+.library-pagination button:disabled{opacity:.4;cursor:default;}

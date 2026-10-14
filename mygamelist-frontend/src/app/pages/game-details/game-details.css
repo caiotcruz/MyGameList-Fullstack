@@ -19,11 +19,11 @@
 .spinner-neon {
   width: 50px;
   height: 50px;
-  border: 4px solid rgba(46, 184, 164, 0.1);
+  border: 4px solid rgba(var(--mgl-accent-rgb), 0.1);
   border-left-color: var(--mgl-accent-strong);
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  box-shadow: 0 0 15px rgba(46, 184, 164, 0.5);
+  box-shadow: 0 0 15px rgba(var(--mgl-accent-rgb), 0.5);
 }
 
 @keyframes spin {
@@ -57,7 +57,7 @@
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
-  padding: 0 40px 40px 110px; 
+  padding: 0 40px 40px 110px;
   display: flex;
   gap: 40px;
   align-items: flex-end;
@@ -87,7 +87,7 @@
   padding: 8px 12px;
   border-radius: 12px;
   font-weight: 900;
-  box-shadow: 0 10px 20px rgba(46, 184, 164, 0.4);
+  box-shadow: 0 10px 20px rgba(var(--mgl-accent-rgb), 0.4);
 }
 
 .game-title-main {
@@ -147,10 +147,10 @@
 }
 
 .user-status-glass:hover {
-  background: rgba(46, 184, 164, 0.15);
+  background: rgba(var(--mgl-accent-rgb), 0.15);
   border-color: var(--mgl-accent-strong);
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(46, 184, 164, 0.2);
+  box-shadow: 0 10px 25px rgba(var(--mgl-accent-rgb), 0.2);
 }
 
 .status-icon-box {
@@ -194,7 +194,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 25px;
-  padding: 0 40px 0 110px; 
+  padding: 0 40px 0 110px;
   box-sizing: border-box;
 }
 
@@ -210,7 +210,7 @@
 
 .stat-item:hover {
   border-color: var(--mgl-accent-strong);
-  background: rgba(46, 184, 164, 0.05);
+  background: rgba(var(--mgl-accent-rgb), 0.05);
   transform: translateY(-5px);
 }
 
@@ -294,16 +294,16 @@
 }
 
 .accent-completed .stat-icon-badge {
-  color: #b478ff;
-  background: rgba(180, 0, 255, 0.08);
-  border-color: rgba(180, 0, 255, 0.35);
-  box-shadow: 0 0 18px rgba(180, 0, 255, 0.25);
+  color: #78bcff;
+  background: rgba(var(--mgl-accent-rgb),0.08);
+  border-color: rgba(var(--mgl-accent-rgb),0.35);
+  box-shadow: 0 0 18px rgba(var(--mgl-accent-rgb),0.25);
 }
-.accent-completed .stat-value { color: #b478ff; }
-.accent-completed .stat-desc { color: #b478ff; }
+.accent-completed .stat-value { color: #78bcff; }
+.accent-completed .stat-desc { color: #78bcff; }
 .accent-completed:hover {
-  border-color: rgba(180, 0, 255, 0.4);
-  background: rgba(180, 0, 255, 0.05);
+  border-color: rgba(var(--mgl-accent-rgb),0.4);
+  background: rgba(var(--mgl-accent-rgb),0.05);
 }
 
 .accent-platinum .stat-icon-badge {
@@ -836,7 +836,7 @@
 .custom-checkbox-container input:checked ~ .checkmark {
   background-color: var(--mgl-accent-strong);
   border-color: var(--mgl-accent-strong);
-  box-shadow: 0 0 10px rgba(46, 184, 164, 0.4);
+  box-shadow: 0 0 10px rgba(var(--mgl-accent-rgb), 0.4);
 }
 
 .checkmark:after {
@@ -920,7 +920,7 @@
 
 .store-pill:hover {
   border-color: var(--mgl-accent-strong);
-  background: rgba(46, 184, 164, 0.1);
+  background: rgba(var(--mgl-accent-rgb), 0.1);
   color: #fff;
   transform: translateY(-2px);
 }
@@ -958,7 +958,7 @@
 
 .screenshots-strip::-webkit-scrollbar-thumb,
 .trailers-strip::-webkit-scrollbar-thumb {
-  background: rgba(46, 184, 164, 0.4);
+  background: rgba(var(--mgl-accent-rgb), 0.4);
   border-radius: 10px;
 }
 
@@ -984,7 +984,7 @@ css
 .screenshot-thumb:hover {
   border-color: var(--mgl-accent-strong);
   transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(46, 184, 164, 0.25);
+  box-shadow: 0 10px 25px rgba(var(--mgl-accent-rgb), 0.25);
 }
 
 .screenshot-thumb img {
@@ -1080,7 +1080,7 @@ css
 }
 
 .related-strip::-webkit-scrollbar-thumb {
-  background: rgba(46, 184, 164, 0.4);
+  background: rgba(var(--mgl-accent-rgb), 0.4);
   border-radius: 10px;
 }
 
@@ -1211,9 +1211,9 @@ css
 .rarity-legendary .achievement-percent { color: #00e5ff; background: rgba(0, 229, 255, 0.1); }
 .rarity-legendary:hover { box-shadow: 0 10px 25px rgba(0, 229, 255, 0.15); border-color: #00e5ff; }
 
-.rarity-rare { border-color: rgba(180, 0, 255, 0.3); }
-.rarity-rare .achievement-percent { color: #b478ff; background: rgba(180, 0, 255, 0.1); }
-.rarity-rare:hover { border-color: #b478ff; }
+.rarity-rare { border-color: rgba(var(--mgl-accent-rgb),0.3); }
+.rarity-rare .achievement-percent { color: #78bcff; background: rgba(var(--mgl-accent-rgb),0.1); }
+.rarity-rare:hover { border-color: #78bcff; }
 
 .rarity-common .achievement-percent { color: #888; background: rgba(255, 255, 255, 0.04); }
 
@@ -1233,7 +1233,7 @@ css
 .btn-show-more-glass:hover {
   border-color: var(--mgl-accent-strong);
   color: #fff;
-  background: rgba(46, 184, 164, 0.1);
+  background: rgba(var(--mgl-accent-rgb), 0.1);
 }
 
 .lightbox-blur {
@@ -1263,7 +1263,7 @@ css
 }
 
 .lightbox-nav:hover {
-  background: rgba(46, 184, 164, 0.3);
+  background: rgba(var(--mgl-accent-rgb), 0.3);
   border-color: var(--mgl-accent-strong);
 }
 
@@ -1412,7 +1412,7 @@ css
   }
 
   .stats-grid-container {
-    grid-template-columns: 1fr; 
+    grid-template-columns: 1fr;
     gap: 15px;
     margin: 25px auto;
   }
@@ -1480,3 +1480,5 @@ css
   }
 }
 .rev-footer>app-safety-actions{order:3;margin-left:auto;}.rev-footer{gap:12px;flex-wrap:wrap;}
+
+.stats-grid-container{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));}.accent-dropped .stat-value,.accent-dropped .stat-icon-badge{color:#ef9e8c;}

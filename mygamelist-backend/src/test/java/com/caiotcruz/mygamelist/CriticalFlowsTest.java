@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
  "management.server.port=0", "api.security.token.secret=local-integration-test-key-with-more-than-32-bytes",
  "app.outbox-key=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
  "api.rawg.key=unused-test-key", "spring.mail.username=test@example.test", "spring.mail.password=unused",
+ "app.recommendations.metadata-enabled=false",
  "app.moderator-ids="
 })
 class CriticalFlowsTest {
@@ -106,5 +107,18 @@ class CriticalFlowsTest {
   assertEquals(1L,db.queryForObject("SELECT COUNT(*) FROM tb_content_reports WHERE reporter_id=?",Long.class,bob.getId()).longValue());
   assertEquals(403,call(bob,"GET","/safety/moderation/reports",null).status);
   assertEquals(400,call(bob,"PUT","/safety/preferences",Map.of("messagePolicy","ADMIN")).status);
+ }
+
+ @Test void longReviewAndThemePersistAndOverflowIsRejected()throws Exception{
+  String review="r".repeat(50000);
+  ok(call(alice,"POST","/my-games",Map.of("rawgId",game1.getRawgId(),"status","DROPPED","review",review)));
+  assertEquals(review,lists.findByUserId(alice.getId()).get(0).getReview());
+  assertEquals(400,call(alice,"POST","/my-games",Map.of("rawgId",game1.getRawgId(),"review",review+"x")).status);
+  assertEquals(review,lists.findByUserId(alice.getId()).get(0).getReview());
+  ok(call(alice,"PUT","/users/me",Map.of("bio","b".repeat(5000),"theme","TEAL")));
+  User saved=users.findById(alice.getId()).orElseThrow();
+  assertEquals(5000,saved.getBio().length());assertEquals(ThemePreference.TEAL,saved.getTheme());
+  assertEquals(400,call(alice,"PUT","/users/me",Map.of("theme","ARBITRARY")).status);
+  assertEquals(ThemePreference.TEAL,users.findById(bob.getId()).orElseThrow().getTheme());
  }
 }

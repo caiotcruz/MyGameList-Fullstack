@@ -1,3 +1,4 @@
+import { TEXT_LIMITS } from '../../shared/text-limits';
 import { Subject, takeUntil } from 'rxjs';
 import { SafetyActions } from '../../components/safety-actions/safety-actions';
 import { Feedback, errorMessage } from '../../services/feedback';
@@ -15,6 +16,8 @@ import { MessageService, ConversationSummary, Message, MessageableContact } from
   styleUrl: './messages.css'
 })
 export class Messages implements OnInit, OnDestroy {
+  readonly limits = TEXT_LIMITS;
+
   feedback=inject(Feedback);
 
   messageService = inject(MessageService);
@@ -167,7 +170,13 @@ export class Messages implements OnInit, OnDestroy {
     return fromContact?.profilePicture || null;
   }
 
+  onMessageEnter(event: Event) {
+    const key=event as KeyboardEvent;
+    if (!key.shiftKey && !key.isComposing) { key.preventDefault(); this.enviar(); }
+  }
+
   enviar() {
+    if(this.draft.length>this.limits.MESSAGE){this.feedback.show('Mensagem acima do limite. Seu texto foi preservado.');return;}
     if(!this.canSend)return;
     if (!this.draft.trim() || !this.activeUserId || this.isSending) return;
 

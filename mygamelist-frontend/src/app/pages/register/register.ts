@@ -1,6 +1,7 @@
+import { TEXT_LIMITS } from '../../shared/text-limits';
 import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router'; 
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators';
@@ -9,11 +10,13 @@ import { ApiResponse } from '../../models/api-response';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule, RouterLink, CommonModule], 
+  imports: [FormsModule, RouterLink, CommonModule],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
 export class Register {
+  readonly limits = TEXT_LIMITS;
+
   private authService = inject(AuthService);
   public router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
@@ -40,26 +43,26 @@ export class Register {
 
     this.isLoading = true;
     this.errorMessage = '';
-    this.cdr.detectChanges(); 
+    this.cdr.detectChanges();
 
-    const userData = { 
-      name: this.name, 
-      email: this.email, 
-      password: this.password 
+    const userData = {
+      name: this.name,
+      email: this.email,
+      password: this.password
     };
 
     this.authService.register(userData)
       .pipe(
         finalize(() => {
           this.isLoading = false;
-          this.cdr.detectChanges(); 
+          this.cdr.detectChanges();
         })
       )
       .subscribe({
         next: (res: ApiResponse<void>) => {
           console.log(res.message);
-          this.router.navigate(['/verify'], { 
-            queryParams: { email: this.email } 
+          this.router.navigate(['/verify'], {
+            queryParams: { email: this.email }
           });
         },
         error: (err) => {

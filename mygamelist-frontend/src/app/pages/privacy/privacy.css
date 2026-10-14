@@ -1,14 +1,14 @@
 :host {display:block;min-height:100dvh;background:#090e12;color:#edf5f5;font-family:Inter,system-ui,sans-serif;box-sizing:border-box;padding:40px 24px 60px 114px;}
 .privacy-page {box-sizing:border-box;max-width:880px;margin:0 auto;padding:0;}
 .privacy-page h1 {margin:24px 0 10px;line-height:1.2;}
-.privacy-page a {display:inline-flex;align-items:center;min-height:40px;color:#8ce4d5;text-decoration:none;}
+.privacy-page a {display:inline-flex;align-items:center;min-height:40px;color:var(--mgl-accent);text-decoration:none;}
 .privacy-card {box-sizing:border-box;background:#141d24;border-color:#2d4148;margin:24px 0;padding:28px;}
 .privacy-card h2 {margin:0 0 12px;line-height:1.4;}
 .privacy-page select,.privacy-page textarea {display:block;background:#0e171e;border-color:#3d5960;max-width:100%;min-height:46px;}
 .privacy-page select {margin:10px 0 18px;}
 .privacy-page textarea {min-height:96px;resize:vertical;}
-.privacy-page button {background:#165c59;border-color:#3c8c81;}
-.privacy-page button:hover:not(:disabled){background:#21766e;}
+.privacy-page button {background:var(--mgl-accent-strong);border-color:var(--mgl-accent);}
+.privacy-page button:hover:not(:disabled){background:var(--mgl-accent-strong);}
 .blocked-row {flex-wrap:wrap;}.blocked-row span {flex:1 1 160px;}
 .moderation-report {min-width:0;overflow-wrap:anywhere;}
 @media(max-width:768px){:host{padding:24px 16px 110px;}.privacy-card{padding:20px;}.privacy-page h1{font-size:1.8rem;}.privacy-card>button{width:100%;}}

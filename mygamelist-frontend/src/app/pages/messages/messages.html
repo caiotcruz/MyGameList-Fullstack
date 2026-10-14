@@ -91,16 +91,16 @@
       </div>
 
       <div class="thread-input-row">
-        <input
-          type="text"
+        <textarea rows="2"
           placeholder="Escreva uma mensagem..."
           [(ngModel)]="draft"
-          (keyup.enter)="enviar()"
-          maxlength="2000" aria-label="Mensagem" [disabled]="isSending || !canSend">
+          (keydown.enter)="onMessageEnter($event)"
+          [attr.maxlength]="limits.MESSAGE" aria-label="Mensagem" [disabled]="isSending || !canSend"></textarea>
         <button (click)="enviar()" aria-label="Enviar mensagem" [disabled]="isSending || !canSend || !draft.trim()">
           <span class="fa-solid fa-paper-plane"></span>
         </button>
       </div>
+      <small class="text-counter message-counter">{{draft.length}} / {{limits.MESSAGE}} · Shift+Enter para nova linha</small>
     </ng-container>
 
     <ng-template #noThreadSelected>

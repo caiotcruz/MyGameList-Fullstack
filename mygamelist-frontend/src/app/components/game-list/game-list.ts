@@ -1,3 +1,5 @@
+import { LibraryEntry, LibrarySort, selectLibrary } from '../../shared/library-view';
+import { TEXT_LIMITS, reviewLimitError } from '../../shared/text-limits';
 import { Feedback, errorMessage } from '../../services/feedback';
 import { ReviewDrafts } from '../../services/review-drafts';
 import { Component, Input, Output, EventEmitter, inject, ChangeDetectorRef, OnChanges, SimpleChanges } from '@angular/core';
@@ -16,6 +18,7 @@ import { RouterModule, Router } from '@angular/router';
 export class GameList implements OnChanges {
   feedback=inject(Feedback);
   drafts=inject(ReviewDrafts);
+  readonly limits = TEXT_LIMITS;
   saveError='';
   draftRestored=false;
   preserveDraft(){this.drafts.save(this.editingGame);}
@@ -25,7 +28,7 @@ export class GameList implements OnChanges {
   cdr = inject(ChangeDetectorRef);
   router = inject(Router);
 
-  @Input() games: any[] = [];
+  @Input() games: LibraryEntry[] = [];
   @Input() isOwner: boolean = false;
   @Output() listUpdated = new EventEmitter<void>();
 
@@ -39,53 +42,42 @@ export class GameList implements OnChanges {
   reviewSelecionada: any = null;
   gameParaRemover: any = null;
 
+  query = '';
+  statusFilter = '';
+  favoritesOnly = false;
+  filteredGames: LibraryEntry[] = [];
+  page = 1;
+  readonly pageSize = 24;
+  get visibleGames() { return this.filteredGames.slice((this.page-1)*this.pageSize, this.page*this.pageSize); }
+  get pages() { return Math.max(1,Math.ceil(this.filteredGames.length/this.pageSize)); }
+  get hasExternalPlaytime() { return this.games.some(g=>g.externalProgress?.some(p=>p.playtimeMinutes!==null)); }
+
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['games'] && this.games) {
-      this.aplicarOrdenacaoPadrao();
-      this.calcularStats();
-    }
+    if(changes['games']) { this.updateView(false); this.calcularStats(); }
   }
-
-  aplicarOrdenacaoPadrao() {
-    this.sortColumn = ''; 
-    this.games.sort((a, b) => {
-      if (a.favorite && !b.favorite) return -1;
-      if (!a.favorite && b.favorite) return 1;
-
-      const dateA = new Date(a.updatedAt || 0).getTime();
-      const dateB = new Date(b.updatedAt || 0).getTime();
-      return dateB - dateA;
+  updateView(resetPage=true) {
+    this.filteredGames=selectLibrary(this.games,{
+      query:this.query,status:this.statusFilter,favoritesOnly:this.favoritesOnly,
+      sort:(this.sortColumn || 'default') as LibrarySort,direction:this.sortDirection
     });
+    this.page=resetPage?1:Math.min(this.page,this.pages);
   }
-
-  limparOrdenacao() {
-    this.aplicarOrdenacaoPadrao();
-    this.cdr.detectChanges();
+  aplicarOrdenacaoPadrao() { this.sortColumn='';this.sortDirection='asc';this.updateView(); }
+  limparOrdenacao() { this.aplicarOrdenacaoPadrao(); }
+  changeSort(value:string) {
+    this.sortColumn=value==='default'?'':value;
+    this.sortDirection=['score','updatedAt','playtime'].includes(value)?'desc':'asc';
+    this.updateView();
   }
-
   ordenar(coluna: string) {
-    if (this.sortColumn === coluna) {
-      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-    } else {
-      this.sortColumn = coluna;
-      this.sortDirection = 'asc';
-    }
-
-    this.games.sort((a, b) => {
-      let vA, vB;
-      if (coluna === 'title') { vA = a.game.title.toLowerCase(); vB = b.game.title.toLowerCase(); }
-      else if (coluna === 'status') { vA = a.status; vB = b.status; }
-      else if (coluna === 'score') { vA = a.score || 0; vB = b.score || 0; }
-      else return 0;
-
-      if (vA < vB) return this.sortDirection === 'asc' ? -1 : 1;
-      if (vA > vB) return this.sortDirection === 'asc' ? 1 : -1;
-      return 0;
-    });
+    if(this.sortColumn===coluna)this.sortDirection=this.sortDirection==='asc'?'desc':'asc';
+    else {this.sortColumn=coluna;this.sortDirection=['score','updatedAt','playtime'].includes(coluna)?'desc':'asc';}
+    this.updateView();
   }
+  clearFilters(){this.query='';this.statusFilter='';this.favoritesOnly=false;this.updateView();}
 
   getSortIcon(coluna: string): string {
-    if (this.sortColumn !== coluna) return '↕'; 
+    if (this.sortColumn !== coluna) return '↕';
     return this.sortDirection === 'asc' ? '▲' : '▼';
   }
 
@@ -101,17 +93,17 @@ export class GameList implements OnChanges {
     });
   }
 
-  navegarParaJogo(item: any) { 
-    this.router.navigate(['/game', item.game.rawgId]); 
+  navegarParaJogo(item: any) {
+    this.router.navigate(['/game', item.game.rawgId]);
   }
-  
+
   getStatusColor(status: string): string {
-    const colors: any = { 
-      'PLAYING': '#4caf50', 
-      'COMPLETED': '#2196f3', 
+    const colors: any = {
+      'PLAYING': '#4caf50',
+      'COMPLETED': '#2196f3',
       'PLATINUM': '#00e5ff',
-      'DROPPED': '#f44336', 
-      'PLAN_TO_PLAY': '#9e9e9e' 
+      'DROPPED': '#f44336',
+      'PLAN_TO_PLAY': '#9e9e9e'
     };
     return colors[status] || '#000';
   }
@@ -120,11 +112,11 @@ export class GameList implements OnChanges {
     event.stopPropagation();
     const temSpoiler = Boolean(item.spoiler || item.isSpoiler || item.reviewIsSpoiler);
 
-    this.editingGame = { 
-      rawgId: item.game.rawgId, 
-      title: item.game.title, 
-      status: item.status, 
-      score: item.score, 
+    this.editingGame = {
+      rawgId: item.game.rawgId,
+      title: item.game.title,
+      status: item.status,
+      score: item.score,
       review: item.review,
       isSpoiler: temSpoiler
     };
@@ -137,17 +129,18 @@ export class GameList implements OnChanges {
 
   fecharModal(saved=false) {
     if(this.isSaving)return;
-    if(!saved)this.preserveDraft(); 
-    this.isModalOpen = false; 
+    if(!saved)this.preserveDraft();
+    this.isModalOpen = false;
   }
 
-  validarScore() { 
-    this.editingGame.score = Math.min(10, Math.max(0, Math.floor(this.editingGame.score || 0))); 
+  validarScore() {
+    this.editingGame.score = Math.min(10, Math.max(0, Math.floor(this.editingGame.score || 0)));
   }
 
   salvarAlteracoes() {
     if(this.isSaving)return;
-    this.saveError="";this.preserveDraft();
+    this.saveError=reviewLimitError(this.editingGame.review);this.preserveDraft();
+    if(this.saveError)return;
     this.isSaving = true;
     this.gameService.addGameToList(this.editingGame).subscribe({
       next: () => {
@@ -187,12 +180,12 @@ export class GameList implements OnChanges {
   lerReview(item: any, event: Event) {
     event.stopPropagation();
     const temSpoiler = Boolean(item.spoiler || item.isSpoiler || item.reviewIsSpoiler);
-    this.reviewSelecionada = { 
-      title: item.game.title, 
-      text: item.review, 
+    this.reviewSelecionada = {
+      title: item.game.title,
+      text: item.review,
       score: item.score,
       isSpoiler: temSpoiler,
-      showSpoilerText: false 
+      showSpoilerText: false
     };
   }
 
@@ -203,12 +196,12 @@ export class GameList implements OnChanges {
     }
   }
 
-  fecharReview() { 
-    this.reviewSelecionada = null; 
+  fecharReview() {
+    this.reviewSelecionada = null;
   }
 
-  trackByGameId(index: number, item: any) { 
-    return item.id; 
+  trackByGameId(index: number, item: any) {
+    return item.id;
   }
 
   calcularStats() {

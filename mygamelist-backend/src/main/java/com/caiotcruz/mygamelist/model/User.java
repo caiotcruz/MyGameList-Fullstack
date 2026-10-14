@@ -27,15 +27,15 @@ public class User implements UserDetails {
 
     @JsonIgnore
     @Column(nullable = false)
-    private String password; 
+    private String password;
 
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(length = 500) 
+    @Column(columnDefinition = "TEXT")
     private String bio;
-    
-    @Column(columnDefinition = "TEXT") 
+
+    @Column(columnDefinition = "TEXT")
     private String profilePicture;
 
     @Column(nullable = false)
@@ -50,6 +50,10 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(nullable=false, columnDefinition="varchar(32) default 'PEOPLE_I_FOLLOW'")
     private com.caiotcruz.mygamelist.model.enums.MessagePolicy messagePolicy = com.caiotcruz.mygamelist.model.enums.MessagePolicy.PEOPLE_I_FOLLOW;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable=false, columnDefinition="varchar(16) default 'TEAL'")
+    private com.caiotcruz.mygamelist.model.enums.ThemePreference theme = com.caiotcruz.mygamelist.model.enums.ThemePreference.TEAL;
 
     private boolean rotatingAvatar = false;
 
@@ -67,7 +71,7 @@ public class User implements UserDetails {
     public boolean isRotatingAvatar() { return rotatingAvatar; }
 
     private boolean enabled = false;
-    
+
     @JsonIgnore
     private String verificationCode;
     @JsonIgnore
@@ -84,7 +88,7 @@ public class User implements UserDetails {
     public boolean isAccountNonLocked() { return true; }
     @Override
     public boolean isCredentialsNonExpired() { return true; }
-    
+
     @Override
     public boolean isEnabled() {
         return this.enabled;

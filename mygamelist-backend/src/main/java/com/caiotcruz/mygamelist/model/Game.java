@@ -25,4 +25,9 @@ public class Game {
     private String releaseDate;
 
     private Integer metacritic;
+
+    // null = not loaded; empty = catalog supplied no genres.
+    @Column(columnDefinition="TEXT")
+    private String genreSlugs;
+    private java.time.LocalDateTime genreRetryAt;
 }

@@ -16,6 +16,8 @@ public interface UserGameListRepository extends JpaRepository<UserGameList, Long
     Optional<UserGameList> findByUserAndGame(User user, Game game);
     List<UserGameList> findByUser(User user);
     List<UserGameList> findByUserId(Long userId);
+    @Query("select u from UserGameList u join fetch u.game where u.user.id=:userId")
+    List<UserGameList> recommendationHistory(@Param("userId") Long userId);
     Optional<UserGameList> findByUserAndIsFavoriteTrue(User user);
 
 

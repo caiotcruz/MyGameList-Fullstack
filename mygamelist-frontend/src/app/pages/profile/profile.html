@@ -1,5 +1,5 @@
 <div class="profile-page-wrapper">
-  
+
   <p class="form-error" role="alert" *ngIf="profileError">{{profileError}} <a routerLink="/privacy">Gerenciar bloqueios</a></p>
   <section class="profile-hero" *ngIf="!profileError">
     <div class="hero-backdrop"
@@ -20,7 +20,7 @@
             <div class="avatar-placeholder">{{ userName[0] || '?' }}</div>
           </ng-template>
         </div>
-        
+
         <div class="lvl-tag">LEVEL {{ userLevel }}</div>
       </div>
 
@@ -29,7 +29,7 @@
           <div class="name-column">
             <h1 class="profile-name-display">{{ userName }}</h1>
           </div>
-          
+
           <div class="actions-column" *ngIf="isMyProfile">
             <a class="safety-link" routerLink="/privacy">Privacidade</a>
             <button class="btn-edit-profile-action" (click)="abrirEdicao()" title="Editar perfil">
@@ -73,7 +73,7 @@
   </section>
 
   <div class="profile-dashboard-grid" *ngIf="!profileError">
-    <div class="glass-card fav-highlight clickable-card" 
+    <div class="glass-card fav-highlight clickable-card"
          *ngIf="favoriteGame?.game"
          [routerLink]="['/game', favoriteGame.game.rawgId || favoriteGame.game.id]">
       <span class="label">
@@ -158,25 +158,25 @@
       <h2>Coleção Completa <span class="count">({{ stats.total }})</span></h2>
       <div class="accent-line"></div>
     </div>
-    <app-game-list 
-      [games]="userGames" 
-      [isOwner]="isMyProfile" 
+    <app-game-list
+      [games]="userGames"
+      [isOwner]="isMyProfile"
       (listUpdated)="onListUpdated()">
     </app-game-list>
   </section>
 
   <div class="modal-blur" *ngIf="isFollowModalOpen" (click)="fecharFollowModal()">
     <div class="modal-glass-card follow-modal" (click)="$event.stopPropagation()">
-      
+
       <div class="follow-tabs-header">
-        <button 
-          class="tab-btn" 
+        <button
+          class="tab-btn"
           [class.active]="activeFollowTab === 'followers'"
           (click)="activeFollowTab = 'followers'">
           Seguidores ({{ statsData.followersCount }})
         </button>
-        <button 
-          class="tab-btn" 
+        <button
+          class="tab-btn"
           [class.active]="activeFollowTab === 'following'"
           (click)="activeFollowTab = 'following'">
           Seguindo ({{ statsData.followingCount }})
@@ -184,7 +184,7 @@
       </div>
 
       <div class="follow-list-container">
-        
+
         <ng-container *ngIf="activeFollowTab === 'followers'">
           <div class="follow-user-card" *ngFor="let user of statsData.followers">
             <div class="user-info-side" (click)="navegarParaPerfil(user.id)">
@@ -195,9 +195,9 @@
               <span class="user-name-link">{{ user.name }}</span>
             </div>
 
-            <button 
+            <button
               *ngIf="user.id !== myId"
-              class="btn-follow-action" 
+              class="btn-follow-action"
               [class.is-following]="euSigo(user.id)"
               (click)="toggleFollowUser(user, $event)">
               {{ euSigo(user.id) ? 'Seguindo' : 'Seguir de volta' }}
@@ -220,9 +220,9 @@
               <span class="user-name-link">{{ user.name }}</span>
             </div>
 
-            <button 
+            <button
               *ngIf="user.id !== myId"
-              class="btn-follow-action" 
+              class="btn-follow-action"
               [class.is-following]="euSigo(user.id)"
               (click)="toggleFollowUser(user, $event)">
               {{ euSigo(user.id) ? 'Seguindo' : 'Seguir' }}
@@ -247,9 +247,9 @@
     <div class="modal-glass-card" (click)="$event.stopPropagation()">
       <div class="modal-header-secret">
         <h3 class="modal-title">Editar Perfil</h3>
-        <button 
+        <button
           type="button"
-          class="secret-spin-btn" 
+          class="secret-spin-btn"
           [class.active]="editData.rotatingAvatar"
           (click)="editData.rotatingAvatar = !editData.rotatingAvatar"
           title="???">
@@ -259,7 +259,7 @@
 
       <div class="field-box">
         <label>Nome</label>
-        <input [(ngModel)]="editData.name" placeholder="Seu nome" />
+        <input [(ngModel)]="editData.name" [attr.maxlength]="limits.NAME" placeholder="Seu nome" />
       </div>
       <div class="field-box">
         <label>Foto (URL)</label>
@@ -267,8 +267,17 @@
       </div>
       <div class="field-box">
         <label>Bio</label>
-        <textarea [(ngModel)]="editData.bio" rows="4" placeholder="Conte sua história..."></textarea>
+        <textarea [(ngModel)]="editData.bio" [attr.maxlength]="limits.BIO" rows="4" placeholder="Conte sua história..."></textarea>
+        <small class="text-counter">{{editData.bio.length}} / {{limits.BIO}} caracteres</small>
       </div>
+      <fieldset class="theme-picker">
+        <legend>Cor da sua interface</legend>
+        <p>Aplicada à sua área logada. Páginas públicas mantêm o verde-água padrão.</p>
+        <label *ngFor="let option of themes" [class.selected]="editData.theme === option.id">
+          <input type="radio" name="theme" [value]="option.id" [(ngModel)]="editData.theme">
+          <span class="theme-swatch" [style.background]="option.color"></span>{{option.label}}
+        </label>
+      </fieldset>
       <div class="modal-footer-btns">
         <button class="btn-cancel" (click)="isEditingProfile = false">Cancelar</button>
         <button class="btn-save-glow" (click)="salvarPerfil()">Salvar Alterações</button>

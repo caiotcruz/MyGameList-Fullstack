@@ -1,27 +1,30 @@
+import { TEXT_LIMITS } from '../../shared/text-limits';
 import { SafetyActions } from '../../components/safety-actions/safety-actions';
 import { Feedback, errorMessage } from '../../services/feedback';
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; 
-import { ActivityService } from '../../services/activity'; 
-import { CommunityService } from '../../services/community'; 
+import { FormsModule } from '@angular/forms';
+import { ActivityService } from '../../services/activity';
+import { CommunityService } from '../../services/community';
 import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-feed',
   standalone: true,
-  imports: [SafetyActions, CommonModule, DatePipe, FormsModule, RouterModule], 
+  imports: [SafetyActions, CommonModule, DatePipe, FormsModule, RouterModule],
   templateUrl: './feed.html',
   styleUrl: './feed.css'
 })
 export class Feed implements OnInit {
+  readonly limits = TEXT_LIMITS;
+
   feedback=inject(Feedback);
 
   activityService = inject(ActivityService);
   communityService = inject(CommunityService);
-  cdr = inject(ChangeDetectorRef); 
+  cdr = inject(ChangeDetectorRef);
 
-  activities: any[] = []; 
+  activities: any[] = [];
   myId: number = 0;
 
   nextCursor: number | null = null;
@@ -75,14 +78,15 @@ export class Feed implements OnInit {
     item.showComments = !item.showComments;
   }
 
-  enviarComentario(item: any, inputHtml: HTMLInputElement) {
+  enviarComentario(item: any, inputHtml: HTMLInputElement | HTMLTextAreaElement) {
     const texto = inputHtml.value;
     if (!texto.trim()) return;
+    if(texto.length>this.limits.COMMENT){this.feedback.show('Comentário acima do limite. Seu texto foi preservado.');return;}
 
     this.communityService.postComment(item.id, texto).subscribe({
       next: (novoComentario) => {
         item.comments = [...(item.comments || []), novoComentario];
-        inputHtml.value = ''; 
+        inputHtml.value = '';
         this.cdr.detectChanges();
       },
       error: () => this.feedback.show('Erro ao comentar')
@@ -114,7 +118,7 @@ export class Feed implements OnInit {
 
   getRatingValue(item: any): number | null {
     const score = item.ratingValue ?? item.score ?? item.ratingScore;
-    
+
     if (score !== undefined && score !== null && Number(score) > 0) {
       return Number(score);
     }

@@ -1,3 +1,5 @@
+import { TEXT_LIMITS } from '../../shared/text-limits';
+import { ThemeService, THEMES, ThemeId } from '../../services/theme';
 import { SafetyActions } from '../../components/safety-actions/safety-actions';
 import { Feedback, errorMessage } from '../../services/feedback';
 import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
@@ -8,29 +10,33 @@ import { forkJoin, Subject, takeUntil } from 'rxjs';
 
 import { CommunityService, Achievement } from '../../services/community';
 import { FollowService } from '../../services/follow';
-import { GameList } from '../../components/game-list/game-list'; 
-import { UserService } from '../../services/user'; 
+import { GameList } from '../../components/game-list/game-list';
+import { UserService } from '../../services/user';
 
 interface ChartBar {
   score: number;
-  count: number;    
-  heightPc: number; 
+  count: number;
+  heightPc: number;
 }
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [SafetyActions, CommonModule, GameList, FormsModule, RouterModule], 
+  imports: [SafetyActions, CommonModule, GameList, FormsModule, RouterModule],
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
 export class Profile implements OnInit, OnDestroy {
+  readonly limits = TEXT_LIMITS;
+  theme = inject(ThemeService);
+  readonly themes = THEMES;
+
   feedback=inject(Feedback);
 
   private route = inject(ActivatedRoute);
   private communityService = inject(CommunityService);
   private followService = inject(FollowService);
-  private userService = inject(UserService); 
+  private userService = inject(UserService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
 
@@ -38,16 +44,16 @@ export class Profile implements OnInit, OnDestroy {
   myId: number = 0;
   userGames: any[] = [];
   userName: string = 'Carregando...';
-  userBio: string = '';   
+  userBio: string = '';
   userAvatar: string = '';
   userLevel: number = 1;
   userExperience: number = 0;
   readonly xpPerLevel: number = 1000;
 
-  isRotatingAvatar: boolean = false; 
+  isRotatingAvatar: boolean = false;
   isMyProfile: boolean = false;
-  isEditingProfile = false; 
-  editData = { name: '', bio: '', profilePicture: '', rotatingAvatar: false };
+  isEditingProfile = false;
+  editData = { name: '', bio: '', profilePicture: '', rotatingAvatar: false, theme: 'TEAL' as ThemeId };
 
   statsData: {
     followersCount: number;
@@ -68,7 +74,7 @@ export class Profile implements OnInit, OnDestroy {
   profileError='';
   onBlocked(){this.router.navigate(['/privacy']);}
   chartData: ChartBar[] = [];
-  favoriteGame: any = null; 
+  favoriteGame: any = null;
 
   private destroy$ = new Subject<void>();
 
@@ -116,7 +122,7 @@ export class Profile implements OnInit, OnDestroy {
           this.userName = res.user.name;
           this.userBio = res.user.bio;
           this.userAvatar = res.user.profilePicture;
-          this.isRotatingAvatar = res.user.rotatingAvatar; 
+          this.isRotatingAvatar = res.user.rotatingAvatar;
           this.userLevel = res.user.level ?? 1;
           this.userExperience = res.user.experience ?? 0;
           this.userGames = res.games;
@@ -190,23 +196,28 @@ export class Profile implements OnInit, OnDestroy {
 
   abrirEdicao() {
     this.editData = {
-      name: this.userName || '', 
-      bio: this.userBio || '',   
+      name: this.userName || '',
+      bio: this.userBio || '',
       profilePicture: this.userAvatar || '',
-      rotatingAvatar: this.isRotatingAvatar || false
+      rotatingAvatar: this.isRotatingAvatar || false,
+      theme: this.theme.selected()
     };
     this.isEditingProfile = true;
   }
 
   salvarPerfil() {
+    if ((this.editData.bio?.length || 0) > this.limits.BIO || (this.editData.name?.length || 0) > this.limits.NAME) {
+      this.feedback.show('Confira os limites de nome e biografia. Seu texto foi preservado.'); return;
+    }
     this.userService.updateProfile(this.editData).subscribe({
       next: (userAtualizado: any) => {
         this.userName = userAtualizado.name;
         this.userBio = userAtualizado.bio;
         this.userAvatar = userAtualizado.profilePicture;
         this.isRotatingAvatar = userAtualizado.rotatingAvatar;
+        this.theme.setSaved(userAtualizado.theme);
         this.isEditingProfile = false;
-        this.cdr.detectChanges(); 
+        this.cdr.detectChanges();
       },
       error: (err) => this.feedback.error(err)
     });
@@ -227,14 +238,14 @@ export class Profile implements OnInit, OnDestroy {
     const completed = this.userGames.filter(g => g.status === 'COMPLETED' || g.status === 'PLATINUM').length;
     const platinum = this.userGames.filter(g => g.status === 'PLATINUM').length;
     const playing = this.userGames.filter(g => g.status === 'PLAYING').length;
-    
+
     const ratedGames = this.userGames.filter(g => g.score > 0);
     const totalScore = ratedGames.reduce((sum, g) => sum + g.score, 0);
     const avgScore = ratedGames.length ? (totalScore / ratedGames.length) : 0;
 
     this.stats = { total, completed, playing, platinum, avgScore };
 
-    const counts = new Array(11).fill(0); 
+    const counts = new Array(11).fill(0);
     let maxCount = 0;
     ratedGames.forEach(g => {
       counts[g.score]++;
@@ -251,7 +262,7 @@ export class Profile implements OnInit, OnDestroy {
     });
 
     const manualFavorite = this.userGames.find(g => g.favorite === true);
-    this.favoriteGame = manualFavorite || 
+    this.favoriteGame = manualFavorite ||
                        (ratedGames.length > 0 ? [...ratedGames].sort((a, b) => b.score - a.score)[0] : this.userGames[0]);
 
 

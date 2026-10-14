@@ -35,8 +35,12 @@ public class CachedRawgClient implements RawgClient {
   if(result!=null) try { redis.opsForValue().set(key,json.writeValueAsString(result),Duration.ofSeconds(seconds)); } catch(Exception e) { metrics.counter("mgl.rawg.cache","result","error").increment(); }
   return result;
  }
+ public RawgRecommendationPage recommendationCandidates(String apiKey,String genre,int size,int page,String ordering) {
+  return cached("recommendationCandidates",new Object[]{genre,size,page,ordering},RawgRecommendationPage.class,3600,
+   ()->delegate.recommendationCandidates(apiKey,genre,size,page,ordering));
+ }
  public RawgSearchResponse searchGames(String apiKey, String query, int pageSize, int page) { return cached("searchGames",new Object[]{query, pageSize, page},RawgSearchResponse.class,300,()->delegate.searchGames(apiKey,query, pageSize, page)); }
- public GameDetailsDTO getGameDetails(String apiKey, Long id) { return cached("getGameDetails",new Object[]{id},GameDetailsDTO.class,3600,()->delegate.getGameDetails(apiKey,id)); }
+ public GameDetailsDTO getGameDetails(String apiKey, Long id) { return cached("getGameDetailsWithGenres",new Object[]{id},GameDetailsDTO.class,3600,()->delegate.getGameDetails(apiKey,id)); }
  public RawgGameListResponse getAdditions(String apiKey, Long id) { return cached("getAdditions",new Object[]{id},RawgGameListResponse.class,3600,()->delegate.getAdditions(apiKey,id)); }
  public RawgGameListResponse getGameSeries(String apiKey, Long id) { return cached("getGameSeries",new Object[]{id},RawgGameListResponse.class,3600,()->delegate.getGameSeries(apiKey,id)); }
  public RawgScreenshotsResponse getScreenshots(String apiKey, Long id) { return cached("getScreenshots",new Object[]{id},RawgScreenshotsResponse.class,3600,()->delegate.getScreenshots(apiKey,id)); }

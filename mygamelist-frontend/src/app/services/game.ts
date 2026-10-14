@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { environment } from '../../environments/environment'; 
+import { environment } from '../../environments/environment';
 
 export interface GameReview {
   reviewId: number;
@@ -28,6 +28,7 @@ export interface GameHubData {
   playingCount: number;
   completedCount: number;
   platinumCount: number;
+  droppedCount: number;
   communityScore: number;
   userStatus: string | null;
   userScore: number;
@@ -36,6 +37,16 @@ export interface GameHubData {
   myReviewSpoiler: boolean;
   latestReviews: GameReview[];
   scoreDistribution?: { [key: string]: number };
+}
+
+export interface Recommendation {
+  rawgId: number; title: string; coverUrl: string | null; matchedGenres: string[]; affinity: number;
+}
+export interface RecommendationResponse {
+  state: 'READY' | 'PREPARING' | 'EMPTY_HISTORY' | 'NO_GENRES' | 'EXHAUSTED';
+  pendingGenres: number;
+  genres: {genre:string;played:number;rated:number;mean:number;weight:number}[];
+  games: Recommendation[];
 }
 
 export interface TrendingGame {
@@ -96,7 +107,7 @@ export class GameService {
     };
   }
 
-  searchGames(query: string, page: number = 1) { 
+  searchGames(query: string, page: number = 1) {
     return this.http.get<any[]>(`${this.apiUrl}/games/search?query=${encodeURIComponent(query)}&page=${page}`);
   }
 
@@ -118,6 +129,10 @@ export class GameService {
 
   voteReview(reviewId: number, type: 'LIKE' | 'DISLIKE') {
     return this.http.post(`${this.apiUrl}/reviews/${reviewId}/vote`, { type }, this.getHeaders());
+  }
+
+  getRecommendations() {
+    return this.http.get<RecommendationResponse>(`${this.apiUrl}/games/recommendations`, this.getHeaders());
   }
 
   getTrendingGames(limit: number = 10) {

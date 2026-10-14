@@ -1,9 +1,25 @@
 <div class="list-wrapper-pro">
+  <section class="library-toolbar" aria-label="Buscar e organizar coleção" *ngIf="games.length">
+    <label class="library-search">Pesquisar nesta coleção
+      <input type="search" [(ngModel)]="query" (ngModelChange)="updateView()" placeholder="Digite parte do nome do jogo" maxlength="200">
+    </label>
+    <label>Status<select [(ngModel)]="statusFilter" (ngModelChange)="updateView()">
+      <option value="">Todos</option><option value="PLAYING">Jogando</option><option value="PLAN_TO_PLAY">Planejo jogar</option><option value="COMPLETED">Zerado</option><option value="PLATINUM">Platinado</option><option value="DROPPED">Desisti</option>
+    </select></label>
+    <label>Ordenação<select [ngModel]="sortColumn || 'default'" (ngModelChange)="changeSort($event)">
+      <option value="default">Favorito e atualizações recentes</option><option value="title">Nome</option><option value="score">Nota</option><option value="status">Status</option><option value="updatedAt">Última atualização</option>
+      <option *ngIf="hasExternalPlaytime" value="playtime">Tempo de jogo</option>
+    </select></label>
+    <button type="button" *ngIf="sortColumn" (click)="sortDirection=sortDirection==='asc'?'desc':'asc';updateView()" aria-label="Inverter ordem">{{sortDirection==='asc'?'Crescente ↑':'Decrescente ↓'}}</button>
+    <label class="library-check"><input type="checkbox" [(ngModel)]="favoritesOnly" (ngModelChange)="updateView()">Só favorito</label>
+    <button type="button" *ngIf="query || statusFilter || favoritesOnly" (click)="clearFilters()">Limpar filtros</button>
+    <span class="library-count" aria-live="polite">{{filteredGames.length}} de {{games.length}} jogos</span>
+  </section>
   <div class="list-header-pro" *ngIf="games.length > 0">
     <div class="header-col sortable" (click)="ordenar('title')">
       Nome do Jogo <span class="sort-icon">{{ getSortIcon('title') }}</span>
     </div>
-    
+
     <div class="header-info-group">
       <button class="btn-reset-sort" *ngIf="sortColumn" (click)="limparOrdenacao()">
         <span class="fa-solid fa-xmark"></span> Ordem Padrão
@@ -19,27 +35,9 @@
     </div>
   </div>
 
-  <div class="mobile-sort-bar" *ngIf="games.length > 0">
-    <span class="sort-label">Ordenar por:</span>
-    <div class="sort-options">
-      <button (click)="ordenar('title')" [class.active]="sortColumn === 'title'">
-        Nome <span class="sort-icon">{{ getSortIcon('title') }}</span>
-      </button>
-      <button (click)="ordenar('status')" [class.active]="sortColumn === 'status'">
-        Status <span class="sort-icon">{{ getSortIcon('status') }}</span>
-      </button>
-      <button (click)="ordenar('score')" [class.active]="sortColumn === 'score'">
-        Nota <span class="sort-icon">{{ getSortIcon('score') }}</span>
-      </button>
-      <button class="btn-reset-mobile" *ngIf="sortColumn" (click)="limparOrdenacao()">
-        <span class="fa-solid fa-xmark"></span>
-      </button>
-    </div>
-  </div>
-
   <div class="game-stack" *ngIf="games.length > 0">
-    <div *ngFor="let item of games; trackBy: trackByGameId" 
-         class="game-stack-card" 
+    <div *ngFor="let item of visibleGames; trackBy: trackByGameId"
+         class="game-stack-card"
          [class.is-favorite]="item.favorite"
          (click)="navegarParaJogo(item)">
       <div class="card-left">
@@ -53,7 +51,7 @@
           <h4>{{ item.game.title }}</h4>
           <div class="game-meta-pills">
             <span class="status-pill" [style.border-color]="getStatusColor(item.status)">{{ item.status }}</span>
-            <span class="score-pill" *ngIf="item.score > 0">
+            <span class="score-pill" *ngIf="(item.score || 0) > 0">
               <span class="fa-solid fa-star text-warning"></span> {{ item.score }}
             </span>
             <button class="review-pill-btn" *ngIf="item.review" (click)="lerReview(item, $event)">
@@ -64,23 +62,23 @@
       </div>
 
       <div class="card-right" *ngIf="isOwner">
-        <button class="action-trigger favorite-btn" 
-                (click)="toggleFavorite(item, $event)" 
-                [class.active]="item.favorite" 
+        <button class="action-trigger favorite-btn"
+                (click)="toggleFavorite(item, $event)"
+                [class.active]="item.favorite"
                 type="button"
                 title="Favoritar">
           <span class="fa-solid fa-star"></span>
         </button>
-        
-        <button class="action-trigger" 
-                (click)="abrirEdicao(item, $event)" 
+
+        <button class="action-trigger"
+                (click)="abrirEdicao(item, $event)"
                 type="button"
                 title="Editar entrada">
           <span class="fa-solid fa-pen"></span>
         </button>
-        
-        <button class="action-trigger del" 
-                (click)="removerJogo(item, $event)" 
+
+        <button class="action-trigger del"
+                (click)="removerJogo(item, $event)"
                 type="button"
                 title="Remover da lista">
           <span class="fa-solid fa-trash"></span>
@@ -88,6 +86,13 @@
       </div>
     </div>
   </div>
+
+  <p class="empty-list-vibe" *ngIf="games.length && !filteredGames.length">Nenhum jogo corresponde aos filtros. Tente outro trecho do nome.</p>
+  <nav class="library-pagination" aria-label="Páginas da coleção" *ngIf="pages > 1">
+    <button type="button" [disabled]="page===1" (click)="page=page-1">Anterior</button>
+    <span aria-live="polite">Página {{page}} de {{pages}}</span>
+    <button type="button" [disabled]="page===pages" (click)="page=page+1">Próxima</button>
+  </nav>
 
   <div *ngIf="games.length === 0" class="empty-list-vibe">
     <div class="empty-icon">
@@ -98,7 +103,7 @@
 
   <div class="modal-blur" *ngIf="reviewSelecionada" (click)="fecharReview()">
     <div class="modal-glass-card review-modal" (click)="$event.stopPropagation()">
-      
+
       <div class="review-header-pop">
         <h3>{{ reviewSelecionada.title }}</h3>
         <span class="score-pop" *ngIf="reviewSelecionada.score > 0">
@@ -107,7 +112,7 @@
       </div>
 
       <div class="review-body-pop">
-        
+
         <div class="spoiler-warning-glass" *ngIf="reviewSelecionada.isSpoiler && !reviewSelecionada.showSpoilerText" (click)="toggleSpoilerReviewModal()">
           <span class="fa-solid fa-eye-slash spoiler-icon"></span>
           <span class="spoiler-text">Contém spoilers • <strong>Clique para ver</strong></span>
@@ -115,7 +120,7 @@
 
         <div class="review-text-container" *ngIf="!reviewSelecionada.isSpoiler || reviewSelecionada.showSpoilerText">
           <p class="review-quote-text">"{{ reviewSelecionada.text }}"</p>
-          
+
           <button type="button" class="btn-hide-spoiler-glass" *ngIf="reviewSelecionada.isSpoiler" (click)="toggleSpoilerReviewModal()">
             <span class="fa-solid fa-eye"></span>
             <span>Ocultar spoiler</span>
@@ -131,7 +136,7 @@
   <div class="modal-blur" *ngIf="isModalOpen" (click)="fecharModal()">
     <div class="modal-glass-card" (click)="$event.stopPropagation()">
       <h3 class="modal-title">Editar {{ editingGame.title }}</h3>
-      
+
       <div class="flex-fields-row">
         <div class="field-box small-field">
           <label>Status</label>
@@ -150,8 +155,9 @@
       </div>
 
       <div class="field-box" *ngIf="editingGame.status !== 'PLAN_TO_PLAY'">
-        <label>Review Curto</label>
-        <textarea [(ngModel)]="editingGame.review" (ngModelChange)="preserveDraft()" maxlength="5000" rows="4"></textarea>
+        <label>Review</label>
+        <textarea [(ngModel)]="editingGame.review" (ngModelChange)="preserveDraft()" [attr.maxlength]="limits.REVIEW" rows="8"></textarea>
+        <small class="text-counter">{{ editingGame.review?.length || 0 }} / {{ limits.REVIEW }} caracteres</small>
       </div>
 
       <div class="field-box-checkbox" *ngIf="editingGame.status !== 'PLAN_TO_PLAY' && editingGame.review?.trim()">
@@ -181,7 +187,7 @@
       </div>
       <h3 class="modal-title">Remover Jogo?</h3>
       <p class="confirm-text">
-        Você tem certeza que deseja remover <strong>{{ gameParaRemover.game.title }}</strong> da sua coleção? 
+        Você tem certeza que deseja remover <strong>{{ gameParaRemover.game.title }}</strong> da sua coleção?
         Esta ação não pode ser desfeita.
       </p>
       <div class="modal-footer-btns">

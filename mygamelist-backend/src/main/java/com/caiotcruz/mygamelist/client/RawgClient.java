@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(primary = false, name = "rawgClient", url = "${api.rawg.url}")
 public interface RawgClient {
+    @GetMapping("/games")
+    com.caiotcruz.mygamelist.dto.rawg.RawgRecommendationPage recommendationCandidates(
+        @RequestParam("key") String apiKey, @RequestParam("genres") String genre,
+        @RequestParam("page_size") int pageSize, @RequestParam("page") int page,
+        @RequestParam("ordering") String ordering);
+
 
     @GetMapping("/games")
     RawgSearchResponse searchGames(

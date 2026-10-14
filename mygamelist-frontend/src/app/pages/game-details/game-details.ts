@@ -1,3 +1,4 @@
+import { TEXT_LIMITS, reviewLimitError } from '../../shared/text-limits';
 import { ReviewDrafts } from '../../services/review-drafts';
 import { SafetyActions } from '../../components/safety-actions/safety-actions';
 import { Feedback, errorMessage } from '../../services/feedback';
@@ -26,6 +27,7 @@ interface ChartBar {
 })
 export class GameDetails implements OnInit {
   drafts=inject(ReviewDrafts);
+  readonly limits = TEXT_LIMITS;
   saveError='';
   draftRestored=false;
   preserveDraft(){this.drafts.save(this.editingGame);}
@@ -244,7 +246,7 @@ export class GameDetails implements OnInit {
   verificarStatus() {
     if (this.editingGame.status === 'PLAN_TO_PLAY') {
       this.editingGame.score = 0;
-      this.editingGame.review = '';
+      // Keep the review draft when changing status.
       this.editingGame.isSpoiler = false;
     }
   }
@@ -257,7 +259,8 @@ export class GameDetails implements OnInit {
     if (this.isSaving) return;
     this.validarScore();
     if(this.isSaving)return;
-    this.saveError="";this.preserveDraft();
+    this.saveError=reviewLimitError(this.editingGame.review);this.preserveDraft();
+    if(this.saveError)return;
     this.isSaving = true;
 
     this.gameService.addGameToList(this.editingGame).subscribe({

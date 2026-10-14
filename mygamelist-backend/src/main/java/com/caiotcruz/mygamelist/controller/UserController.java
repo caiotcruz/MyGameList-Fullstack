@@ -30,7 +30,7 @@ public class UserController {
     public ResponseEntity<PublicUserDTO> getUserById(@PathVariable Long id) {
         safety.requireProfile(id);
         Optional<User> user = userRepository.findById(id);
-        
+
         return user.map(PublicUserDTO::from).map(ResponseEntity::ok)
                    .orElse(ResponseEntity.notFound().build());
     }
@@ -39,7 +39,7 @@ public class UserController {
     @PutMapping("/me")
     public ResponseEntity<PublicUserDTO> updateMyProfile(@Valid @RequestBody UserProfileDTO dto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        
+
         User user = (User) userRepository.findByEmail(email);
         locks.lock(user.getId());
 
@@ -47,6 +47,8 @@ public class UserController {
         if (dto.name() != null && !dto.name().isBlank()) {
             user.setName(dto.name());
         }
+
+        if (dto.theme() != null) user.setTheme(dto.theme());
 
         if (dto.bio() != null) {
             user.setBio(dto.bio());

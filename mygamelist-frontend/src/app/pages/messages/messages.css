@@ -54,7 +54,7 @@
 }
 
 .conversation-item.active {
-  background: rgba(46, 184, 164, 0.1);
+  background: rgba(var(--mgl-accent-rgb), 0.1);
   border-left-color: var(--mgl-accent-strong);
 }
 
@@ -202,7 +202,7 @@
 }
 
 .contact-card:hover {
-  background: rgba(46, 184, 164, 0.08);
+  background: rgba(var(--mgl-accent-rgb), 0.08);
 }
 
 .contact-card .avatar-mini {
@@ -321,8 +321,8 @@
 }
 
 .message-bubble.mine {
-  background: rgba(46, 184, 164, 0.25);
-  border-color: rgba(46, 184, 164, 0.4);
+  background: rgba(var(--mgl-accent-rgb), 0.25);
+  border-color: rgba(var(--mgl-accent-rgb), 0.4);
   border-radius: 18px 18px 4px 18px;
   align-self: flex-end;
 }
@@ -348,7 +348,7 @@
 .spinner-neon-small {
   width: 28px;
   height: 28px;
-  border: 3px solid rgba(46, 184, 164, 0.15);
+  border: 3px solid rgba(var(--mgl-accent-rgb), 0.15);
   border-left-color: var(--mgl-accent-strong);
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -365,7 +365,7 @@
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-.thread-input-row input {
+.thread-input-row textarea {
   flex: 1;
   background: #050505;
   border: 1px solid #222;
@@ -376,7 +376,7 @@
   outline: none;
 }
 
-.thread-input-row input:focus {
+.thread-input-row textarea:focus {
   border-color: var(--mgl-accent-strong);
 }
 
@@ -433,3 +433,4 @@
     min-height: 500px;
   }
 }
+.thread-input-row textarea{min-width:0;resize:vertical;max-height:220px;min-height:64px;line-height:1.5;box-sizing:border-box;}.message-bubble p{white-space:pre-wrap;overflow-wrap:anywhere;}.message-counter{padding:0 20px 10px;margin:0;}.thread-input-row button{flex-shrink:0;}

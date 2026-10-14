@@ -5,13 +5,13 @@
   <h2 class="brand-logo" (click)="router.navigate(['/'])">MyGameList</h2>
   <h2>Junte-se a nós</h2>
   <span class="subtitle">Crie sua conta no MyGameList</span>
-  
+
   <div class="form-group">
     <label for="name">Nome de usuário</label>
-    <input 
+    <input
       id="name"
-      type="text" 
-      [(ngModel)]="name" 
+      type="text"
+      [(ngModel)]="name" [attr.maxlength]="limits.NAME"
       (input)="errorMessage = ''"
       placeholder="Seu nome de usuário"
       [disabled]="isLoading">
@@ -19,10 +19,10 @@
 
   <div class="form-group">
     <label for="reg-email">Email</label>
-    <input 
+    <input
       id="reg-email"
-      type="email" 
-      [(ngModel)]="email" 
+      type="email"
+      [(ngModel)]="email"
       (input)="errorMessage = ''"
       placeholder="seu@email.com"
       [disabled]="isLoading">
@@ -30,10 +30,10 @@
 
   <div class="form-group">
     <label for="reg-pass">Senha</label>
-    <input 
+    <input
       id="reg-pass"
-      type="password" 
-      [(ngModel)]="password" 
+      type="password"
+      [(ngModel)]="password"
       (input)="errorMessage = ''"
       placeholder="Mínimo 6 caracteres"
       (keyup.enter)="onRegister()"
@@ -45,7 +45,7 @@
   </div>
 
   <button class="btn-submit"
-    (click)="onRegister()" 
+    (click)="onRegister()"
     [disabled]="isLoading"
     [class.btn-loading]="isLoading">
 
