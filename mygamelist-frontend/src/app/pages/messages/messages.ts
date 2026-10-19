@@ -37,6 +37,8 @@ export class Messages implements OnInit, OnDestroy {
   thread: Message[] = [];
   isLoadingThread = false;
 
+  nextBefore: number | null = null;
+  loadingOlder = false;
   draft = '';
   isSending = false;
 
@@ -104,7 +106,7 @@ export class Messages implements OnInit, OnDestroy {
   abrirConversa(userId: number, name: string | null, avatar: string | null) {
     if(this.activeUserId)this.drafts.set(this.activeUserId,this.draft);
     this.draft=this.drafts.get(userId)||"";
-    this.thread=[];this.threadError="";this.canSend=false;
+    this.thread=[];this.threadError="";this.canSend=false;this.nextBefore=null;this.loadingOlder=false;
     this.activeUserId = userId;
     this.activeUserName = name || this.findNameFallback(userId) || 'Carregando...';
     this.activeUserAvatar = avatar ?? this.findAvatarFallback(userId);
@@ -124,6 +126,7 @@ export class Messages implements OnInit, OnDestroy {
         }
 
         this.thread = res.messages;
+        this.nextBefore=res.nextBefore ?? null;
         this.isLoadingThread = false;
         this.scrollToBottom();
         this.carregarLista(true);
@@ -143,16 +146,27 @@ export class Messages implements OnInit, OnDestroy {
       next: (res) => {
         if(userId!==this.activeUserId)return;
         this.canSend=res.canSend;
-        if (res.messages.length !== this.thread.length) {
-          const foiNoFinal = this.isScrolledToBottom();
-          this.thread = res.messages;
-          if (foiNoFinal) {
-            this.scrollToBottom();
-          }
-          this.cdr.detectChanges();
-        }
+        const foiNoFinal=this.isScrolledToBottom();
+        const existing=new Map(this.thread.map(m=>[m.id,m]));
+        for(const message of res.messages)existing.set(message.id,message);
+        this.thread=[...existing.values()].sort((a,b)=>a.id-b.id);
+        if(foiNoFinal)this.scrollToBottom();
+        this.cdr.detectChanges();
       },
       error:err=>{if(userId!==this.activeUserId)return;this.canSend=false;if(err.status===403){this.thread=[];this.threadError=errorMessage(err);}this.cdr.detectChanges();}
+    });
+  }
+
+  carregarAnteriores(){
+    if(!this.activeUserId || !this.nextBefore || this.loadingOlder)return;
+    const recipient=this.activeUserId;this.loadingOlder=true;
+    this.messageService.getThread(recipient,this.nextBefore).pipe(takeUntil(this.destroy$)).subscribe({
+      next:res=>{
+        if(recipient!==this.activeUserId)return;
+        const combined=new Map([...res.messages,...this.thread].map(m=>[m.id,m]));
+        this.thread=[...combined.values()].sort((a,b)=>a.id-b.id);
+        this.nextBefore=res.nextBefore??null;this.loadingOlder=false;this.cdr.detectChanges();
+      },error:err=>{if(recipient!==this.activeUserId)return;this.loadingOlder=false;this.feedback.error(err);this.cdr.detectChanges();}
     });
   }
 

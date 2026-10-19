@@ -75,6 +75,7 @@
       <p class="form-error" role="alert" *ngIf="threadError">{{threadError}}</p>
       <p class="draft-note" *ngIf="!canSend && !isLoadingThread && !threadError">Esta pessoa não está recebendo mensagens suas no momento.</p>
       <div class="thread-scroll" #threadScroll>
+        <button type="button" class="safety-link" *ngIf="nextBefore" [disabled]="loadingOlder" (click)="carregarAnteriores()">{{loadingOlder ? "Carregando…" : "Mensagens anteriores"}}</button>
         <div class="loading-thread" *ngIf="isLoadingThread">
           <div class="spinner-neon-small"></div>
         </div>

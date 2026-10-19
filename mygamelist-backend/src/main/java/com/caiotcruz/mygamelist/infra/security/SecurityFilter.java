@@ -23,10 +23,12 @@ public class SecurityFilter extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(SecurityFilter.class);
 
     private final TokenService tokenService;
+    private final SecurityEvents events;
     private final AuthorizationService authorizationService;
 
     public SecurityFilter(TokenService tokenService, 
-                          AuthorizationService authorizationService) {
+                          AuthorizationService authorizationService, SecurityEvents events) {
+        this.events=events;
         this.tokenService = tokenService;
         this.authorizationService = authorizationService;
     }
@@ -58,10 +60,13 @@ public class SecurityFilter extends OncePerRequestFilter {
                                 new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                         
                         SecurityContextHolder.getContext().setAuthentication(authentication);
-                    }
-                }
+                    } else { events.record("token_rejected"); }
+                } else { events.record("token_invalid"); }
             } catch (Exception e) {
-                logger.error("Erro ao validar token no SecurityFilter: ", e);
+                if(!(e instanceof org.springframework.security.core.userdetails.UsernameNotFoundException)) {
+                    SecurityResponses.reject(response,new SecurityRejection(503,"AUTH_UNAVAILABLE","Autenticação temporariamente indisponível.",30));
+                    return;
+                }
                 SecurityContextHolder.clearContext();
             }
         }

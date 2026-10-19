@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-    List<Message> findByConversationOrderBySentAtAsc(Conversation conversation);
+    List<Message> findTop51ByConversationAndIdLessThanOrderByIdDesc(Conversation conversation,Long before);
 
     @Modifying
     @Transactional

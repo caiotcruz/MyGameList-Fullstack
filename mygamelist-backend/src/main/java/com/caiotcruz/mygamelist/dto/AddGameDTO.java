@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public record AddGameDTO(
-    @NotNull Long rawgId,
+    @NotNull @jakarta.validation.constraints.Positive Long rawgId,
     GameStatus status,
     @Min(0) @Max(10) Integer score,
     @jakarta.validation.constraints.Size(max = TextLimits.REVIEW) String review,

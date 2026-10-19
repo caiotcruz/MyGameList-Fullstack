@@ -1,11 +1,6 @@
 package com.caiotcruz.mygamelist.dto;
-
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-
-public record ResetPasswordDTO(
-    @NotBlank @Email String email,
-    @NotBlank String codigo,
-    @NotBlank @Size(min = 6) String newPassword
-) {}
+import jakarta.validation.constraints.*;
+import com.caiotcruz.mygamelist.infra.security.*;
+public record ResetPasswordDTO(@NotBlank @Email @Size(max=254) String email, @NotBlank @Pattern(regexp="[0-9a-fA-F-]{36}") String codigo, @PasswordInput String newPassword) {
+    public ResetPasswordDTO {email=RequestLimits.email(email);}
+}

@@ -21,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @EnabledIfEnvironmentVariable(named="RUN_CRITICAL_TESTS",matches="true")
 @SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT,properties={
  "spring.datasource.url=jdbc:postgresql://localhost:5433/mygamelist_critical_tests",
+ "spring.datasource.username=postgres", "spring.datasource.password=${DATABASE_PASSWORD}",
+ "app.security.require-runtime-role=false", "app.community.migrate=true",
  "spring.jpa.hibernate.ddl-auto=create-drop", "app.mail.worker-enabled=false",
  "spring.rabbitmq.listener.simple.auto-startup=false", "spring.rabbitmq.dynamic=false",
  "management.server.port=0", "api.security.token.secret=local-integration-test-key-with-more-than-32-bytes",
@@ -30,6 +32,8 @@ import static org.junit.jupiter.api.Assertions.*;
  "app.moderator-ids="
 })
 class CriticalFlowsTest {
+ @org.springframework.test.context.bean.override.mockito.MockitoBean
+ com.caiotcruz.mygamelist.infra.security.RateLimits isolatedRateLimits;
  @Autowired UserRepository users; @Autowired GameRepository games;
  @Autowired UserGameListRepository lists; @Autowired NotificationRepository notifications;
  @Autowired JdbcTemplate db; @Autowired TokenService tokens; @Autowired JsonMapper json; @Autowired Environment env;

@@ -72,7 +72,9 @@ public class GameService {
     }
 
     public List<GameResultDTO> searchGames(String query, Integer page) {
-        int pageNumber = (page != null && page > 0) ? page : 1;
+        com.caiotcruz.mygamelist.infra.security.RequestLimits.boundedQuery(query,200);
+        int pageNumber=page==null?1:page;
+        if(pageNumber<1 || pageNumber>100)throw new IllegalArgumentException("Invalid page");
         return rawgClient.searchGames(apiKey, query, 16, pageNumber).results();
     }
 
@@ -284,7 +286,7 @@ public class GameService {
     }
 
     private List<GameReviewDTO> loadReviews(Long internalId, Long currentUserId) {
-        List<UserGameList> reviewEntities = userGameListRepository.findReviewsByGameId(internalId);
+        List<UserGameList> reviewEntities = userGameListRepository.findReviewsByGameId(internalId,PageRequest.of(0,100));
 
         var hidden=safety.hiddenIds(currentUserId);
         return reviewEntities.stream().filter(r -> !hidden.contains(r.getUser().getId())).map(r -> {

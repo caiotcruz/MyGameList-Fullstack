@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+    <suppress until="2027-01-14Z">
+        <notes><![CDATA[
+Revisado em 2026-10-14.
+CVE-2022-31691 afeta ferramentas de IDE Spring Tools,
+nao o artefato Maven Spring Boot DevTools.
+Fonte: https://spring.io/security/cve-2022-31691/
+Excecao restrita a este CVE e a esta versao exata do artefato.
+Reavaliar ao atualizar a dependencia ou antes do vencimento.
+        ]]></notes>
+        <gav>org.springframework.boot:spring-boot-devtools:4.0.8</gav>
+        <cve>CVE-2022-31691</cve>
+    </suppress>
+</suppressions>

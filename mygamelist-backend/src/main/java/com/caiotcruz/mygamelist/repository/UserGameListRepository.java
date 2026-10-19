@@ -40,5 +40,5 @@ public interface UserGameListRepository extends JpaRepository<UserGameList, Long
     long countPlayersByRawgId(@Param("rawgId") Long rawgId);
 
     @Query("SELECT ugl FROM UserGameList ugl WHERE ugl.game.id = :gameId AND ugl.review IS NOT NULL AND LENGTH(ugl.review) > 0 ORDER BY ugl.updatedAt DESC")
-    List<UserGameList> findReviewsByGameId(@Param("gameId") Long gameId);
+    List<UserGameList> findReviewsByGameId(@Param("gameId") Long gameId, org.springframework.data.domain.Pageable page);
 }

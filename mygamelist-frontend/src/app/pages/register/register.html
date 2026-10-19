@@ -32,10 +32,10 @@
     <label for="reg-pass">Senha</label>
     <input
       id="reg-pass"
-      type="password"
+      type="password" autocomplete="new-password" maxlength="72"
       [(ngModel)]="password"
       (input)="errorMessage = ''"
-      placeholder="Mínimo 6 caracteres"
+      placeholder="Mínimo 12 caracteres"
       (keyup.enter)="onRegister()"
       [disabled]="isLoading">
   </div>

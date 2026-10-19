@@ -26,17 +26,21 @@ public class SecurityConfigurations {
     private String allowedOrigins;
     private final SecurityFilter securityFilter;
     private final AuthRateLimitFilter authRateLimitFilter;
+    private final AccountRateLimitFilter accountRateLimitFilter;
 
-    public SecurityConfigurations(SecurityFilter securityFilter, AuthRateLimitFilter authRateLimitFilter) {
+    public SecurityConfigurations(SecurityFilter securityFilter, AuthRateLimitFilter authRateLimitFilter, AccountRateLimitFilter accountRateLimitFilter) {
         this.securityFilter = securityFilter;
         this.authRateLimitFilter = authRateLimitFilter;
+        this.accountRateLimitFilter=accountRateLimitFilter;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // Authorization bearer tokens are not sent automatically by browsers; no cookie auth.
                 .csrf(csrf -> csrf.disable())
+                .headers(headers -> headers.contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'none'; frame-ancestors 'none'; base-uri 'none'")))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(errors -> errors
                     .authenticationEntryPoint((req, res, ex) -> {
@@ -55,21 +59,32 @@ public class SecurityConfigurations {
                             "/auth/forgot-password", "/auth/reset-password", "/auth/resend-verification").permitAll()
                     .anyRequest().authenticated())
                 .addFilterBefore(authRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(securityFilter, AuthRateLimitFilter.class)
+                .addFilterAfter(accountRateLimitFilter, SecurityFilter.class)
                 .build();
+    }
+
+    @Bean public org.springframework.boot.web.servlet.FilterRegistrationBean<SecurityFilter> tokenRegistration(SecurityFilter filter){return disabled(filter);}
+    @Bean public org.springframework.boot.web.servlet.FilterRegistrationBean<AuthRateLimitFilter> authLimitRegistration(AuthRateLimitFilter filter){return disabled(filter);}
+    @Bean public org.springframework.boot.web.servlet.FilterRegistrationBean<AccountRateLimitFilter> accountLimitRegistration(AccountRateLimitFilter filter){return disabled(filter);}
+    private <T extends jakarta.servlet.Filter> org.springframework.boot.web.servlet.FilterRegistrationBean<T> disabled(T filter){
+        var registration=new org.springframework.boot.web.servlet.FilterRegistrationBean<T>(filter);registration.setEnabled(false);return registration;
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        configuration.setAllowedOrigins(Arrays.stream(allowedOrigins.split(",")).map(String::trim).toList());
+        var origins=Arrays.stream(allowedOrigins.split(",")).map(String::trim).toList();
+        if(origins.stream().anyMatch(o->o.isBlank()||o.contains("*")))throw new IllegalStateException("Configure explicit CORS origins");
+        configuration.setAllowedOrigins(origins);
         
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
         
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false);
+        configuration.setExposedHeaders(java.util.List.of("Retry-After","X-Request-ID"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

@@ -1,8 +1,15 @@
 services:
   postgres:
     image: postgres:15
+    mem_limit: 1g
+    cpus: 2.0
     container_name: mygamelist-postgres
     restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 256
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
     ports: ["127.0.0.1:5433:5432"]
     environment:
       POSTGRES_DB: mygamelist
@@ -16,7 +23,14 @@ services:
       retries: 20
   redis:
     image: redis:7.4-alpine
+    mem_limit: 256m
+    cpus: 1.0
     restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 256
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
     ports: ["127.0.0.1:6379:6379"]
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD:?Configure REDIS_PASSWORD}
@@ -28,7 +42,14 @@ services:
       retries: 20
   rabbitmq:
     image: rabbitmq:4.1-management
+    mem_limit: 768m
+    cpus: 1.0
     restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 256
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
     ports: ["127.0.0.1:5672:5672", "127.0.0.1:15672:15672"]
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-mygamelist}

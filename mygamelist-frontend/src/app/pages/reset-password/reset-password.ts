@@ -1,3 +1,4 @@
+import { passwordError } from '../../shared/password-policy';
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -37,8 +38,10 @@ export class ResetPassword implements OnInit {
   }
 
   onReset() {
-    if (!this.codigo || this.newPassword.length < 6) {
-      this.errorMessage = 'Dados inválidos ou senha muito curta.';
+    if(this.isLoading)return;
+    const invalidPassword=passwordError(this.newPassword);
+    if (!this.codigo || invalidPassword) {
+      this.errorMessage = invalidPassword || 'Link inválido.';
       return;
     }
     

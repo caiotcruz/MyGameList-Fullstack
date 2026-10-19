@@ -1,0 +1,58 @@
+name: Security checks
+on:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '20 7 * * 1'
+env:
+  SCARF_NO_ANALYTICS: "true"
+permissions:
+  contents: read
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  frontend:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2, reviewed immutable revision
+        with:
+          persist-credentials: false
+      - name: Check runner Node compatibility
+        run: node -e "const [major,minor]=process.versions.node.split('.').map(Number);if(!(major>=24 || major===22 && minor>=12))process.exit(1)"
+      - run: npm ci
+        working-directory: mygamelist-frontend
+      - run: npm test -- --watch=false
+        working-directory: mygamelist-frontend
+      - run: npm run test:contracts && npm run test:boundary && npm run build
+        working-directory: mygamelist-frontend
+      - name: Audit production and build dependencies
+        run: npm audit --audit-level=high
+        working-directory: mygamelist-frontend
+  backend:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Unit tests
+        working-directory: mygamelist-backend
+        shell: bash
+        run: |
+          export JAVA_HOME="$JAVA_HOME_17_X64"
+          chmod +x mvnw
+          ./mvnw -B '-Dtest=*Test,!CriticalFlowsTest' test
+      - name: Dependency audit
+        working-directory: mygamelist-backend
+        shell: bash
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: |
+          export JAVA_HOME="$JAVA_HOME_17_X64"
+          if [ -z "$NVD_API_KEY" ]; then
+            echo "Configure the NVD_API_KEY repository secret; audit was not performed."
+            exit 1
+          fi
+          ./mvnw -B -Psecurity-audit -DskipTests '-DnvdApiKeyEnvironmentVariable=NVD_API_KEY' verify

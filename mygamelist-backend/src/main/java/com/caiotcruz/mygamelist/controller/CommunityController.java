@@ -105,6 +105,7 @@ public class CommunityController {
 
     @GetMapping("/users/search")
     public List<UserSummaryDTO> searchUsers(@RequestParam String name) {
+        com.caiotcruz.mygamelist.infra.security.RequestLimits.boundedQuery(name,80);
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User currentUser = (User) userRepository.findByEmail(email);
 

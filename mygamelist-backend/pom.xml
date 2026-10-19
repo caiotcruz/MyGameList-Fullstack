@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.0.1</version>
+		<version>4.0.8</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.caiotcruz</groupId>
@@ -28,7 +28,11 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
-		<spring-cloud.version>2025.1.0</spring-cloud.version>
+		<spring-cloud.version>2025.1.3</spring-cloud.version>
+        <!-- Boot 4.0.8 manages 11.0.24; 11.0.27 also includes the subsequent security fixes. -->
+        <tomcat.version>11.0.27</tomcat.version>
+        <!-- CVE-2026-89044: fix introduced in Netty 4.2.18.Final. -->
+        <netty.version>4.2.19.Final</netty.version>
 	</properties>
 	<dependencies>
 <dependency><groupId>io.micrometer</groupId><artifactId>micrometer-registry-prometheus</artifactId></dependency>
@@ -115,6 +119,14 @@
 
 	<build>
 		<plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!-- Explicit test-only agent avoids runtime self-attachment. Version comes from Boot BOM. -->
+                    <argLine>-javaagent:"${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar"</argLine>
+                </configuration>
+            </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -142,4 +154,14 @@
 		</plugins>
 	</build>
 
+    <profiles>
+        <profile>
+            <id>security-audit</id>
+            <build><plugins><plugin>
+                <groupId>org.owasp</groupId><artifactId>dependency-check-maven</artifactId><version>13.0.0</version>
+                <configuration><suppressionFiles><suppressionFile>${project.basedir}/dependency-check-suppressions.xml</suppressionFile></suppressionFiles><ossIndexAnalyzerEnabled>false</ossIndexAnalyzerEnabled><centralAnalyzerEnabled>false</centralAnalyzerEnabled><nodeAuditAnalyzerEnabled>false</nodeAuditAnalyzerEnabled><failBuildOnCVSS>7</failBuildOnCVSS><failOnError>true</failOnError><formats><format>HTML</format><format>JSON</format></formats></configuration>
+                <executions><execution><goals><goal>check</goal></goals></execution></executions>
+            </plugin></plugins></build>
+        </profile>
+    </profiles>
 </project>

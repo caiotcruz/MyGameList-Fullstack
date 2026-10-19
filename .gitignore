@@ -35,3 +35,6 @@ Thumbs.db
 # Instructions and temporary commit message for this publication
 /_git-helper/
 
+##
+/docs/
+MANIFESTO_SEGURANCA.sha256

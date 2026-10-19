@@ -64,25 +64,20 @@ public class MessageService {
     }
 
     @Transactional
-    public MessageThreadDTO getThread(Long otherUserId) {
-        User me = getCurrentUser();
-        User other = userRepository.findById(otherUserId)
-                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND,"Usuário não encontrado"));
+    public MessageThreadDTO getThread(Long otherUserId){return getThread(otherUserId,null);}
 
+    @Transactional
+    public MessageThreadDTO getThread(Long otherUserId,Long before) {
+        if(otherUserId==null||otherUserId<1||before!=null&&before<1)throw new IllegalArgumentException("Invalid cursor");
+        User me=getCurrentUser();
+        User other=userRepository.findById(otherUserId).orElseThrow(()->new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND,"Usuário não encontrado"));
         safety.requireVisible(me.getId(),other.getId());
-
-        ActivityUserDTO partnerDto = ActivityUserDTO.from(other);
-
-        List<MessageDTO> messages = conversationRepository.findBetween(me, other)
-                .map(conversation -> {
-                    messageRepository.markAllAsRead(conversation, me);
-                    return messageRepository.findByConversationOrderBySentAtAsc(conversation).stream()
-                            .map(m -> toMessageDTO(m, me))
-                            .toList();
-                })
-                .orElse(List.of());
-
-        return new MessageThreadDTO(partnerDto, messages, safety.canSend(me,other));
+        var conversation=conversationRepository.findBetween(me,other);
+        List<Message> page=conversation.map(c->messageRepository.findTop51ByConversationAndIdLessThanOrderByIdDesc(c,before==null?Long.MAX_VALUE:before)).orElse(List.of());
+        Long next=page.size()>50?page.get(49).getId():null;
+        var visible=page.stream().limit(50).sorted(java.util.Comparator.comparing(Message::getId)).map(m->toMessageDTO(m,me)).toList();
+        if(before==null)conversation.ifPresent(c->messageRepository.markAllAsRead(c,me));
+        return new MessageThreadDTO(ActivityUserDTO.from(other),visible,safety.canSend(me,other),next);
     }
 
     @Transactional

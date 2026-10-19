@@ -21,6 +21,10 @@ try {
         if ($LASTEXITCODE -ne 0) { throw 'Falha ao copiar migracao de recomendacoes.' }
         docker compose --env-file .env exec -T postgres psql -U postgres -d mygamelist -v ON_ERROR_STOP=1 -f /tmp/004_recommendations_themes.sql
         if ($LASTEXITCODE -ne 0) { throw 'Falha na migracao de recomendacoes.' }
+        docker compose --env-file .env cp scripts/005_security.sql postgres:/tmp/005_security.sql
+        if ($LASTEXITCODE -ne 0) { throw 'Falha ao copiar migracao de seguranca.' }
+        docker compose --env-file .env exec -T postgres psql -U postgres -d mygamelist -v ON_ERROR_STOP=1 -f /tmp/005_security.sql
+        if ($LASTEXITCODE -ne 0) { throw 'Falha na migracao de seguranca.' }
     }
     & ./mvnw.cmd spring-boot:run
 } finally { Pop-Location }

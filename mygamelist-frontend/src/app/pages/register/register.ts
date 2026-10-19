@@ -1,3 +1,4 @@
+import { passwordError } from '../../shared/password-policy';
 import { TEXT_LIMITS } from '../../shared/text-limits';
 import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -36,8 +37,9 @@ export class Register {
       return;
     }
 
-    if (this.password.length < 6) {
-      this.errorMessage = 'A senha deve ter pelo menos 6 caracteres.';
+    const invalidPassword=passwordError(this.password);
+    if (invalidPassword) {
+      this.errorMessage = invalidPassword;
       return;
     }
 

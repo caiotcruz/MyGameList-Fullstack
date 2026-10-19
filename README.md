@@ -6,7 +6,7 @@ Projeto full-stack de **Caio Teixeira da Cruz**, desenvolvido com Java, Spring B
 
 ## Funcionalidades
 
-- **Biblioteca pessoal:** status de jogo, notas de 0 a 10, reviews, spoilers e um favorito por usuário.
+- **Biblioteca pessoal:** status de jogo, notas de 0 a 10, reviews de até 50.000 unidades UTF-16, spoilers e um favorito por usuário. Busca por trecho do título sem diferenciar acentos, filtros, ordenação e paginação de 24 jogos.
 - **Catálogo RAWG:** busca, detalhes, imagens, trailers, lojas e conteúdos relacionados.
 - **Comunidade:** seguir usuários, feed de atividades agrupadas, curtidas, comentários e reviews com votos.
 - **Em alta:** ranking calculado sobre atividades dos últimos **30 dias**, sem reiniciar na virada do mês.
@@ -14,7 +14,7 @@ Projeto full-stack de **Caio Teixeira da Cruz**, desenvolvido com Java, Spring B
 - **Mensagens:** conversas e contagem de não lidas, respeitando a preferência do destinatário: todos, pessoas que ele segue ou ninguém. O padrão é pessoas que o destinatário segue.
 - **Proteção da comunidade:** bloqueio bidirecional e denúncias de perfis, atividades, comentários, reviews e mensagens. Controles contextuais em “Mais opções”.
 - **Moderação:** triagem de denúncias com evidência, estado e nota de análise. Acesso autorizado no servidor por `MODERATOR_IDS`.
-- **Experiência:** tema escuro com destaque verde-água, layout responsivo, mensagens de erro consistentes, atualização de notificações na primeira abertura e rascunhos de reviews preservados após falha de envio.
+- **Experiência:** tema escuro com verde-água padrão e nove opções de tema no editor de perfil; preferência por conta aplicada somente na área autenticada, layout responsivo, mensagens de erro consistentes, atualização de notificações na primeira abertura e rascunhos de reviews preservados após falha de envio.
 
 ## Tecnologias
 
@@ -88,7 +88,7 @@ Para permitir triagem de denúncias, configure opcionalmente `MODERATOR_IDS` com
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-Local.ps1
 ```
 
-O script carrega `.env`, inicia PostgreSQL, Redis e RabbitMQ, aguarda os healthchecks, aplica o SQL idempotente da outbox e inicia o Spring Boot. No ambiente local padrão, o Hibernate atualiza o schema e o inicializador da comunidade cria os índices adicionais. Aguarde `Started MygamelistApplication`.
+O script carrega `.env`, inicia PostgreSQL, Redis e RabbitMQ, aguarda os healthchecks, aplica o SQL idempotente da outbox, migra temas e textos em bancos existentes e inicia o Spring Boot. No ambiente local padrão, o Hibernate atualiza o schema e o inicializador da comunidade cria os índices adicionais. Aguarde `Started MygamelistApplication`.
 
 ### 4. Iniciar o frontend
 
@@ -124,7 +124,7 @@ Na pasta `mygamelist-backend`:
 
 ```powershell
 . .\scripts\Load-Env.ps1
-.\mvnw.cmd '-Dtest=OutboxCryptoTest,CachedRawgClientTest,MailWorkerTest,NotificationServiceTest,AchievementServiceTest,SocialServiceTest' test
+.\mvnw.cmd '-Dtest=OutboxCryptoTest,CachedRawgClientTest,MailWorkerTest,NotificationServiceTest,AchievementServiceTest,SocialServiceTest,TextLimitsTest,GameHubStatsTest,RecommendationEngineTest,RecommendationServiceTest,RecommendationControllerTest' test
 ```
 
 ### Backend: integração e concorrência
@@ -142,18 +142,49 @@ Na pasta `mygamelist-frontend`:
 ```powershell
 npm.cmd test -- --watch=false
 npm.cmd run test:boundary
+npm.cmd run test:contracts
 npm.cmd run build
 ```
 
 ### Estado da validação
 
-Na revisão de outubro de 2026, foram registrados 11 testes unitários aprovados no backend e 32 testes aprovados no frontend, incluindo regressões de notificações e preservação de reviews. O build do frontend passou com avisos de tamanho de CSS em perfil e detalhes do jogo. A execução completa da suíte crítica após a correção do script PowerShell ainda precisa ser confirmada. Esses resultados não representam um teste de capacidade sob carga nem uma validação visual completa.
+Na atualização de segurança passaram **34 testes unitários do backend**, **52 testes do frontend**, 12 verificações de destino do token, cinco contratos de limites de texto e o build de produção. O backend e seus testes compilaram com Java 17. A auditoria npm retornou zero vulnerabilidades após atualizar as dependências dentro da linha Angular 21. A integração com PostgreSQL/Redis reais, os scripts PowerShell e a auditoria Java ainda precisam ser concluídos localmente. Consulte [as evidências e limitações](docs/VALIDACAO_SEGURANCA.md).
+
+## Segurança e execução com privilégios reduzidos
+
+O projeto inclui limites distribuídos por IP/conta/operação, controle de concorrência, JSON estrito e limitado, proteção de autenticação e código de verificação, paginação do histórico de mensagens, métricas de rejeição e um perfil de banco sem privilégios administrativos. Aplique o [guia de atualização de segurança](ATUALIZACAO_SEGURANCA.md), incluindo backup e `Provision-Runtime.ps1`, para ativar o usuário de banco restrito.
+
+Leia a [matriz OWASP Top 10:2025 e os riscos remanescentes](docs/SEGURANCA.md). Os limites são conservadores e precisam de calibração; não representam garantia contra qualquer ataque ou proteção volumétrica de rede. O CI e Dependabot estão preparados para PRs/verificações periódicas, mas não foram executados no GitHub nesta entrega.
+
+## Temas, textos e coleção
+
+A landing e as páginas de autenticação usam verde-água fixo, incluindo a marca. Na área autenticada, **Editar perfil → Cor de destaque** salva a preferência da conta. Visitar outro perfil não altera seu tema.
+
+| Campo | Limite |
+| --- | ---: |
+| Review | 50.000 |
+| Bio | 5.000 |
+| Comentário | 5.000 |
+| Mensagem | 10.000 |
+| Nome de exibição | 80 |
+
+A contagem usa unidades UTF-16, de forma consistente entre Java, JavaScript e `maxlength`; alguns emojis ocupam duas unidades. Comentários e mensagens aceitam múltiplas linhas. No chat, Shift+Enter quebra a linha e Enter envia. Nos comentários, Ctrl+Enter envia.
+
+Os detalhes do jogo incluem a contagem de **Desistiram**. A coleção permite busca por texto/números, filtro de status e favoritos e ordenação por título, status, nota ou atualização. A busca considera toda a coleção carregada, antes da paginação.
+
+A preparação para Steam está restrita ao contrato opcional de progresso externo e ao plano em [docs/STEAM_INTEGRATION.md](docs/STEAM_INTEGRATION.md). Não há conexão, importação ou sincronização Steam nesta versão. Consulte [ATUALIZACAO_TEMAS.md](ATUALIZACAO_TEMAS.md) para aplicar o pacote ao projeto existente.
+
+## Recomendações pessoais
+
+Na busca, o carrossel **Escolhas para você** combina frequência e notas dos gêneros, seleciona os dois principais e exclui todos os jogos da coleção, inclusive planejados. Jogos antigos recebem metadados de gênero em segundo plano. Veja a [fórmula e suas limitações](docs/RECOMENDACOES.md) e o [guia desta atualização](ATUALIZACAO_RECOMENDACOES.md).
+
+Os oito contratos matemáticos foram compilados e executados com Java 17. Os testes unitários de recomendações também passaram na atualização de segurança. A integração com banco e serviços reais segue como validação local separada.
 
 ## Próximos passos
 
 - Concluir a validação de integração e concorrência no ambiente local.
 - Revisar os fluxos com teclado e telas móveis.
-- Automatizar build e testes em integração contínua.
+- Executar e acompanhar o workflow de segurança; concluir a auditoria Java e das imagens.
 - Adotar migrações versionadas e ampliar a observabilidade de falhas e backlog de e-mails.
 - Medir latência e consumo de recursos antes de definir metas de capacidade ou preparar implantação online.
 

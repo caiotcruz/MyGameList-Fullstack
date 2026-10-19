@@ -1,18 +1,6 @@
 package com.caiotcruz.mygamelist.dto;
-
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-
-public record RegisterDTO(
-    @NotBlank(message = "O nome é obrigatório")
-    @Size(min = 2, max = TextLimits.NAME) String name,
-
-    @NotBlank(message = "O email é obrigatório")
-    @Email(message = "Formato de email inválido")
-    String email,
-
-    @NotBlank(message = "A senha é obrigatória")
-    @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres")
-    String password
-) {}
+import jakarta.validation.constraints.*;
+import com.caiotcruz.mygamelist.infra.security.*;
+public record RegisterDTO(@NotBlank @Size(min=2,max=TextLimits.NAME) String name, @NotBlank @Email @Size(max=254) String email, @PasswordInput String password) {
+    public RegisterDTO {email=RequestLimits.email(email);name=name==null?null:name.trim();}
+}

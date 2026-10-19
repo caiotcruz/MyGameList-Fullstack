@@ -25,7 +25,7 @@ public class MailRelay {
       MessageProperties properties=new MessageProperties();properties.setContentType("text/plain");properties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);
       rabbit.send("",MessagingConfiguration.QUEUE,new Message(id.getBytes(StandardCharsets.UTF_8),properties),correlation);
       var confirm=correlation.getFuture().get(3,TimeUnit.SECONDS);
-      if(!confirm.isAck() || correlation.getReturned()!=null) throw new IllegalStateException("Broker did not accept mail ID");
+      if(!confirm.ack() || correlation.getReturned()!=null) throw new IllegalStateException("Broker did not accept mail ID");
       db.update("UPDATE mail_outbox SET next_attempt_at=CURRENT_TIMESTAMP+INTERVAL '2 minutes' WHERE id=?",id);
       metrics.counter("mgl.mail.published").increment();
      } catch(Exception ex) {

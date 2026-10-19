@@ -16,6 +16,10 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
 
+    @jakarta.annotation.PostConstruct
+    void validateSecret(){if(secret==null || secret.getBytes(java.nio.charset.StandardCharsets.UTF_8).length<32)
+        throw new IllegalStateException("JWT_SECRET must contain at least 32 bytes");}
+
     public String generateToken(User user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
@@ -39,7 +43,7 @@ public class TokenService {
                     .verify(token)
                     .getSubject();
         } catch (JWTVerificationException exception) {
-            System.out.println("Token inválido: " + exception.getMessage());
+
             return "";
         }
     }

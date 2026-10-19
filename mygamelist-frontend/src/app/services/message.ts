@@ -26,6 +26,7 @@ export interface MessageableContact {
 }
 
 export interface MessageThread {
+  nextBefore?: number | null;
   partner: { id: number; name: string; profilePicture: string | null };
   messages: Message[];
   canSend: boolean;
@@ -46,8 +47,8 @@ export class MessageService {
     return this.http.get<ConversationSummary[]>(`${this.apiUrl}/conversations`, this.getHeaders());
   }
 
-  getThread(userId: number) {
-    return this.http.get<MessageThread>(`${this.apiUrl}/conversations/${userId}`, this.getHeaders());
+  getThread(userId: number, before?: number) {
+    return this.http.get<MessageThread>(`${this.apiUrl}/conversations/${userId}${before ? "?before=" + before : ""}`, this.getHeaders());
   }
 
   sendMessage(userId: number, content: string) {

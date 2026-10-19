@@ -27,8 +27,8 @@ public class MessageController {
     }
 
     @GetMapping("/conversations/{userId}")
-    public MessageThreadDTO getThread(@PathVariable Long userId) {
-        return messageService.getThread(userId);
+    public MessageThreadDTO getThread(@PathVariable Long userId, @RequestParam(required=false) Long before) {
+        return messageService.getThread(userId,before);
     }
 
     @PostMapping("/conversations/{userId}")
